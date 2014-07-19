@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Bash colour definitions
+# see http://www.tldp.org/HOWTO/Bash-Prompt-HOWTO/x329.html
 BLACK='\[\e[0;30m\]';       DARK_GRAY='\[\e[1;30m\]'
 BLUE='\[\e[0;34m\]';        LIGHT_BLUE='\[\e[1;34m\]'
 GREEN='\[\e[0;32m\]';       LIGHT_GREEN='\[\e[1;32m\]'
@@ -12,14 +13,14 @@ LIGHT_GRAY='\[\e[0;37m\]';  WHITE='\[\e[1;37m\]'
 RESET_COLOR='\[\e[00m\]'
 
 unset EXIT_CODES
-# Exit codes definitions
+# Exit codes definitions, see bash(1),
 EXIT_CODES[1]='Catchall for general errors / Operation not permitted'
 EXIT_CODES[2]='Misuse of shell builtins / No such file or directory'
 EXIT_CODES[126]='A command is found but is not executable'
 EXIT_CODES[127]='A command is not found'
 EXIT_CODES[128]='Invalid argument to exit'
 EXIT_CODES[255]='Exit status out of range'
-# Signals
+# Signals, see signal(7)
 EXIT_CODES[129]='SIGHUP,1,Term Hangup detected on controlling terminal or '\
 'death of controlling process'
 EXIT_CODES[130]='SIGINT,2,Term Interrupt from keyboard'
@@ -73,7 +74,7 @@ parse_git () {
     local stage=
     local ahead=
     local behind=
-    branchname=$(git branch 2>/dev/null | fgrep '*')
+    branchname=$(git branch 2>/dev/null | grep '\*')
     if [[ -n ${branchname} ]]; then
         PS1+="(${LIGHT_BLUE}${branchname:2}${RESET_COLOR}"
         gitstatus=$(git status --porcelain 2> /dev/null)
@@ -97,7 +98,6 @@ parse_git () {
         PS1+="${RESET_COLOR})"
     fi
 }
-
 
 generate_ps () {
     local ecode=${?}
