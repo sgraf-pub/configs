@@ -114,3 +114,4 @@ generate_ps () {
 }
 
 PROMPT_COMMAND=generate_ps
+
