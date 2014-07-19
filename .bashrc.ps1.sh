@@ -20,12 +20,14 @@ EXIT_CODES[127]='A command is not found'
 EXIT_CODES[128]='Invalid argument to exit'
 EXIT_CODES[255]='Exit status out of range'
 # Signals
-EXIT_CODES[129]='SIGHUP,1,Term Hangup detected on controlling terminal or death of controlling process'
+EXIT_CODES[129]='SIGHUP,1,Term Hangup detected on controlling terminal or '\
+'death of controlling process'
 EXIT_CODES[130]='SIGINT,2,Term Interrupt from keyboard'
 EXIT_CODES[131]='SIGQUIT,3,Core Quit from keyboard'
 EXIT_CODES[132]='SIGILL,4,Core Illegal Instruction'
 EXIT_CODES[133]='SIGTRAP,5,Core Trace/breakpoint trap'
-EXIT_CODES[134]='SIGABRT,6,Core Abort signal from abort(3) / SIGIOT,6,Core IOT trap'
+EXIT_CODES[134]='SIGABRT,6,Core Abort signal from abort(3) / SIGIOT,6,Core '\
+'IOT trap'
 EXIT_CODES[135]='SIGBUS,7,Core Bus error (bad memory access)'
 EXIT_CODES[136]='SIGFPE,8,Core Floating point exception'
 EXIT_CODES[137]='SIGKILL,9,Term Kill signal'
@@ -48,9 +50,11 @@ EXIT_CODES[153]='SIGXFSZ,25,Core File size limit exceeded (4.2BSD)'
 EXIT_CODES[154]='SIGVTALRM,26,Term Virtual alarm clock (4.2BSD)'
 EXIT_CODES[155]='SIGPROF,27,Term Profiling timer expired'
 EXIT_CODES[156]='SIGWINCH,28,Ign Window resize signal (4.3BSD, Sun)'
-EXIT_CODES[157]='SIGPOLL,29,Term Pollable event (Sys V) / SIGIO,29,Term I/O now possible (4.2BSD)'
+EXIT_CODES[157]='SIGPOLL,29,Term Pollable event (Sys V) / SIGIO,29,Term I/O '\
+'now possible (4.2BSD)'
 EXIT_CODES[158]='SIGPWR,30,Term Power failure (System V) / SIGINFO,30,Term'
-EXIT_CODES[159]='SIGSYS,31,Core Bad argument to routine (SVr4) / SIGUNUSED,31,Core Synonymous with SIGSYS'
+EXIT_CODES[159]='SIGSYS,31,Core Bad argument to routine (SVr4) / SIGUNUSED,'\
+'31,Core'
 
 parse_exit_code () {
     if [ ${1} != "0" ] ; then
@@ -62,12 +66,46 @@ parse_exit_code () {
     PS1+="${RESET_COLOR}"
 }
 
+parse_git () {
+    local branchname=
+    local gitstatus=
+    local workt=
+    local stage=
+    local ahead=
+    local behind=
+    branchname=$(git branch 2>/dev/null | fgrep '*')
+    if [[ -n ${branchname} ]]; then
+        PS1+="(${LIGHT_BLUE}${branchname:2}${RESET_COLOR}"
+        gitstatus=$(git status --porcelain 2> /dev/null)
+        if [[ -n "${gitstatus}" ]] ; then
+            workt=$(echo -e "${gitstatus}" | cut -c2 | sort | uniq | \
+                tr -d '\n ')
+            stage=$(echo -e "${gitstatus}" | cut -c1 | sort | uniq | \
+                grep -v -e '\?' -e '\!' | tr -d '\n ')
+        fi
+        if [[ -n ${stage} || -n ${workt} ]]; then
+            PS1+=" ${YELLOW}${stage}${LIGHT_RED}${workt}"
+        fi
+        ahead=$(git rev-list --count @{upstream}..HEAD)
+        behind=$(git rev-list --count HEAD..@{upstream})
+        if [ ${ahead} -ne 0 ]; then
+            PS1+=" ${YELLOW}+${ahead}"
+        fi
+        if [ ${behind} -ne 0 ]; then
+            PS1+=" ${YELLOW}-${behind}"
+        fi
+        PS1+="${RESET_COLOR})"
+    fi
+}
+
+
 generate_ps () {
     local ecode=${?}
     PS1=
     parse_exit_code ${ecode}
     PS1+="\n"
     PS1+="[\u@\h ${LIGHT_BLUE}\w${RESET_COLOR}]"
+    parse_git
     if [ \u == "root" ]; then
         PS1+="# "
     else
