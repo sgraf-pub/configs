@@ -19,12 +19,12 @@ EXIT_CODES[2]='Misuse of shell builtins / No such file or directory'
 EXIT_CODES[126]='A command is found but is not executable'
 EXIT_CODES[127]='A command is not found'
 EXIT_CODES[128]='Invalid argument to exit'
-EXIT_CODES[255]='Exit status out of range'
+EXIT_CODES[255]='Exit status out of range / SSH error occurred'
 # Signals, see signal(7)
 EXIT_CODES[129]='SIGHUP,1,Term Hangup detected on controlling terminal or '\
 'death of controlling process'
-EXIT_CODES[130]='SIGINT,2,Term Interrupt from keyboard'
-EXIT_CODES[131]='SIGQUIT,3,Core Quit from keyboard'
+EXIT_CODES[130]='SIGINT,2,Term Interrupt from keyboard (Ctrl-C)'
+EXIT_CODES[131]='SIGQUIT,3,Core Quit from keyboard (Ctrl-\)'
 EXIT_CODES[132]='SIGILL,4,Core Illegal Instruction'
 EXIT_CODES[133]='SIGTRAP,5,Core Trace/breakpoint trap'
 EXIT_CODES[134]='SIGABRT,6,Core Abort signal from abort(3) / SIGIOT,6,Core '\
