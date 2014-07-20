@@ -9,6 +9,7 @@ set modeline
 set smarttab
 set autoindent
 
+set number
 set background=dark
 
 if exists('+colorcolumn')
