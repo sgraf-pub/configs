@@ -58,13 +58,22 @@ EXIT_CODES[159]='SIGSYS,31,Core Bad argument to routine (SVr4) / SIGUNUSED,'\
 '31,Core'
 
 parse_exit_code () {
-    if [ ${1} != "0" ] ; then
-        PS1+="${LIGHT_RED}:: [   FAIL   ] :: "
-        PS1+="${EXIT_CODES[$1]} (Expected 0, got ${1})"
+    local temp_ecode=( $1 )
+    local final_ecode=
+    if [ ${temp_ecode} != ${temp_ecode[@]:(-1)} ]; then
+        final_ecode=${temp_ecode}
     else
-        PS1+="${LIGHT_GREEN}:: [   PASS   ] ::"
+        final_ecode=${temp_ecode[@]:1}
     fi
-    PS1+="${RESET_COLOR}"
+    for i in ${final_ecode[@]}; do
+        if [ ${i} != "0" ] ; then
+            PS1+="${LIGHT_RED}:: [   FAIL   ] :: "
+            PS1+="${EXIT_CODES[$i]} (Expected 0, got ${i})"
+        else
+            PS1+="${LIGHT_GREEN}:: [   PASS   ] ::"
+        fi
+        PS1+="${RESET_COLOR}\n"
+    done
 }
 
 parse_git () {
@@ -100,10 +109,9 @@ parse_git () {
 }
 
 generate_ps () {
-    local ecode=${?}
+    local ecode="${?} ${PIPESTATUS[@]}"
     PS1=
-    parse_exit_code ${ecode}
-    PS1+="\n"
+    parse_exit_code "${ecode}"
     PS1+="[\u@\h ${LIGHT_BLUE}\w${RESET_COLOR}]"
     parse_git
     if [ \u == "root" ]; then
