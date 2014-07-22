@@ -108,11 +108,19 @@ parse_git () {
     fi
 }
 
+where_i_am ()
+{
+    PS1+=$(ifconfig | grep -e 'inet.*broadcast' | awk '{print $2}' | \
+        tr '\n' '/' | sed s'/.$//')
+}
+
 generate_ps () {
     local ecode="${?} ${PIPESTATUS[@]}"
     PS1=
     parse_exit_code "${ecode}"
-    PS1+="[\u@\h ${LIGHT_BLUE}\w${RESET_COLOR}]"
+    PS1+="[\u@"
+    where_i_am
+    PS1+=" ${LIGHT_BLUE}\w${RESET_COLOR}]"
     parse_git
     if [ \u == "root" ]; then
         PS1+="# "
