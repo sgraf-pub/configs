@@ -98,11 +98,13 @@ parse_git () {
         fi
         ahead=$(git rev-list --count @{upstream}..HEAD)
         behind=$(git rev-list --count HEAD..@{upstream})
-        if [ ${ahead} -ne 0 ]; then
-            PS1+=" ${YELLOW}+${ahead}"
-        fi
-        if [ ${behind} -ne 0 ]; then
-            PS1+=" ${YELLOW}-${behind}"
+        if [[ ${?} == 0 && -n ${ahead} ]]; then
+            if [ ${ahead} -ne 0 ]; then
+                PS1+=" ${YELLOW}+${ahead}"
+            fi
+            if [ ${behind} -ne 0 ]; then
+                PS1+=" ${YELLOW}-${behind}"
+            fi
         fi
         PS1+="${RESET_COLOR})"
     fi
