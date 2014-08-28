@@ -96,9 +96,9 @@ parse_git () {
         if [[ -n ${stage} || -n ${workt} ]]; then
             PS1+=" ${YELLOW}${stage}${LIGHT_RED}${workt}"
         fi
-        ahead=$(git rev-list --count @{upstream}..HEAD)
-        behind=$(git rev-list --count HEAD..@{upstream})
-        if [[ ${?} == 0 && -n ${ahead} ]]; then
+        ahead=$(git rev-list --count @{upstream}..HEAD 2>/dev/null)
+        behind=$(git rev-list --count HEAD..@{upstream} 2>/dev/null)
+        if [[ -n ${ahead} ]]; then
             if [ ${ahead} -ne 0 ]; then
                 PS1+=" ${YELLOW}+${ahead}"
             fi
