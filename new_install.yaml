@@ -1,0 +1,105 @@
+---
+- hosts: all
+  user: root
+  tasks:
+  #
+  # Set old 'yum groups' behavior
+  #
+  - ini_file: dest=/etc/yum.conf section=main option=group_command value=compat
+
+  #
+  # Set swappiness to reasonable value
+  #
+  - sysctl: name=vm.swappiness value=5 state=present
+
+  #
+  # Boot menu waits only 1s
+  #
+  - lineinfile: dest=/etc/sysconfig/grub regexp=^GRUB_TIMEOUT= line=GRUB_TIMEOUT=1
+
+  #
+  # Install necessary packages
+  #
+  - shell: rpm -q rpmfusion-free-release-20
+    register: result
+    ignore_errors: True
+    when: ansible_distribution_major_version == "20"
+    changed_when: "result.rc != 0"
+  - yum: name=http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-20.noarch.rpm state=present
+    when: ansible_distribution_major_version == "20" and result|failed
+  - shell: rpm -q rpmfusion-free-release-21
+    register: result
+    ignore_errors: True
+    when: ansible_distribution_major_version == "21"
+    changed_when: "result.rc != 0"
+  - yum: name=http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-21.noarch.rpm state=present
+    when: ansible_distribution_major_version == "21" and result|failed
+  - yum: name={{ item }} state=absent
+    with_items: [prelink, lightspark, gnash]
+  - shell: rpm -q adobe-release-x86_64
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
+  - yum: name=http://linuxdownload.adobe.com/adobe-release/adobe-release-x86_64-1.0-1.noarch.rpm state=present
+    when: result|failed
+  - shell: rpm -q skype
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
+  - yum: name=http://download.skype.com/linux/skype-4.3.0.37-fedora.i586.rpm state=present
+    when: result|failed
+  - shell: rpm -q google-chrome-stable
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
+  - yum: name=https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm state=present
+    when: result|failed
+  - shell: rpm -q google-talkplugin
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
+  - yum: name=https://dl.google.com/linux/direct/google-talkplugin_current_x86_64.rpm state=present
+    when: result|failed
+  - yum: name={{ item }} state=present
+    with_items: [yum-utils, yum-langpacks, mplayer, mencoder, vlc, gstreamer1-libav, gstreamer-ffmpeg, "@printing", flash-plugin, "@multimedia", "@libreoffice", "@gnome-desktop", tuned]
+  - shell: yum langinstall cs en -y
+
+  #
+  # Configure power saving
+  #
+  - service: name=tuned state=started enabled=yes
+  - shell: tuned-adm profile powersave
+
+  #
+  # Setup mplayer
+  #
+  - copy: src=configs/mplayer.config dest={{ item }}/.mplayer/config mode=644
+    with_items: [/root, /home/sgraf, /home/medvidek, /home/stani]
+    ignore_errors: True
+
+  #
+  # Setup ssh
+  #
+  - copy: src=configs/ssh.config dest={{ item }}/.ssh/config mode=644
+    with_items: [/root, /home/sgraf, /home/medvidek, /home/stani]
+    ignore_errors: True
+
+  #
+  # Setup vim
+  #
+  - copy: src=configs/vimrc dest={{ item }}/.vimrc mode=644
+    with_items: [/root, /home/sgraf, /home/medvidek, /home/stani]
+    ignore_errors: True
+
+  #
+  # Setup bash prompt
+  #
+  - copy: src=configs/bashrc.ps1.sh dest={{ item }}/.bashrc.ps1.sh mode=755
+    with_items: [/root, /home/sgraf, /home/medvidek, /home/stani]
+    ignore_errors: True
+  - lineinfile: dest="{{ item }}/.bashrc" line="source ~/.bashrc.ps1.sh"
+    with_items: [/root, /home/sgraf, /home/medvidek, /home/stani]
+    ignore_errors: True
+
+
+

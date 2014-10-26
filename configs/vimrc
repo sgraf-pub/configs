@@ -1,13 +1,9 @@
 syntax on
-filetype indent plugin on
 
 set tabstop=8
 set expandtab
-set shiftwidth=4
-set softtabstop=4
-set modeline
-set smarttab
-set autoindent
+set shiftwidth=2
+set softtabstop=2
 
 set number
 set background=dark
