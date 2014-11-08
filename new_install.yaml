@@ -1,11 +1,16 @@
 ---
-- hosts: all
-  user: root
+- hosts: "{{ var_host }}"
+  remote_user: root
   tasks:
   #
   # Set old 'yum groups' behavior
+  # Fix expiration time settings
   #
   - ini_file: dest=/etc/yum.conf section=main option=group_command value=compat
+  - ini_file: dest=/etc/yum.conf section=main option=metadata_expire value=6h
+  - ini_file: dest=/etc/yum.conf section=main option=metadata_expire_filter value=never
+  - ini_file: dest=/etc/yum.conf section=main option=mirrorlist_expire value=6h
+  - ini_file: dest=/etc/yum.conf section=main option=check_config_file_age value=0
 
   #
   # Set swappiness to reasonable value
@@ -54,6 +59,12 @@
     changed_when: "result.rc != 0"
   - yum: name=https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm state=present
     when: result|failed
+  - shell: rpm -q 'gpg-pubkey-7fac5991'
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
+  - shell: rpm --import https://dl-ssl.google.com/linux/linux_signing_key.pub
+    when: result|failed
   - shell: rpm -q google-talkplugin
     register: result
     ignore_errors: True
@@ -61,45 +72,81 @@
   - yum: name=https://dl.google.com/linux/direct/google-talkplugin_current_x86_64.rpm state=present
     when: result|failed
   - yum: name={{ item }} state=present
-    with_items: [yum-utils, yum-langpacks, mplayer, mencoder, vlc, gstreamer1-libav, gstreamer-ffmpeg, "@printing", flash-plugin, "@multimedia", "@libreoffice", "@gnome-desktop", tuned]
-  - shell: yum langinstall cs en -y
+    with_items: [yum-utils, yum-langpacks, mplayer, mencoder, vlc, gstreamer1-libav,
+      gstreamer-ffmpeg, "@printing", flash-plugin, "@multimedia", "@libreoffice",
+      "@gnome-desktop", tuned, htop, python-tools, kate, kate-pate, terminator,
+      gnome-tweak-tool, vim-enhanced, mc, lftp, nano, wget, curl, meld, freemind,
+      gimp, keepassx, bash-completion, git, screen]
+
+  #
+  # Install languages
+  #
+  - shell: yum langlist | grep Czech
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
+  - shell: yum langinstall Czech -y
+    when: result|failed
+  - shell: yum langlist | grep English
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
+  - shell: yum langinstall English -y
+    when: result|failed
 
   #
   # Configure power saving
   #
   - service: name=tuned state=started enabled=yes
+  - shell: tuned-adm active | grep powersave
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
   - shell: tuned-adm profile powersave
+    when: result|failed
 
   #
   # Setup mplayer
   #
+  - file: dest={{ item }}/.mplayer state=directory mode=755
+    with_items: [/root, "/home/{{ var_user }}"]
   - copy: src=configs/mplayer.config dest={{ item }}/.mplayer/config mode=644
-    with_items: [/root, /home/sgraf, /home/medvidek, /home/stani]
-    ignore_errors: True
+    with_items: [/root, "/home/{{ var_user }}"]
 
   #
   # Setup ssh
   #
+  - file: dest={{ item }}/.ssh state=directory mode=700
+    with_items: [/root, "/home/{{ var_user }}"]
   - copy: src=configs/ssh.config dest={{ item }}/.ssh/config mode=644
-    with_items: [/root, /home/sgraf, /home/medvidek, /home/stani]
-    ignore_errors: True
+    with_items: [/root, "/home/{{ var_user }}"]
 
   #
   # Setup vim
   #
   - copy: src=configs/vimrc dest={{ item }}/.vimrc mode=644
-    with_items: [/root, /home/sgraf, /home/medvidek, /home/stani]
-    ignore_errors: True
+    with_items: [/root, "/home/{{ var_user }}"]
 
   #
   # Setup bash prompt
   #
   - copy: src=configs/bashrc.ps1.sh dest={{ item }}/.bashrc.ps1.sh mode=755
-    with_items: [/root, /home/sgraf, /home/medvidek, /home/stani]
-    ignore_errors: True
+    with_items: [/root, "/home/{{ var_user }}"]
   - lineinfile: dest="{{ item }}/.bashrc" line="source ~/.bashrc.ps1.sh"
-    with_items: [/root, /home/sgraf, /home/medvidek, /home/stani]
-    ignore_errors: True
+    with_items: [/root, "/home/{{ var_user }}"]
+
+  #
+  # Setup screen
+  #
+  - copy: src=configs/screenrc dest={{ item }}/.screenrc mode=644
+    with_items: [/root, "/home/{{ var_user }}"]
+
+  #
+  # Setup dnsmasq
+  #
+  - copy: src=configs/dnsmasq.conf dest=/etc/dnsmasq.conf mode=644
+  - copy: src=configs/resolv.dnsmasq dest=/etc/resolv.dnsmasq mode=644
+  - service: name=dnsmasq state=started enabled=yes
 
 
 
