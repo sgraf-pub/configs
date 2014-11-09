@@ -1,5 +1,5 @@
 ---
-- hosts: "{{ var_host }}"
+- hosts: all
   remote_user: root
   tasks:
   #
@@ -104,6 +104,12 @@
     changed_when: "result.rc != 0"
   - shell: tuned-adm profile powersave
     when: result|failed
+
+  #
+  # Check if var_user is valid
+  #
+  - shell: ls -d /home/{{ var_user }}
+    changed_when: "result.rc != 0"
 
   #
   # Setup mplayer
