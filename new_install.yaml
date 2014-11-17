@@ -76,7 +76,8 @@
       gstreamer-ffmpeg, "@printing", flash-plugin, "@multimedia", "@libreoffice",
       "@gnome-desktop", tuned, htop, python-tools, kate, kate-pate, terminator,
       gnome-tweak-tool, vim-enhanced, mc, lftp, nano, wget, curl, meld, freemind,
-      gimp, keepassx, bash-completion, git, screen]
+      gimp, keepassx, bash-completion, git, screen, krb5-workstation, krb5-auth-dialog,
+      sdparm, hdparm, smartmontools, lm_sensors, fuse-sshfs]
 
   #
   # Install languages
