@@ -77,7 +77,18 @@
       "@gnome-desktop", tuned, htop, python-tools, kate, kate-pate, terminator,
       gnome-tweak-tool, vim-enhanced, mc, lftp, nano, wget, curl, meld, freemind,
       gimp, keepassx, bash-completion, git, screen, krb5-workstation, krb5-auth-dialog,
-      sdparm, hdparm, smartmontools, lm_sensors, fuse-sshfs]
+      sdparm, hdparm, smartmontools, lm_sensors, fuse-sshfs, curl, cabextract,
+       xorg-x11-font-utils, fontconfig]
+
+  #
+  # Install MS fonts
+  #
+  - shell: rpm -q msttcore-fonts-installer
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
+  - yum: name=https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm state=present
+    when: result|failed
 
   #
   # Install languages
