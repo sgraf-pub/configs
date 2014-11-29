@@ -78,7 +78,7 @@
       gnome-tweak-tool, vim-enhanced, mc, lftp, nano, wget, curl, meld, freemind,
       gimp, keepassx, bash-completion, git, screen, krb5-workstation, krb5-auth-dialog,
       sdparm, hdparm, smartmontools, lm_sensors, fuse-sshfs, curl, cabextract,
-      xorg-x11-font-utils, fontconfig, "@development-tools"]
+      xorg-x11-font-utils, fontconfig, "@development-tools", poppler, psutils, ghostscript]
 
   #
   # Install MS fonts
