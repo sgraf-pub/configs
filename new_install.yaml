@@ -82,6 +82,8 @@
     - "@libreoffice"
     - "@multimedia"
     - "@printing"
+    - ansible
+    - ansible-lint
     - bash-completion
     - cabextract
     - curl
