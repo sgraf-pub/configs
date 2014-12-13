@@ -6,121 +6,175 @@
   # Set old 'yum groups' behavior
   # Fix expiration time settings
   #
-  - ini_file: dest=/etc/yum.conf section=main option=group_command value=compat
-  - ini_file: dest=/etc/yum.conf section=main option=metadata_expire value=6h
-  - ini_file: dest=/etc/yum.conf section=main option=metadata_expire_filter value=never
-  - ini_file: dest=/etc/yum.conf section=main option=mirrorlist_expire value=6h
-  - ini_file: dest=/etc/yum.conf section=main option=check_config_file_age value=0
+  - name: Set old 'yum groups' behavior, Fix expiration time settings
+    ini_file: dest=/etc/yum.conf section=main option=group_command value=compat
+    ini_file: dest=/etc/yum.conf section=main option=metadata_expire value=6h
+    ini_file: dest=/etc/yum.conf section=main option=metadata_expire_filter value=never
+    ini_file: dest=/etc/yum.conf section=main option=mirrorlist_expire value=6h
+    ini_file: dest=/etc/yum.conf section=main option=check_config_file_age value=0
 
   #
   # Set swappiness to reasonable value
   #
-  - sysctl: name=vm.swappiness value=5 state=present
+  - name: Set swappiness to reasonable value
+    sysctl: name=vm.swappiness value=5 state=present
 
   #
   # Boot menu waits only 1s
   #
-  - lineinfile: dest=/etc/sysconfig/grub regexp=^GRUB_TIMEOUT= line=GRUB_TIMEOUT=1
+  - name: Boot menu waits only 1s
+    lineinfile: dest=/etc/sysconfig/grub regexp=^GRUB_TIMEOUT= line=GRUB_TIMEOUT=1
 
   #
   # Install necessary packages
   #
-  - shell: rpm -q rpmfusion-free-release-20
-    register: result
-    ignore_errors: True
-    when: ansible_distribution_major_version == "20"
-    changed_when: "result.rc != 0"
-  - yum: name=http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-20.noarch.rpm state=present
-    when: ansible_distribution_major_version == "20" and result|failed
-  - shell: rpm -q rpmfusion-free-release-21
-    register: result
-    ignore_errors: True
-    when: ansible_distribution_major_version == "21"
-    changed_when: "result.rc != 0"
-  - yum: name=http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-21.noarch.rpm state=present
-    when: ansible_distribution_major_version == "21" and result|failed
-  - yum: name={{ item }} state=absent
-    with_items: [prelink, lightspark, gnash]
-  - shell: rpm -q adobe-release-x86_64
+  - name: Check rpmfusion-free
+    shell: rpm -q rpmfusion-free-release-21
     register: result
     ignore_errors: True
     changed_when: "result.rc != 0"
-  - yum: name=http://linuxdownload.adobe.com/adobe-release/adobe-release-x86_64-1.0-1.noarch.rpm state=present
+  - name: Install rpmfusion-free
+    yum: name=http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-21.noarch.rpm state=present
     when: result|failed
-  - shell: rpm -q skype
+  - name: Check adobe-release
+    shell: rpm -q adobe-release-x86_64
     register: result
     ignore_errors: True
     changed_when: "result.rc != 0"
-  - yum: name=http://download.skype.com/linux/skype-4.3.0.37-fedora.i586.rpm state=present
+  - name: Install adobe-release
+    yum: name=http://linuxdownload.adobe.com/adobe-release/adobe-release-x86_64-1.0-1.noarch.rpm state=present
     when: result|failed
-  - shell: rpm -q google-chrome-stable
+  - name: Check skype
+    shell: rpm -q skype
     register: result
     ignore_errors: True
     changed_when: "result.rc != 0"
-  - yum: name=https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm state=present
+  - name: Install skype
+    yum: name=http://download.skype.com/linux/skype-4.3.0.37-fedora.i586.rpm state=present
     when: result|failed
-  - shell: rpm -q 'gpg-pubkey-7fac5991'
+  - name: Check google-chrome
+    shell: rpm -q google-chrome-stable
     register: result
     ignore_errors: True
     changed_when: "result.rc != 0"
-  - shell: rpm --import https://dl-ssl.google.com/linux/linux_signing_key.pub
+  - name: Install google-chrome
+    yum: name=https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm state=present
     when: result|failed
-  - shell: rpm -q google-talkplugin
+  - name: Check google-talkplugin
+    shell: rpm -q google-talkplugin
     register: result
     ignore_errors: True
     changed_when: "result.rc != 0"
-  - yum: name=https://dl.google.com/linux/direct/google-talkplugin_current_x86_64.rpm state=present
+  - name: Install google-talkplugin
+    yum: name=https://dl.google.com/linux/direct/google-talkplugin_current_x86_64.rpm state=present
     when: result|failed
-  - yum: name={{ item }} state=present
-    with_items: [yum-utils, yum-langpacks, mplayer, mencoder, vlc, gstreamer1-libav,
-      gstreamer-ffmpeg, "@printing", flash-plugin, "@multimedia", "@libreoffice",
-      "@gnome-desktop", tuned, htop, python-tools, kate, kate-pate, terminator,
-      gnome-tweak-tool, vim-enhanced, mc, lftp, nano, wget, curl, meld, freemind,
-      gimp, keepassx, bash-completion, git, screen, krb5-workstation, krb5-auth-dialog,
-      sdparm, hdparm, smartmontools, lm_sensors, fuse-sshfs, curl, cabextract,
-      xorg-x11-font-utils, fontconfig, "@development-tools", poppler, psutils, ghostscript]
+  - name: Install packages
+    yum: name={{ item }} state=absent
+    with_items:
+    - gnash
+    - lightspark
+    - prelink
+    yum: name='*' state=latest
+    yum: name={{ item }} state=present
+    with_items:
+    - "@development-tools"
+    - "@gnome-desktop"
+    - "@libreoffice"
+    - "@multimedia"
+    - "@printing"
+    - bash-completion
+    - cabextract
+    - curl
+    - flash-plugin
+    - fontconfig
+    - freemind
+    - fuse-sshfs
+    - ghostscript
+    - gimp
+    - git
+    - gnome-tweak-tool
+    - gstreamer-ffmpeg
+    - gstreamer1-libav
+    - hdparm
+    - htop
+    - kate
+    - kate-pate
+    - keepassx
+    - krb5-auth-dialog
+    - krb5-workstation
+    - lftp
+    - lm_sensors
+    - mc
+    - mencoder
+    - meld
+    - mplayer
+    - nano
+    - poppler
+    - psutils
+    - python-tools
+    - screen
+    - sdparm
+    - smartmontools
+    - terminator
+    - tuned
+    - vim-enhanced
+    - wget
+    - vlc
+    - xorg-x11-font-utils
+    - yum-langpacks
+    - yum-utils
 
   #
   # Install MS fonts
   #
-  - shell: rpm -q msttcore-fonts-installer
+  - name: Check msttcore-fonts
+    shell: rpm -q msttcore-fonts-installer
     register: result
     ignore_errors: True
     changed_when: "result.rc != 0"
-  - yum: name=https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm state=present
+  - name: Install msttcore-fonts
+    yum: name=https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm state=present
     when: result|failed
 
   #
   # Install languages
   #
-  - shell: yum langlist | grep Czech
+  - name: Check Czech
+    shell: yum langlist | grep Czech
     register: result
     ignore_errors: True
     changed_when: "result.rc != 0"
-  - shell: yum langinstall Czech -y
+  - name: Install Czech
+    shell: yum langinstall Czech -y
     when: result|failed
-  - shell: yum langlist | grep English
+  - name: Check English
+    shell: yum langlist | grep English
     register: result
     ignore_errors: True
     changed_when: "result.rc != 0"
-  - shell: yum langinstall English -y
+  - name: Install English
+    shell: yum langinstall English -y
     when: result|failed
 
   #
   # Configure power saving
   #
-  - service: name=tuned state=started enabled=yes
-  - shell: tuned-adm active | grep powersave
+  - name: Start tuned
+    service: name=tuned state=started enabled=yes
+  - name: Check profile
+    shell: tuned-adm active | grep desktop
     register: result
     ignore_errors: True
     changed_when: "result.rc != 0"
-  - shell: tuned-adm profile powersave
+  - name: Set profile
+    shell: tuned-adm profile desktop
     when: result|failed
 
   #
   # Check if var_user is valid
   #
-  - shell: ls -d /home/{{ var_user }}
+  - name: Check if username is valid
+    shell: ls -d /home/{{ var_user }}
     changed_when: "result.rc != 0"
 
   #
