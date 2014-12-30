@@ -1,4 +1,8 @@
 ---
+#
+# Usage example:
+# $ ansible-playbook new_install.yaml -i "192.168.87.104," -e "var_user=sgraf" -e "var_power=desktop" -e "var_cifsname=aaa" -e "var_cifspass=bbb" -e "var_serverip=192.168.87.244"
+#
 - hosts: all
   remote_user: root
   tasks:
@@ -6,23 +10,27 @@
   # Set old 'yum groups' behavior
   # Fix expiration time settings
   #
-  - name: Set old 'yum groups' behavior, Fix expiration time settings
+  - name: Set old group_command behaviour
     ini_file: dest=/etc/yum.conf section=main option=group_command value=compat
+  - name: Set metadata_expire to 6h
     ini_file: dest=/etc/yum.conf section=main option=metadata_expire value=6h
+  - name: Disable filtering of metadata expire time
     ini_file: dest=/etc/yum.conf section=main option=metadata_expire_filter value=never
+  - name: Set mirrorlist_expire to 6h
     ini_file: dest=/etc/yum.conf section=main option=mirrorlist_expire value=6h
+  - name: Disable autoexpiring old repos
     ini_file: dest=/etc/yum.conf section=main option=check_config_file_age value=0
 
   #
   # Set swappiness to reasonable value
   #
-  - name: Set swappiness to reasonable value
+  - name: Set swappiness to some low value
     sysctl: name=vm.swappiness value=5 state=present
 
   #
   # Boot menu waits only 1s
   #
-  - name: Boot menu waits only 1s
+  - name: Boot menu of Grub waits only 1s
     lineinfile: dest=/etc/sysconfig/grub regexp=^GRUB_TIMEOUT= line=GRUB_TIMEOUT=1
 
   #
@@ -68,13 +76,15 @@
   - name: Install google-talkplugin
     yum: name=https://dl.google.com/linux/direct/google-talkplugin_current_x86_64.rpm state=present
     when: result|failed
-  - name: Install packages
+  - name: Remove packages
     yum: name={{ item }} state=absent
     with_items:
     - gnash
     - lightspark
     - prelink
+  - name: Update to the latest
     yum: name='*' state=latest
+  - name: Install packages
     yum: name={{ item }} state=present
     with_items:
     - "@development-tools"
@@ -82,11 +92,14 @@
     - "@libreoffice"
     - "@multimedia"
     - "@printing"
+    - "@virtualization"
     - ansible
     - ansible-lint
+    - autofs
     - bash-completion
     - cabextract
     - curl
+    - fedora-repos-rawhide
     - flash-plugin
     - fontconfig
     - freemind
@@ -105,7 +118,9 @@
     - krb5-auth-dialog
     - krb5-workstation
     - lftp
+    - linphone
     - lm_sensors
+    - lshw
     - mc
     - mencoder
     - meld
@@ -164,12 +179,12 @@
   - name: Start tuned
     service: name=tuned state=started enabled=yes
   - name: Check profile
-    shell: tuned-adm active | grep desktop
+    shell: tuned-adm active | grep {{ var_power }}
     register: result
     ignore_errors: True
     changed_when: "result.rc != 0"
   - name: Set profile
-    shell: tuned-adm profile desktop
+    shell: tuned-adm profile {{ var_power }}
     when: result|failed
 
   #
@@ -182,45 +197,74 @@
   #
   # Setup mplayer
   #
-  - file: dest={{ item }}/.mplayer state=directory mode=755
+  - name: Create directory for config of mplayer
+    file: dest={{ item }}/.mplayer state=directory mode=755
     with_items: [/root, "/home/{{ var_user }}"]
-  - copy: src=configs/mplayer.config dest={{ item }}/.mplayer/config mode=644
+  - name: Copy config of mplayer
+    copy: src=configs/mplayer.config dest={{ item }}/.mplayer/config mode=644
     with_items: [/root, "/home/{{ var_user }}"]
 
   #
   # Setup ssh
   #
-  - file: dest={{ item }}/.ssh state=directory mode=700
+  - name: Create directory for config of ssh
+    file: dest={{ item }}/.ssh state=directory mode=700
     with_items: [/root, "/home/{{ var_user }}"]
-  - copy: src=configs/ssh.config dest={{ item }}/.ssh/config mode=644
+  - name: Copy config of ssh
+    copy: src=configs/ssh.config dest={{ item }}/.ssh/config mode=644
     with_items: [/root, "/home/{{ var_user }}"]
 
   #
   # Setup vim
   #
-  - copy: src=configs/vimrc dest={{ item }}/.vimrc mode=644
+  - name: Copy config of vim
+    copy: src=configs/vimrc dest={{ item }}/.vimrc mode=644
     with_items: [/root, "/home/{{ var_user }}"]
 
   #
   # Setup bash prompt
   #
-  - copy: src=configs/bashrc.ps1.sh dest={{ item }}/.bashrc.ps1.sh mode=755
+  - name: Copy config of bash prompt
+    copy: src=configs/bashrc.ps1.sh dest={{ item }}/.bashrc.ps1.sh mode=755
     with_items: [/root, "/home/{{ var_user }}"]
-  - lineinfile: dest="{{ item }}/.bashrc" line="source ~/.bashrc.ps1.sh"
+  - name: Load new bash prompt by default
+    lineinfile: dest="{{ item }}/.bashrc" line="source ~/.bashrc.ps1.sh"
     with_items: [/root, "/home/{{ var_user }}"]
 
   #
   # Setup screen
   #
-  - copy: src=configs/screenrc dest={{ item }}/.screenrc mode=644
+  - name: Copy config of screen
+    copy: src=configs/screenrc dest={{ item }}/.screenrc mode=644
     with_items: [/root, "/home/{{ var_user }}"]
 
   #
   # Setup dnsmasq
   #
-  - copy: src=configs/dnsmasq.conf dest=/etc/dnsmasq.conf mode=644
-  - copy: src=configs/resolv.dnsmasq dest=/etc/resolv.dnsmasq mode=644
-  - service: name=dnsmasq state=started enabled=yes
+  - name: Copy config of dnsmasq
+    copy: src=configs/dnsmasq.conf dest=/etc/dnsmasq.conf mode=644
+  - name: Copy config of DNS servers for dnsmasq
+    copy: src=configs/resolv.dnsmasq dest=/etc/resolv.dnsmasq mode=644
+  - name: Make sure dnsmasq is started and enabled
+    service: name=dnsmasq state=started enabled=yes
 
-
+  #
+  # Setup cifs mount
+  #
+  - name: Create mount point
+    file: path=/media/pocitac-byt state=directory mode=644
+  - name: Create credentials file
+    file: path=/etc/credentials.txt state=touch mode=600
+  - name: Customize username
+    lineinfile: dest=/etc/credentials.txt line=username={{ var_cifsname }}
+  - name: Customize password
+    lineinfile: dest=/etc/credentials.txt line=password={{ var_cifspass }}
+  - name: Create config of cifs
+    file: path=/etc/auto.cifs state=touch mode=644
+  - name: Change config of cifs
+    lineinfile: dest=/etc/auto.cifs line="DATA -fstype=cifs,rw,noperm,credentials=/etc/credentials.txt ://{{ var_serverip }}/DATA"
+  - name: Add cifs to master config
+    lineinfile: dest=/etc/auto.master line="/media/pocitac-byt /etc/auto.cifs --timeout=60 --ghost"
+  - name: Make sure autofs is started and enabled
+    service: name=autofs state=started enabled=yes
 
