@@ -138,6 +138,7 @@
     - wget
     - vlc
     - xorg-x11-font-utils
+    - youtube-dl
     - yum-langpacks
     - yum-utils
 
@@ -241,18 +242,14 @@
   #
   # Setup dnsmasq
   #
-  - name: Copy config of dnsmasq
-    copy: src=configs/dnsmasq.conf dest=/etc/dnsmasq.conf mode=644
-  - name: Copy config of DNS servers for dnsmasq
-    copy: src=configs/resolv.dnsmasq dest=/etc/resolv.dnsmasq mode=644
-  - name: Make sure dnsmasq is started and enabled
-    service: name=dnsmasq state=started enabled=yes
+  - name: Enable dnsmasq
+    ini_file: dest=/etc/NetworkManager/NetworkManager.conf section=main option=dns value=dnsmasq
 
   #
   # Setup cifs mount
   #
   - name: Create mount point
-    file: path=/media/pocitac-byt state=directory mode=644
+    file: path=/media/pocitac-byt state=directory
   - name: Create credentials file
     file: path=/etc/credentials.txt state=touch mode=600
   - name: Customize username
@@ -267,4 +264,12 @@
     lineinfile: dest=/etc/auto.master line="/media/pocitac-byt /etc/auto.cifs --timeout=60 --ghost"
   - name: Make sure autofs is started and enabled
     service: name=autofs state=started enabled=yes
+
+  #
+  # Disable automatic makecache for dnf and yum
+  #
+  - name: Disable regular yum makecache
+    service: name=yum-makecache.timer state=stopped enabled=no
+  - name: Disable regular dnf makecache
+    service: name=dnf-makecache.timer state=stopped enabled=no
 
