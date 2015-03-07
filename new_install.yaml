@@ -252,10 +252,22 @@
   #
   # Setup cifs mount
   #
+  - name: Check mount point
+    shell: ls /media/pocitac-byt
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
   - name: Create mount point
     file: path=/media/pocitac-byt state=directory
+    when: result|failed
+  - name: Check credentials file
+    shell: ls /etc/credentials.txt
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
   - name: Create credentials file
     file: path=/etc/credentials.txt state=touch mode=600
+    when: result|failed
   - name: Customize username
     lineinfile: dest=/etc/credentials.txt line=username={{ var_cifsname }}
   - name: Customize password
