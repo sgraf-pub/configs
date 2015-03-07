@@ -99,6 +99,8 @@
     - bash-completion
     - cabextract
     - curl
+    - dnf
+    - dnf-langpacks
     - fedora-repos-rawhide
     - flash-plugin
     - fontconfig
@@ -117,6 +119,7 @@
     - keepassx
     - krb5-auth-dialog
     - krb5-workstation
+    - icedtea-web
     - lftp
     - linphone
     - lm_sensors
@@ -137,6 +140,7 @@
     - vim-enhanced
     - wget
     - vlc
+    - wine.i686
     - xorg-x11-font-utils
     - youtube-dl
     - yum-langpacks
@@ -266,10 +270,10 @@
     service: name=autofs state=started enabled=yes
 
   #
-  # Disable automatic makecache for dnf and yum
+  # Set automatic makecache for dnf and yum
   #
   - name: Disable regular yum makecache
     service: name=yum-makecache.timer state=stopped enabled=no
-  - name: Disable regular dnf makecache
-    service: name=dnf-makecache.timer state=stopped enabled=no
+  - name: Enable regular dnf makecache
+    service: name=dnf-makecache.timer state=started enabled=yes
 
