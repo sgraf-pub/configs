@@ -68,6 +68,8 @@
   - name: Install google-chrome
     yum: name=https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm state=present
     when: result|failed
+  - name: Fix google-chrome repo gpgkey
+    ini_file: dest=/etc/yum.repos.d/google-chrome.repo section=google-chrome option=gpgkey value="https://dl-ssl.google.com/linux/linux_signing_key.pub"
   - name: Check google-talkplugin
     shell: rpm -q google-talkplugin
     register: result
@@ -76,6 +78,8 @@
   - name: Install google-talkplugin
     yum: name=https://dl.google.com/linux/direct/google-talkplugin_current_x86_64.rpm state=present
     when: result|failed
+  - name: Fix google-talkplugin repo gpgkey
+    ini_file: dest=/etc/yum.repos.d/google-talkplugin.repo section=google-talkplugin option=gpgkey value="https://dl-ssl.google.com/linux/linux_signing_key.pub"
   - name: Remove packages
     yum: name={{ item }} state=absent
     with_items:
@@ -130,8 +134,11 @@
     - mplayer
     - nano
     - poppler
+    - powertop
     - psutils
     - python-tools
+    - rfkill
+    - rpmconf
     - screen
     - sdparm
     - smartmontools
