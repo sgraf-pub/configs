@@ -143,6 +143,7 @@
     - sdparm
     - smartmontools
     - terminator
+    - thunderbird
     - tuned
     - vim-enhanced
     - wget
