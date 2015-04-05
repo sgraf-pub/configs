@@ -7,19 +7,36 @@
   remote_user: root
   tasks:
   #
-  # Set old 'yum groups' behavior
-  # Fix expiration time settings
+  # Restore original dnf and yum configuration files
   #
-  - name: Set old group_command behaviour
-    ini_file: dest=/etc/yum.conf section=main option=group_command value=compat
-  - name: Set metadata_expire to 6h
-    ini_file: dest=/etc/yum.conf section=main option=metadata_expire value=6h
-  - name: Disable filtering of metadata expire time
-    ini_file: dest=/etc/yum.conf section=main option=metadata_expire_filter value=never
-  - name: Set mirrorlist_expire to 6h
-    ini_file: dest=/etc/yum.conf section=main option=mirrorlist_expire value=6h
-  - name: Disable autoexpiring old repos
-    ini_file: dest=/etc/yum.conf section=main option=check_config_file_age value=0
+  - name: Check yum
+    shell: rpm -V yum
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
+  - name: Download yum
+    shell: dnf download --destdir=/tmp/ yum
+    when: result|failed
+  - name: Backup yum.conf
+    shell: mv /etc/yum.conf /etc/yum.conf_backup
+    when: result|failed
+  - name: Restore yum.conf
+    shell: rpm --reinstall '/tmp/yum-*.rpm'
+    when: result|failed
+  - name: Check dnf-conf
+    shell: rpm -V dnf-conf
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
+  - name: Download dnf-conf
+    shell: dnf download --destdir=/tmp/ dnf-conf
+    when: result|failed
+  - name: Backup dnf.conf
+    shell: mv /etc/dnf/dnf.conf /etc/dnf/dnf.conf_backup
+    when: result|failed
+  - name: Restore dnf.conf
+    shell: rpm --reinstall '/tmp/dnf-conf-*.rpm'
+    when: result|failed
 
   #
   # Set swappiness to reasonable value
@@ -91,12 +108,15 @@
   - name: Install packages
     yum: name={{ item }} state=present
     with_items:
+    - "@basic-desktop"
     - "@development-tools"
     - "@gnome-desktop"
     - "@libreoffice"
+    - "@minimal-environment"
     - "@multimedia"
     - "@printing"
     - "@virtualization"
+    - "@workstation-product-environment"
     - ansible
     - ansible-lint
     - autofs
@@ -153,6 +173,7 @@
     - youtube-dl
     - yum-langpacks
     - yum-utils
+    ignore_errors: True
 
   #
   # Install MS fonts
@@ -211,11 +232,26 @@
   # Setup mplayer
   #
   - name: Create directory for config of mplayer
-    file: dest={{ item }}/.mplayer state=directory mode=755
-    with_items: [/root, "/home/{{ var_user }}"]
+    file: dest="/home/{{ var_user }}/.mplayer" state=directory mode=755 owner={{ var_user }} group={{ var_user }}
   - name: Copy config of mplayer
-    copy: src=configs/mplayer.config dest={{ item }}/.mplayer/config mode=644
-    with_items: [/root, "/home/{{ var_user }}"]
+    copy: src=configs/mplayer.config dest=/home/{{ var_user }}/.mplayer/config mode=644 owner={{ var_user }} group={{ var_user }}
+
+  #
+  # Setup vlc
+  #
+  - name: Check vlcrc
+    shell: ls /home/{{ var_user }}/.config/vlc/vlcrc
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
+  - name: Create vlcrc dir
+    file: path=/home/{{ var_user }}/.config/vlc state=directory mode=755 owner={{ var_user }} group={{ var_user }}
+    when: result|failed
+  - name: Copy vlcrc file
+    copy: src=configs/vlcrc dest=/home/{{ var_user }}/.config/vlc/vlcrc mode=600 owner={{ var_user }} group={{ var_user }}
+    when: result|failed
+  - name: Fix vlc file caching
+    shell: "sed -i s/.*file-caching.*/file-caching=30000/ /home/{{ var_user }}/.config/vlc/vlcrc"
 
   #
   # Setup ssh
@@ -294,12 +330,4 @@
     lineinfile: dest=/etc/auto.master line="/media/pocitac-byt /etc/auto.cifs --timeout=60 --ghost"
   - name: Make sure autofs is started and enabled
     service: name=autofs state=started enabled=yes
-
-  #
-  # Set automatic makecache for dnf and yum
-  #
-  - name: Disable regular yum makecache
-    service: name=yum-makecache.timer state=stopped enabled=no
-  - name: Enable regular dnf makecache
-    service: name=dnf-makecache.timer state=started enabled=yes
 
