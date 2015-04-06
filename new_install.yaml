@@ -24,18 +24,18 @@
     shell: rpm --reinstall '/tmp/yum-*.rpm'
     when: result|failed
   - name: Check dnf-conf
-    shell: rpm -V dnf-conf
+    shell: rpm -V $(rpm -qf --qf "%{name}" /etc/dnf/dnf.conf)
     register: result
     ignore_errors: True
     changed_when: "result.rc != 0"
   - name: Download dnf-conf
-    shell: dnf download --destdir=/tmp/ dnf-conf
+    shell: dnf download --destdir=/tmp/ $(rpm -qf --qf "%{name}" /etc/dnf/dnf.conf)
     when: result|failed
   - name: Backup dnf.conf
     shell: mv /etc/dnf/dnf.conf /etc/dnf/dnf.conf_backup
     when: result|failed
   - name: Restore dnf.conf
-    shell: rpm --reinstall '/tmp/dnf-conf-*.rpm'
+    shell: rpm --reinstall '/tmp/dnf-*.rpm'
     when: result|failed
 
   #
