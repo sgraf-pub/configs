@@ -39,6 +39,14 @@
     when: result|failed
 
   #
+  # Set automatic makecache for dnf and yum
+  #
+  - name: Disable regular yum makecache
+  service: name=yum-makecache.timer state=stopped enabled=no
+  - name: Enable regular dnf makecache
+  service: name=dnf-makecache.timer state=started enabled=yes
+
+  #
   # Set swappiness to reasonable value
   #
   - name: Set swappiness to some low value
