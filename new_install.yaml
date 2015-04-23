@@ -172,6 +172,7 @@
     - smartmontools
     - terminator
     - thunderbird
+    - tmux
     - tuned
     - vim-enhanced
     - wget
