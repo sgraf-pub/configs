@@ -62,12 +62,12 @@
   # Install necessary packages
   #
   - name: Check rpmfusion-free
-    shell: rpm -q rpmfusion-free-release-21
+    shell: rpm -q rpmfusion-free-release-22
     register: result
     ignore_errors: True
     changed_when: "result.rc != 0"
   - name: Install rpmfusion-free
-    yum: name=http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-21.noarch.rpm state=present
+    yum: name=http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-22.noarch.rpm state=present
     when: result|failed
   - name: Check adobe-release
     shell: rpm -q adobe-release-x86_64
@@ -147,7 +147,7 @@
     - hdparm
     - htop
     - kate
-    - kate-pate
+    - kate-plugins
     - keepassx
     - krb5-auth-dialog
     - krb5-workstation
