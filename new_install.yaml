@@ -134,6 +134,7 @@
     - dnf
     - dnf-langpacks
     - fedora-repos-rawhide
+    - ffmpeg
     - flash-plugin
     - fontconfig
     - freemind
