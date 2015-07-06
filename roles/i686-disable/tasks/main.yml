@@ -1,0 +1,4 @@
+---
+#
+  - name: Remove multilib packages
+    dnf: name='*.i?86' state=absent

@@ -1,0 +1,50 @@
+---
+#
+  #
+  # Setup server
+  #
+  - name: Lock instead of suspend for LidSwitch
+    ini_file: dest=/etc/systemd/logind.conf section=Login option=HandleLidSwitch value=lock
+  - name: Check init 3
+    shell: systemctl get-default | grep multi-user.target
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
+  - name: Set init 3
+    shell: systemctl set-default multi-user.target
+    when: result|failed
+  - name: Install samba
+    dnf: name=samba state=present
+  - name: Check selinux boolean for Samba
+    shell: getsebool samba_export_all_rw | grep on
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
+  - name: Set selinux boolean for Samba
+    shell: setsebool -P samba_export_all_rw=1
+    when: result|failed
+  - name: Copy samba config
+    copy: src=smb.conf dest=/etc/samba/smb.conf mode=644 owner=root group=root
+  - name: Check samba user
+    shell: pdbedit -L | grep {{ var_cifsname }}
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
+  - name: Create samba user
+    shell: echo -e "{{ var_cifspass }}\n{{ var_cifspass }}" | smbpasswd -s -a {{ var_cifsname }}
+    when: result|failed
+  - name: Create DATA mount point
+    file: path=/media/DATA state=directory
+  - name: Create BACKUP mount point
+    file: path=/media/BACKUP state=directory
+  - name: Start samba service
+    service: name=smb state=started enabled=yes
+  - name: Disable firewall
+    service: name=firewalld state=stopped enabled=no
+  - name: Install dnf-automatic
+    dnf: name=dnf-automatic state=present
+  - name: Set dnf-automatic to install updates
+    ini_file: dest=/etc/dnf/automatic.conf section=commands option=apply_updates value=yes
+  - name: Enable dnf-automatic
+    service: name=dnf-automatic.timer state=started enabled=yes
+

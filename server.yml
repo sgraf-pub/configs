@@ -1,0 +1,11 @@
+---
+# file: server.yml
+- hosts: server
+  remote_user: root
+  roles:
+    - common
+    - i686-disable
+    - cifs-disable
+    - power-server
+    - server
+

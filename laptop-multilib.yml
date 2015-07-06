@@ -1,0 +1,10 @@
+---
+# file: laptop-multilib.yml
+- hosts: laptop-multilib
+  remote_user: root
+  roles:
+    - common
+    - i686-enable
+    - cifs-enable
+    - power-laptop
+

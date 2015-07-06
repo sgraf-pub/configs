@@ -1,0 +1,10 @@
+---
+# file: laptop.yml
+- hosts: laptop
+  remote_user: root
+  roles:
+    - common
+    - i686-disable
+    - cifs-enable
+    - power-laptop
+

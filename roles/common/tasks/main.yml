@@ -1,11 +1,4 @@
 ---
-#
-# Usage example:
-# $ ansible-playbook new_install.yaml -i "192.168.87.104," -e "var_user=sgraf" -e "var_power=desktop" -e "var_cifsname=aaa" -e "var_cifspass=bbb" -e "var_serverip=192.168.87.244"
-#
-- hosts: all
-  remote_user: root
-  tasks:
   #
   # Restore original dnf and yum configuration files
   #
@@ -67,7 +60,7 @@
     ignore_errors: True
     changed_when: "result.rc != 0"
   - name: Install rpmfusion-free
-    yum: name=http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-22.noarch.rpm state=present
+    dnf: name=http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-22.noarch.rpm state=present
     when: result|failed
   - name: Check adobe-release
     shell: rpm -q adobe-release-x86_64
@@ -75,15 +68,7 @@
     ignore_errors: True
     changed_when: "result.rc != 0"
   - name: Install adobe-release
-    yum: name=http://linuxdownload.adobe.com/adobe-release/adobe-release-x86_64-1.0-1.noarch.rpm state=present
-    when: result|failed
-  - name: Check skype
-    shell: rpm -q skype
-    register: result
-    ignore_errors: True
-    changed_when: "result.rc != 0"
-  - name: Install skype
-    yum: name=http://download.skype.com/linux/skype-4.3.0.37-fedora.i586.rpm state=present
+    dnf: name=http://linuxdownload.adobe.com/adobe-release/adobe-release-x86_64-1.0-1.noarch.rpm state=present
     when: result|failed
   - name: Check google-chrome
     shell: rpm -q google-chrome-stable
@@ -91,7 +76,7 @@
     ignore_errors: True
     changed_when: "result.rc != 0"
   - name: Install google-chrome
-    yum: name=https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm state=present
+    dnf: name=https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm state=present
     when: result|failed
   - name: Fix google-chrome repo gpgkey
     ini_file: dest=/etc/yum.repos.d/google-chrome.repo section=google-chrome option=gpgkey value="https://dl-ssl.google.com/linux/linux_signing_key.pub"
@@ -101,22 +86,22 @@
     ignore_errors: True
     changed_when: "result.rc != 0"
   - name: Install google-talkplugin
-    yum: name=https://dl.google.com/linux/direct/google-talkplugin_current_x86_64.rpm state=present
+    dnf: name=https://dl.google.com/linux/direct/google-talkplugin_current_x86_64.rpm state=present
     when: result|failed
   - name: Fix google-talkplugin repo gpgkey
     ini_file: dest=/etc/yum.repos.d/google-talkplugin.repo section=google-talkplugin option=gpgkey value="https://dl-ssl.google.com/linux/linux_signing_key.pub"
   - name: Remove packages
-    yum: name={{ item }} state=absent
+    dnf: name={{ item }} state=absent
     with_items:
     - gnash
+    - kate-pate
     - lightspark
     - prelink
   - name: Update to the latest
-    yum: name='*' state=latest
+    dnf: name='*' state=latest
   - name: Install packages
-    yum: name={{ item }} state=present
+    dnf: name={{ item }} state=present
     with_items:
-    - "@basic-desktop"
     - "@development-tools"
     - "@gnome-desktop"
     - "@libreoffice"
@@ -125,18 +110,12 @@
     - "@printing"
     - "@virtualization"
     - "@workstation-product-environment"
-    - ansible
     - ansible-lint
-    - autofs
     - bash-completion
-    - cabextract
     - curl
-    - dnf
     - dnf-langpacks
-    - fedora-repos-rawhide
     - ffmpeg
     - flash-plugin
-    - fontconfig
     - freemind
     - fuse-sshfs
     - ghostscript
@@ -147,7 +126,6 @@
     - gstreamer1-libav
     - hdparm
     - htop
-    - kate
     - kate-plugins
     - keepassx
     - krb5-auth-dialog
@@ -171,20 +149,16 @@
     - screen
     - sdparm
     - smartmontools
+    - sysfsutils
     - terminator
     - thunderbird
     - tmux
-    - tuned
     - tuned-utils
     - vim-enhanced
-    - wget
     - vlc
-    - wine.i686
-    - xorg-x11-font-utils
+    - wget
     - youtube-dl
-    - yum-langpacks
     - yum-utils
-    ignore_errors: True
 
   #
   # Install MS fonts
@@ -195,41 +169,27 @@
     ignore_errors: True
     changed_when: "result.rc != 0"
   - name: Install msttcore-fonts
-    yum: name=https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm state=present
+    dnf: name=https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm state=present
     when: result|failed
 
   #
   # Install languages
   #
   - name: Check Czech
-    shell: yum langlist | grep Czech
+    shell: dnf langlist | grep Czech
     register: result
     ignore_errors: True
     changed_when: "result.rc != 0"
   - name: Install Czech
-    shell: yum langinstall Czech -y
+    shell: dnf langinstall Czech -y
     when: result|failed
   - name: Check English
-    shell: yum langlist | grep English
+    shell: dnf langlist | grep English
     register: result
     ignore_errors: True
     changed_when: "result.rc != 0"
   - name: Install English
-    shell: yum langinstall English -y
-    when: result|failed
-
-  #
-  # Configure power saving
-  #
-  - name: Start tuned
-    service: name=tuned state=started enabled=yes
-  - name: Check profile
-    shell: tuned-adm active | grep {{ var_power }}
-    register: result
-    ignore_errors: True
-    changed_when: "result.rc != 0"
-  - name: Set profile
-    shell: tuned-adm profile {{ var_power }}
+    shell: dnf langinstall English -y
     when: result|failed
 
   #
@@ -245,7 +205,7 @@
   - name: Create directory for config of mplayer
     file: dest="/home/{{ var_user }}/.mplayer" state=directory mode=755 owner={{ var_user }} group={{ var_user }}
   - name: Copy config of mplayer
-    copy: src=configs/mplayer.config dest=/home/{{ var_user }}/.mplayer/config mode=644 owner={{ var_user }} group={{ var_user }}
+    copy: src=mplayer.config dest=/home/{{ var_user }}/.mplayer/config mode=644 owner={{ var_user }} group={{ var_user }}
 
   #
   # Setup vlc
@@ -259,10 +219,16 @@
     file: path=/home/{{ var_user }}/.config/vlc state=directory mode=755 owner={{ var_user }} group={{ var_user }}
     when: result|failed
   - name: Copy vlcrc file
-    copy: src=configs/vlcrc dest=/home/{{ var_user }}/.config/vlc/vlcrc mode=600 owner={{ var_user }} group={{ var_user }}
+    copy: src=vlcrc dest=/home/{{ var_user }}/.config/vlc/vlcrc mode=600 owner={{ var_user }} group={{ var_user }}
     when: result|failed
+  - name: Check vlc file caching
+    shell: grep 'file-caching=30000' /home/{{ var_user }}/.config/vlc/vlcrc
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
   - name: Fix vlc file caching
     shell: "sed -i s/.*file-caching.*/file-caching=30000/ /home/{{ var_user }}/.config/vlc/vlcrc"
+    when: result|failed
 
   #
   # Setup ssh
@@ -271,21 +237,21 @@
     file: dest={{ item }}/.ssh state=directory mode=700
     with_items: [/root, "/home/{{ var_user }}"]
   - name: Copy config of ssh
-    copy: src=configs/ssh.config dest={{ item }}/.ssh/config mode=644
+    copy: src=ssh.config dest={{ item }}/.ssh/config mode=644
     with_items: [/root, "/home/{{ var_user }}"]
 
   #
   # Setup vim
   #
   - name: Copy config of vim
-    copy: src=configs/vimrc dest={{ item }}/.vimrc mode=644
+    copy: src=vimrc dest={{ item }}/.vimrc mode=644
     with_items: [/root, "/home/{{ var_user }}"]
 
   #
   # Setup bash prompt
   #
   - name: Copy config of bash prompt
-    copy: src=configs/bashrc.ps1.sh dest={{ item }}/.bashrc.ps1.sh mode=755
+    copy: src=bashrc.ps1.sh dest={{ item }}/.bashrc.ps1.sh mode=755
     with_items: [/root, "/home/{{ var_user }}"]
   - name: Load new bash prompt by default
     lineinfile: dest="{{ item }}/.bashrc" line="source ~/.bashrc.ps1.sh"
@@ -295,7 +261,7 @@
   # Setup screen
   #
   - name: Copy config of screen
-    copy: src=configs/screenrc dest={{ item }}/.screenrc mode=644
+    copy: src=screenrc dest={{ item }}/.screenrc mode=644
     with_items: [/root, "/home/{{ var_user }}"]
 
   #
@@ -303,44 +269,6 @@
   #
   - name: Enable dnsmasq
     ini_file: dest=/etc/NetworkManager/NetworkManager.conf section=main option=dns value=dnsmasq
-
-  #
-  # Setup cifs mount
-  #
-  - name: Check mount point
-    shell: ls /media/pocitac-byt
-    register: result
-    ignore_errors: True
-    changed_when: "result.rc != 0"
-  - name: Create mount point
-    file: path=/media/pocitac-byt state=directory
-    when: result|failed
-  - name: Check credentials file
-    shell: ls /etc/credentials.txt
-    register: result
-    ignore_errors: True
-    changed_when: "result.rc != 0"
-  - name: Create credentials file
-    file: path=/etc/credentials.txt state=touch mode=600
-    when: result|failed
-  - name: Customize username
-    lineinfile: dest=/etc/credentials.txt line=username={{ var_cifsname }}
-  - name: Customize password
-    lineinfile: dest=/etc/credentials.txt line=password={{ var_cifspass }}
-  - name: Check config of cifs
-    shell: ls /etc/auto.cifs
-    register: result
-    ignore_errors: True
-    changed_when: "result.rc != 0"
-  - name: Create config of cifs
-    file: path=/etc/auto.cifs state=touch mode=644
-    when: result|failed
-  - name: Change config of cifs
-    lineinfile: dest=/etc/auto.cifs line="DATA -fstype=cifs,rw,noperm,credentials=/etc/credentials.txt ://{{ var_serverip }}/DATA"
-  - name: Add cifs to master config
-    lineinfile: dest=/etc/auto.master line="/media/pocitac-byt /etc/auto.cifs --timeout=60 --ghost"
-  - name: Make sure autofs is started and enabled
-    service: name=autofs state=started enabled=yes
 
   #
   # Setup journald

@@ -1,0 +1,8 @@
+---
+#
+  #
+  # Setup cifs mount
+  #
+  - name: Remove autofs
+    dnf: name=autofs state=absent
+
