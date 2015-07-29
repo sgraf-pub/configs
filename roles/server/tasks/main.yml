@@ -47,4 +47,10 @@
     ini_file: dest=/etc/dnf/automatic.conf section=commands option=apply_updates value=yes
   - name: Enable dnf-automatic
     service: name=dnf-automatic.timer state=started enabled=yes
+  - name: Install tlp
+    dnf: name=tlp state=present
+  - name: Copy tlp configuration file
+    copy: src=tlp dest=/etc/default/tlp mode=644 owner=root group=root
+  - name: Enable tlp
+    service: name=tlp state=started enabled=yes
 
