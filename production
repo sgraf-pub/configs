@@ -1,8 +1,5 @@
 # file: production
 
-[laptop-multilib]
-192.168.FIX.ME
-
 [laptop]
 192.168.FIX.ME
 
