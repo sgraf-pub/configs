@@ -116,7 +116,7 @@ generate_ps () {
     parse_exit_code "${ecode}"
     PS1+="[\u@\h"
     PS1+=" ${LIGHT_BLUE}\w${RESET_COLOR}]"
-    parse_git
+    [[ $(stat -f -L -c %T $PWD) != 'nfs' ]] && parse_git
     if [ \u == "root" ]; then
         PS1+="# "
     else
