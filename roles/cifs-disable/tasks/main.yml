@@ -4,5 +4,5 @@
   # Setup cifs mount
   #
   - name: Remove autofs
-    dnf: name=autofs state=absent
+    yum: name=autofs state=absent
 

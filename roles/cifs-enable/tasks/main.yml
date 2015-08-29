@@ -4,7 +4,7 @@
   # Setup cifs mount
   #
   - name: Install autofs
-    dnf: name=autofs state=present
+    yum: name=autofs state=present
   - name: Check mount point
     shell: ls /media/pocitac-byt
     register: result

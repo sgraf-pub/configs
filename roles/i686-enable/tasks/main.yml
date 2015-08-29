@@ -6,7 +6,7 @@
     ignore_errors: True
     changed_when: "result.rc != 0"
   - name: Install skype
-    dnf: name=http://download.skype.com/linux/skype-4.3.0.37-fedora.i586.rpm state=present
+    yum: name=http://download.skype.com/linux/skype-4.3.0.37-fedora.i586.rpm state=present
     when: result|failed
   - name: Check Adobe Reader
     shell: rpm -q AdobeReader_enu
@@ -14,9 +14,9 @@
     ignore_errors: True
     changed_when: "result.rc != 0"
   - name: Install Adobe Reader
-    dnf: name=http://linuxdownload.adobe.com/linux/i386/AdbeRdr9.5.5-1_i486linux_enu.rpm state=present
+    yum: name=http://linuxdownload.adobe.com/linux/i386/AdbeRdr9.5.5-1_i486linux_enu.rpm state=present
     when: result|failed
   - name: Install wine
-    dnf: name=wine.i686 state=present
+    yum: name=wine.i686 state=present
 
 

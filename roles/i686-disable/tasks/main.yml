@@ -1,4 +1,4 @@
 ---
 #
   - name: Remove multilib packages
-    dnf: name='*.i?86' state=absent
+    yum: name='*.i?86' state=absent

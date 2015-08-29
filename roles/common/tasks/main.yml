@@ -55,20 +55,20 @@
   # Install necessary packages
   #
   - name: Check rpmfusion-free
-    shell: rpm -q rpmfusion-free-release-22
+    shell: rpm -q rpmfusion-free-release-20
     register: result
     ignore_errors: True
     changed_when: "result.rc != 0"
   - name: Install rpmfusion-free
-    dnf: name=http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-22.noarch.rpm state=present
+    yum: name=http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-20.noarch.rpm state=present
     when: result|failed
   - name: Check adobe-release
-    shell: rpm -q adobe-release-x86_64
+    shell: rpm -q adobe-release-{{ ansible_architecture }}
     register: result
     ignore_errors: True
     changed_when: "result.rc != 0"
   - name: Install adobe-release
-    dnf: name=http://linuxdownload.adobe.com/adobe-release/adobe-release-x86_64-1.0-1.noarch.rpm state=present
+    yum: name=http://linuxdownload.adobe.com/adobe-release/adobe-release-{{ ansible_architecture }}-1.0-1.noarch.rpm state=present
     when: result|failed
   - name: Check google-chrome
     shell: rpm -q google-chrome-stable
@@ -76,7 +76,7 @@
     ignore_errors: True
     changed_when: "result.rc != 0"
   - name: Install google-chrome
-    dnf: name=https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm state=present
+    yum: name=https://dl.google.com/linux/direct/google-chrome-stable_current_{{ ansible_architecture }}.rpm state=present
     when: result|failed
   - name: Fix google-chrome repo gpgkey
     ini_file: dest=/etc/yum.repos.d/google-chrome.repo section=google-chrome option=gpgkey value="https://dl-ssl.google.com/linux/linux_signing_key.pub"
@@ -86,21 +86,21 @@
     ignore_errors: True
     changed_when: "result.rc != 0"
   - name: Install google-talkplugin
-    dnf: name=https://dl.google.com/linux/direct/google-talkplugin_current_x86_64.rpm state=present
+    yum: name=https://dl.google.com/linux/direct/google-talkplugin_current_{{ ansible_architecture }}.rpm state=present
     when: result|failed
   - name: Fix google-talkplugin repo gpgkey
     ini_file: dest=/etc/yum.repos.d/google-talkplugin.repo section=google-talkplugin option=gpgkey value="https://dl-ssl.google.com/linux/linux_signing_key.pub"
   - name: Remove packages
-    dnf: name={{ item }} state=absent
+    yum: name={{ item }} state=absent
     with_items:
     - gnash
     - kate-pate
     - lightspark
     - prelink
   - name: Update to the latest
-    dnf: name='*' state=latest
+    yum: name='*' state=latest
   - name: Install packages
-    dnf: name={{ item }} state=present
+    yum: name={{ item }} state=present
     with_items:
     - "@development-tools"
     - "@gnome-desktop"
@@ -113,6 +113,7 @@
     - ansible-lint
     - bash-completion
     - curl
+    - dconf-editor
     - dnf-langpacks
     - ffmpeg
     - flash-plugin
@@ -126,7 +127,6 @@
     - gstreamer1-libav
     - hdparm
     - htop
-    - kate-plugins
     - keepassx
     - krb5-auth-dialog
     - krb5-workstation
@@ -170,7 +170,7 @@
     ignore_errors: True
     changed_when: "result.rc != 0"
   - name: Install msttcore-fonts
-    dnf: name=https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm state=present
+    yum: name=https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm state=present
     when: result|failed
 
   #

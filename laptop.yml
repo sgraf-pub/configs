@@ -1,6 +1,6 @@
 ---
-# file: laptop-multilib.yml
-- hosts: laptop-multilib
+# file: laptop.yml
+- hosts: laptop
   remote_user: root
   roles:
     - common
