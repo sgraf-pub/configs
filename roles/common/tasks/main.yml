@@ -113,6 +113,7 @@
     - ansible-lint
     - bash-completion
     - curl
+    - dconf-editor
     - dnf-langpacks
     - ffmpeg
     - flash-plugin
