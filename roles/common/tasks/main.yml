@@ -63,12 +63,12 @@
     dnf: name=http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-22.noarch.rpm state=present
     when: result|failed
   - name: Check adobe-release
-    shell: rpm -q adobe-release-x86_64
+    shell: rpm -q adobe-release-{{ ansible_architecture }}
     register: result
     ignore_errors: True
     changed_when: "result.rc != 0"
   - name: Install adobe-release
-    dnf: name=http://linuxdownload.adobe.com/adobe-release/adobe-release-x86_64-1.0-1.noarch.rpm state=present
+    dnf: name=http://linuxdownload.adobe.com/adobe-release/adobe-release-{{ ansible_architecture }}-1.0-1.noarch.rpm state=present
     when: result|failed
   - name: Check google-chrome
     shell: rpm -q google-chrome-stable
@@ -76,7 +76,7 @@
     ignore_errors: True
     changed_when: "result.rc != 0"
   - name: Install google-chrome
-    dnf: name=https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm state=present
+    dnf: name=https://dl.google.com/linux/direct/google-chrome-stable_current_{{ ansible_architecture }}.rpm state=present
     when: result|failed
   - name: Fix google-chrome repo gpgkey
     ini_file: dest=/etc/yum.repos.d/google-chrome.repo section=google-chrome option=gpgkey value="https://dl-ssl.google.com/linux/linux_signing_key.pub"
@@ -86,7 +86,7 @@
     ignore_errors: True
     changed_when: "result.rc != 0"
   - name: Install google-talkplugin
-    dnf: name=https://dl.google.com/linux/direct/google-talkplugin_current_x86_64.rpm state=present
+    dnf: name=https://dl.google.com/linux/direct/google-talkplugin_current_{{ ansible_architecture }}.rpm state=present
     when: result|failed
   - name: Fix google-talkplugin repo gpgkey
     ini_file: dest=/etc/yum.repos.d/google-talkplugin.repo section=google-talkplugin option=gpgkey value="https://dl-ssl.google.com/linux/linux_signing_key.pub"
