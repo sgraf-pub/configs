@@ -86,27 +86,30 @@ parse_git () {
     branchname=$(git branch 2>/dev/null | grep '\*')
     if [[ -n ${branchname} ]]; then
         PS1+="(${LIGHT_BLUE}${branchname:2}${RESET_COLOR}"
-        gitstatus=$(git status --porcelain 2> /dev/null)
-        if [[ -n "${gitstatus}" ]] ; then
-            workt=$(echo -e "${gitstatus}" | cut -c2 | sort | uniq | \
-                tr -d '\n ')
-            stage=$(echo -e "${gitstatus}" | cut -c1 | sort | uniq | \
-                grep -v -e '\?' -e '\!' | tr -d '\n ')
-        fi
-        if [[ -n ${stage} || -n ${workt} ]]; then
-            PS1+=" ${YELLOW}${stage}${LIGHT_RED}${workt}"
-        fi
-        ahead=$(git rev-list --count @{upstream}..HEAD 2>/dev/null)
-        behind=$(git rev-list --count HEAD..@{upstream} 2>/dev/null)
-        if [[ -n ${ahead} ]]; then
-            if [ ${ahead} -ne 0 ]; then
-                PS1+=" ${YELLOW}+${ahead}"
+        if [[ $(stat -f -L -c %T $PWD) != 'nfs' ]]; then
+            gitstatus=$(git status --porcelain 2> /dev/null)
+            if [[ -n "${gitstatus}" ]] ; then
+                workt=$(echo -e "${gitstatus}" | cut -c2 | sort | uniq | \
+                    tr -d '\n ')
+                stage=$(echo -e "${gitstatus}" | cut -c1 | sort | uniq | \
+                    grep -v -e '\?' -e '\!' | tr -d '\n ')
             fi
-            if [ ${behind} -ne 0 ]; then
-                PS1+=" ${YELLOW}-${behind}"
+            if [[ -n ${stage} || -n ${workt} ]]; then
+                PS1+=" ${YELLOW}${stage}${LIGHT_RED}${workt}"
             fi
+            ahead=$(git rev-list --count @{upstream}..HEAD 2>/dev/null)
+            behind=$(git rev-list --count HEAD..@{upstream} 2>/dev/null)
+            if [[ -n ${ahead} ]]; then
+                if [ ${ahead} -ne 0 ]; then
+                    PS1+=" ${YELLOW}+${ahead}"
+                fi
+                if [ ${behind} -ne 0 ]; then
+                    PS1+=" ${YELLOW}-${behind}"
+                fi
+            fi
+            PS1+="${RESET_COLOR}"
         fi
-        PS1+="${RESET_COLOR})"
+        PS1+=")"
     fi
 }
 
@@ -116,7 +119,7 @@ generate_ps () {
     parse_exit_code "${ecode}"
     PS1+="[\u@\h"
     PS1+=" ${LIGHT_BLUE}\w${RESET_COLOR}]"
-    [[ $(stat -f -L -c %T $PWD) != 'nfs' ]] && parse_git
+    parse_git
     if [ \u == "root" ]; then
         PS1+="# "
     else
