@@ -283,5 +283,5 @@
   #
   - name: Disable animations
     shell: runuser -u {{ item }} dbus-launch gsettings set org.gnome.desktop.interface enable-animations false
-    with_items: [root, {{ var_user }}]
+    with_items: [root, "{{ var_user }}"]
 
