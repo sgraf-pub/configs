@@ -277,3 +277,10 @@
   - name: Limit max size of journald logs
     ini_file: dest=/etc/systemd/journald.conf section=Journal option=SystemMaxUse value=500M
 
+  #
+  # Gnome Shell
+  #
+  - name: Disable animations
+    shell: runuser -u {{ item }} dbus-launch gsettings set org.gnome.desktop.interface enable-animations false
+    with_items: [root, {{ var_user }}]
+
