@@ -90,13 +90,13 @@
     when: result|failed
   - name: Fix google-talkplugin repo gpgkey
     ini_file: dest=/etc/yum.repos.d/google-talkplugin.repo section=google-talkplugin option=gpgkey value="https://dl-ssl.google.com/linux/linux_signing_key.pub"
-  - name: Remove packages
-    dnf: name={{ item }} state=absent
-    with_items:
-    - gnash
-    - kate-pate
-    - lightspark
-    - prelink
+  #- name: Remove packages
+  #  dnf: name={{ item }} state=absent
+  #  with_items:
+  #  - gnash
+  #  - kate-pate
+  #  - lightspark
+  #  - prelink
   - name: Update to the latest
     dnf: name='*' state=latest
   - name: Install packages
@@ -185,6 +185,7 @@
   - name: Install Czech
     shell: dnf langinstall Czech -y
     when: result|failed
+
   - name: Check English
     shell: dnf langlist | grep English
     register: result
@@ -193,6 +194,69 @@
   - name: Install English
     shell: dnf langinstall English -y
     when: result|failed
+
+  #- name: Check Arabic
+  #  shell: dnf langlist | grep Arabic
+  #  register: result
+  #  ignore_errors: True
+  #  changed_when: "result.rc != 0"
+  #- name: Install Arabic
+  #  shell: dnf langinstall Arabic -y
+  #  when: result|failed
+
+  #- name: Check Chinese
+  #  shell: dnf langlist | grep Chinese
+  #  register: result
+  #  ignore_errors: True
+  #  changed_when: "result.rc != 0"
+  #- name: Install Chinese
+  #  shell: dnf langinstall Chinese -y
+  #  when: result|failed
+
+  #- name: Check Japanese
+  #  shell: dnf langlist | grep Japanese
+  #  register: result
+  #  ignore_errors: True
+  #  changed_when: "result.rc != 0"
+  #- name: Install Japanese
+  #  shell: dnf langinstall Japanese -y
+  #  when: result|failed
+
+  #- name: Check Slovak
+  #  shell: dnf langlist | grep Slovak
+  #  register: result
+  #  ignore_errors: True
+  #  changed_when: "result.rc != 0"
+  #- name: Install Slovak
+  #  shell: dnf langinstall Slovak -y
+  #  when: result|failed
+
+  #- name: Check Spanish
+  #  shell: dnf langlist | grep Spanish
+  #  register: result
+  #  ignore_errors: True
+  #  changed_when: "result.rc != 0"
+  #- name: Install Spanish
+  #  shell: dnf langinstall Spanish -y
+  #  when: result|failed
+
+  #- name: Check 'Simplified Chinese (China)'
+  #  shell: dnf langlist | grep 'Simplified Chinese (China)'
+  #  register: result
+  #  ignore_errors: True
+  #  changed_when: "result.rc != 0"
+  #- name: Install 'Simplified Chinese (China)'
+  #  shell: dnf langinstall 'Simplified Chinese (China)' -y
+  #  when: result|failed
+
+  #- name: Check 'English (United Kingdom)'
+  #  shell: dnf langlist | grep 'English (United Kingdom)'
+  #  register: result
+  #  ignore_errors: True
+  #  changed_when: "result.rc != 0"
+  #- name: Install 'English (United Kingdom)'
+  #  shell: dnf langinstall 'English (United Kingdom)' -y
+  #  when: result|failed
 
   #
   # Check if var_user is valid
@@ -231,6 +295,20 @@
   - name: Fix vlc file caching
     shell: "sed -i s/.*file-caching.*/file-caching=30000/ /home/{{ var_user }}/.config/vlc/vlcrc"
     when: result|failed
+
+  #
+  # Setup htop
+  #
+  - name: Check htoprc
+    shell: ls -d /home/{{ var_user }}/.config/htop/
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
+  - name: Create htoprc dir
+    file: path=/home/{{ var_user }}/.config/htop state=directory mode=755 owner={{ var_user }} group={{ var_user }}
+    when: result|failed
+  - name: Copy htoprc file
+    copy: src=htoprc dest=/home/{{ var_user }}/.config/htop/htoprc mode=600 owner={{ var_user }} group={{ var_user }}
 
   #
   # Setup ssh
@@ -281,7 +359,22 @@
   #
   # Gnome Shell
   #
-  - name: Disable animations
-    shell: runuser -u {{ item }} dbus-launch gsettings set org.gnome.desktop.interface enable-animations false
-    with_items: [root, "{{ var_user }}"]
+  - name: Copy user profile
+    copy: src=gs-user-profile dest="/etc/dconf/profile/{{ var_user }}" mode=644
+  - name: Check settings
+    shell: ls -d /etc/dconf/db/local.d/
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
+  - name: Create settings dir
+    file: path=/etc/dconf/db/local.d state=directory mode=755
+    when: result|failed
+  - name: Copy general config
+    copy: src=gs-settings dest=/etc/dconf/db/local.d/00-settings mode=644
+    register: result
+  - name: Export path to Gnome Shell settings
+    lineinfile: dest="/home/{{ var_user }}/.bash_profile" line="export DCONF_PROFILE={{ var_user }}"
+  - name: Update system databases
+    shell: dconf update
+    when: result.changed
 
