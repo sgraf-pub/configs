@@ -1,0 +1,10 @@
+[org/gnome/settings-daemon/plugins/remote-display]
+active=false
+[org/gnome/desktop/interface]
+enable-animations=false
+clock-show-date=true
+[org/gnome/settings-daemon/peripherals/touchpad]
+scroll-method='two-finger-scrolling'
+tap-to-click=true
+disable-while-typing=true
+
