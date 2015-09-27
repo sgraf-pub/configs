@@ -1,2 +1,1 @@
-hardstatus alwayslastline "%{=}%-w%{+b w}%n %t%{-b w}%+w %=%c"
-
+hardstatus alwayslastline '%{= G}[ %{G}%H %{g}][%= %{= w}%?%-Lw%?%{= R}%n*%f %t%?%{= R}(%u)%?%{= w}%+Lw%?%= %{= g}][ %{y}Load: %l %{g}][%{B}%D %Y-%M-%d %{W}%c:%s %{g}]'
