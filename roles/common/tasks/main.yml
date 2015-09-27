@@ -232,6 +232,20 @@
     when: result|failed
 
   #
+  # Setup htop
+  #
+  - name: Check htoprc
+    shell: ls -d /home/{{ var_user }}/.config/htop/
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
+  - name: Create htoprc dir
+    file: path=/home/{{ var_user }}/.config/htop state=directory mode=755 owner={{ var_user }} group={{ var_user }}
+    when: result|failed
+  - name: Copy htoprc file
+    copy: src=htoprc dest=/home/{{ var_user }}/.config/htop/htoprc mode=600 owner={{ var_user }} group={{ var_user }}
+
+  #
   # Setup ssh
   #
   - name: Create directory for config of ssh
@@ -280,7 +294,31 @@
   #
   # Gnome Shell
   #
-  - name: Disable animations
-    shell: runuser -u {{ item }} dbus-launch gsettings set org.gnome.desktop.interface enable-animations false
-    with_items: [root, "{{ var_user }}"]
+  - name: Check if user profile exists
+    shell: ls /etc/dconf/profile/{{ var_user }}
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
+  - name: Copy user profile
+    copy: src=gs-user-profile dest="/etc/dconf/profile/{{ var_user }}" mode=644
+    when: result|failed
+  - name: Change username in user profile
+    shell: sed -i s/USERNAME/{{ var_user }}/ /etc/dconf/profile/{{ var_user }}
+    when: result|failed
+  - name: Check settings
+    shell: ls -d /etc/dconf/db/local.d/
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
+  - name: Create settings dir
+    file: path=/etc/dconf/db/local.d state=directory mode=755
+    when: result|failed
+  - name: Copy general config
+    copy: src=gs-settings dest=/etc/dconf/db/local.d/00-settings mode=644
+    register: result
+  - name: Export path to Gnome Shell settings
+    lineinfile: dest="/home/{{ var_user }}/.bash_profile" line="export DCONF_PROFILE={{ var_user }}"
+  - name: Update system databases
+    shell: dconf update
+    when: result.changed
 
