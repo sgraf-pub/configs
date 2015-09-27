@@ -359,8 +359,17 @@
   #
   # Gnome Shell
   #
+  - name: Check if user profile exists
+    shell: ls /etc/dconf/profile/{{ var_user }}
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
   - name: Copy user profile
     copy: src=gs-user-profile dest="/etc/dconf/profile/{{ var_user }}" mode=644
+    when: result|failed
+  - name: Change username in user profile
+    shell: sed -i s/USERNAME/{{ var_user }}/ /etc/dconf/profile/{{ var_user }}
+    when: result|failed
   - name: Check settings
     shell: ls -d /etc/dconf/db/local.d/
     register: result
