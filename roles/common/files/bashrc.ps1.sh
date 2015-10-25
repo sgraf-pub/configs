@@ -65,15 +65,23 @@ parse_exit_code () {
     else
         final_ecode=${temp_ecode[@]:1}
     fi
-    for i in ${final_ecode[@]}; do
-        if [ ${i} != "0" ] ; then
-            PS1+="${LIGHT_RED}:: [   FAIL   ] :: "
-            PS1+="${EXIT_CODES[$i]} (Expected 0, got ${i})"
-        else
-            PS1+="${LIGHT_GREEN}:: [   PASS   ] ::"
+    if [ "${final_ecode}" != "0" ]; then
+        local display_ecode=0
+        for i in ${final_ecode[@]}; do
+            [ ${i} != "0" ] && display_ecode=1
+        done
+        if [ ${display_ecode} -eq 1 ] ; then
+            for i in ${final_ecode[@]}; do
+                if [ ${i} != "0" ] ; then
+                    PS1+="${LIGHT_RED}:: [   FAIL   ] :: "
+                    PS1+="${EXIT_CODES[$i]} (Expected 0, got ${i})"
+                else
+                    PS1+="${LIGHT_GREEN}:: [   PASS   ] ::"
+                fi
+                PS1+="${RESET_COLOR}\n"
+            done
         fi
-        PS1+="${RESET_COLOR}\n"
-    done
+    fi
 }
 
 parse_git () {
@@ -128,9 +136,12 @@ generate_ps () {
     local ecode="${?} ${PIPESTATUS[@]}"
     timer_stop
     PS1=
-    PS1='[last: '
-    PS1+=$(date -d@${timer_show} -u +%Hh%Mm%Ss)
-    PS1+='] '
+    # Show timer only if command took > 2s
+    if (( timer_show > 2 )); then
+        PS1="${YELLOW}real "
+        PS1+=$(date -d@${timer_show} -u +%Hh%Mm%Ss)
+        PS1+="${RESET_COLOR}"'\n'
+    fi
     parse_exit_code "${ecode}"
     PS1+="[\u@\h"
     PS1+=" ${LIGHT_BLUE}\w${RESET_COLOR}]"
