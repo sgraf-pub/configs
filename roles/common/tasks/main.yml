@@ -2,20 +2,20 @@
   #
   # Restore original dnf and yum configuration files
   #
-  - name: Check yum
-    shell: rpm -V yum
-    register: result
-    ignore_errors: True
-    changed_when: "result.rc != 0"
-  - name: Download yum
-    shell: dnf download --destdir=/tmp/ yum
-    when: result|failed
-  - name: Backup yum.conf
-    shell: mv /etc/yum.conf /etc/yum.conf_backup
-    when: result|failed
-  - name: Restore yum.conf
-    shell: rpm --reinstall '/tmp/yum-*.rpm'
-    when: result|failed
+  #- name: Check yum
+  #  shell: rpm -V yum
+  #  register: result
+  #  ignore_errors: True
+  #  changed_when: "result.rc != 0"
+  #- name: Download yum
+  #  shell: dnf download --destdir=/tmp/ yum
+  #  when: result|failed
+  #- name: Backup yum.conf
+  #  shell: mv /etc/yum.conf /etc/yum.conf_backup
+  #  when: result|failed
+  #- name: Restore yum.conf
+  #  shell: rpm --reinstall '/tmp/yum-*.rpm'
+  #  when: result|failed
   - name: Check dnf-conf
     shell: rpm -V $(rpm -qf --qf "%{name}" /etc/dnf/dnf.conf)
     register: result
@@ -55,12 +55,12 @@
   # Install necessary packages
   #
   - name: Check rpmfusion-free
-    shell: rpm -q rpmfusion-free-release-22
+    shell: rpm -q rpmfusion-free-release-23
     register: result
     ignore_errors: True
     changed_when: "result.rc != 0"
   - name: Install rpmfusion-free
-    dnf: name=http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-22.noarch.rpm state=present
+    dnf: name=http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-23.noarch.rpm state=present
     when: result|failed
   - name: Check adobe-release
     shell: rpm -q adobe-release-{{ ansible_architecture }}
@@ -105,11 +105,11 @@
     - "@development-tools"
     - "@gnome-desktop"
     - "@libreoffice"
-    - "@minimal-environment"
+    #- "@minimal-environment"
     - "@multimedia"
     - "@printing"
     - "@virtualization"
-    - "@workstation-product-environment"
+    #- "@workstation-product-environment"
     - ansible-lint
     - bash-completion
     - curl
