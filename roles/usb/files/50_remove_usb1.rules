@@ -1,0 +1,5 @@
+ACTION=="add", KERNEL=="0000:00:1d.0", SUBSYSTEM=="pci", RUN+="/bin/sh -c 'echo 1 > /sys/bus/pci/devices/0000:00:1d.0/remove'"
+ACTION=="add", KERNEL=="0000:00:1d.1", SUBSYSTEM=="pci", RUN+="/bin/sh -c 'echo 1 > /sys/bus/pci/devices/0000:00:1d.1/remove'"
+ACTION=="add", KERNEL=="0000:00:1d.2", SUBSYSTEM=="pci", RUN+="/bin/sh -c 'echo 1 > /sys/bus/pci/devices/0000:00:1d.2/remove'"
+ACTION=="add", KERNEL=="0000:00:1d.3", SUBSYSTEM=="pci", RUN+="/bin/sh -c 'echo 1 > /sys/bus/pci/devices/0000:00:1d.3/remove'"
+

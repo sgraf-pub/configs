@@ -1,0 +1,6 @@
+#
+# Disable all old USB1 ports
+#
+- name: Copy udev rules for USB1
+  copy: src=50_remove_usb1.rules dest=/etc/udev/rules.d/50_remove_usb1.rules mode=644 owner=root group=root
+
