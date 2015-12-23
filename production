@@ -1,7 +1,7 @@
 # file: production
 
 [laptop]
-# ip list
+127.0.0.1
 
 [server]
-# ip list
+127.0.0.1
