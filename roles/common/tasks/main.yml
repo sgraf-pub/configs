@@ -39,6 +39,10 @@
   - name: Enable regular dnf makecache
     service: name=dnf-makecache.timer state=started enabled=yes
 
+  # Enable TRIM
+  - name: Enable weekly FS TRIM
+    service: name=fstrim.timer state=started enabled=yes
+
   #
   # Set swappiness to reasonable value
   #
