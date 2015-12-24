@@ -136,9 +136,9 @@ generate_ps () {
     local ecode="${?} ${PIPESTATUS[@]}"
     timer_stop
     PS1=
-    # Show timer only if command took > 2s
-    if (( timer_show > 2 )); then
-        PS1="${YELLOW}real "
+    # Show timer only if command took > 1m
+    if (( timer_show > 60 )); then
+        PS1="${BROWN}Total time spent: "
         PS1+=$(date -d@${timer_show} -u +%Hh%Mm%Ss)
         PS1+="${RESET_COLOR}"'\n'
     fi
