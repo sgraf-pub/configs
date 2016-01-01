@@ -1,0 +1,12 @@
+---
+#
+  - name: Check Adobe Reader
+    shell: rpm -q AdobeReader_enu
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
+  - name: Install Adobe Reader
+    dnf: name=http://linuxdownload.adobe.com/linux/i386/AdbeRdr9.5.5-1_i486linux_enu.rpm state=present
+    when: result|failed
+
+

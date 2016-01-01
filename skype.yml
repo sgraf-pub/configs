@@ -1,0 +1,7 @@
+---
+# file: skype.yml
+- hosts: skype
+  remote_user: root
+  roles:
+    - skype
+

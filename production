@@ -5,3 +5,18 @@
 
 [server]
 127.0.0.1
+
+# flavours
+
+[acrobat-reader]
+127.0.0.1
+
+[flash-plugin]
+127.0.0.1
+
+[skype]
+127.0.0.1
+
+[wine]
+127.0.0.1
+

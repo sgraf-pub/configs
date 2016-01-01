@@ -1,0 +1,7 @@
+---
+# file: wine.yml
+- hosts: wine
+  remote_user: root
+  roles:
+    - wine
+

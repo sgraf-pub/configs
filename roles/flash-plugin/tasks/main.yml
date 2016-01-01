@@ -1,0 +1,12 @@
+---
+  - name: Check adobe-release
+    shell: rpm -q adobe-release-{{ ansible_architecture }}
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
+  - name: Install adobe-release
+    dnf: name=http://linuxdownload.adobe.com/adobe-release/adobe-release-{{ ansible_architecture }}-1.0-1.noarch.rpm state=present
+    when: result|failed
+  - name: Install flash-plugin
+    dnf: name=flash-plugin state=present
+

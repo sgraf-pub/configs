@@ -1,0 +1,7 @@
+---
+# file: acrobat-reader.yml
+- hosts: acrobat-reader
+  remote_user: root
+  roles:
+    - acrobat-reader
+

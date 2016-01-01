@@ -120,7 +120,6 @@
     - dconf-editor
     - dnf-langpacks
     - ffmpeg
-    - flash-plugin
     - freemind
     - fuse-sshfs
     - ghostscript
