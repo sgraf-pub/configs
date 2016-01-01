@@ -1,0 +1,24 @@
+diff --git a/extension.js b/extension.js
+index 9fb9804..28680b2 100644
+--- a/extension.js
++++ b/extension.js
+@@ -109,15 +109,15 @@ const GTileStatusButton = new Lang.Class({
+ function initSettings() {
+     //Here is where you add new grid size button
+     gridSettings[SETTINGS_GRID_SIZE] = [
++        new GridSettingsButton('4x4',4,4),
+         new GridSettingsButton('6x4',6,4),
+-        new GridSettingsButton('8x6',8,6),
+-        new GridSettingsButton('12x8',12,8),
+-        new GridSettingsButton('16x12',16,12),
++        new GridSettingsButton('4x6',4,6),
++        new GridSettingsButton('6x6',6,6),
+     ];
+ 
+     //You can change those settings to set whatever you want by default
+     gridSettings[SETTINGS_AUTO_CLOSE] = true;
+-    gridSettings[SETTINGS_ANIMATION] = true;
++    gridSettings[SETTINGS_ANIMATION] = false;
+     gridSettings[SETTINGS_IGNORE_PANEL] = false; //Set this to true if you have the top panel hidden
+ }
+ 

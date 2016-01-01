@@ -1,0 +1,7 @@
+---
+# file: gtile.yml
+- hosts: gtile
+  remote_user: "{{ var_user }}"
+  roles:
+    - gtile
+

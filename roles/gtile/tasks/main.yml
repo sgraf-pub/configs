@@ -1,0 +1,9 @@
+---
+#
+  - name: Clone gTile extension
+    git: repo=https://github.com/lundal/vibou.gTile.git dest=/home/{{ var_user }}/.local/share/gnome-shell/extensions/gTile@vibou
+  - name: Apply custom settings
+    patch: src=extension.js.patch dest="/home/{{ var_user }}/.local/share/gnome-shell/extensions/gTile@vibou/extension.js"
+  - name: Fix gnome shell compatibility version strings
+    patch: src=metadata.json.patch dest="/home/{{ var_user }}/.local/share/gnome-shell/extensions/gTile@vibou/metadata.json"
+
