@@ -134,7 +134,6 @@
     - keepassx
     - krb5-auth-dialog
     - krb5-workstation
-    - icedtea-web
     - lftp
     - linphone
     - lm_sensors
