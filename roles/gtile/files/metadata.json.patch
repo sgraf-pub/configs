@@ -1,7 +1,11 @@
 diff --git a/metadata.json b/metadata.json
-index 423f4e1..679899d 100644
+index 47561d2..fad0ee0 100644
 --- a/metadata.json
 +++ b/metadata.json
-@@ -1 +1 @@
--{"shell-version": ["3.18","3.16","3.14"], "uuid": "gTile@vibou", "name": "gTile", "description": "Tile your windows as you like. It even supports multiscreen ! -EDIT: - See README file for configuration -", "url" : "https://github.com/vibou/vibou.gTile"}
-+{"shell-version": ["3.18.3","3.18.1","3.18","3.16","3.14"], "uuid": "gTile@vibou", "name": "gTile", "description": "Tile your windows as you like. It even supports multiscreen ! -EDIT: - See README file for configuration -", "url" : "https://github.com/vibou/vibou.gTile"}
+@@ -1,5 +1,6 @@
+ {
+   "shell-version": [
++    "3.18.3",
+     "3.18",
+     "3.16",
+     "3.14"
