@@ -2,20 +2,6 @@
   #
   # Restore original dnf and yum configuration files
   #
-  #- name: Check yum
-  #  shell: rpm -V yum
-  #  register: result
-  #  ignore_errors: True
-  #  changed_when: "result.rc != 0"
-  #- name: Download yum
-  #  shell: dnf download --destdir=/tmp/ yum
-  #  when: result|failed
-  #- name: Backup yum.conf
-  #  shell: mv /etc/yum.conf /etc/yum.conf_backup
-  #  when: result|failed
-  #- name: Restore yum.conf
-  #  shell: rpm --reinstall '/tmp/yum-*.rpm'
-  #  when: result|failed
   - name: Check dnf-conf
     shell: rpm -V $(rpm -qf --qf "%{name}" /etc/dnf/dnf.conf)
     register: result
@@ -32,10 +18,8 @@
     when: result|failed
 
   #
-  # Set automatic makecache for dnf and yum
+  # Set automatic makecache for dnf
   #
-  #- name: Disable regular yum makecache
-  #  service: name=yum-makecache.timer state=stopped enabled=no
   - name: Enable regular dnf makecache
     service: name=dnf-makecache.timer state=started enabled=yes
 
@@ -66,14 +50,6 @@
   - name: Install rpmfusion-free
     dnf: name=http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-23.noarch.rpm state=present
     when: result|failed
-  - name: Check adobe-release
-    shell: rpm -q adobe-release-{{ ansible_architecture }}
-    register: result
-    ignore_errors: True
-    changed_when: "result.rc != 0"
-  - name: Install adobe-release
-    dnf: name=http://linuxdownload.adobe.com/adobe-release/adobe-release-{{ ansible_architecture }}-1.0-1.noarch.rpm state=present
-    when: result|failed
   - name: Check google-chrome
     shell: rpm -q google-chrome-stable
     register: result
@@ -94,26 +70,11 @@
     when: result|failed
   - name: Fix google-talkplugin repo gpgkey
     ini_file: dest=/etc/yum.repos.d/google-talkplugin.repo section=google-talkplugin option=gpgkey value="https://dl-ssl.google.com/linux/linux_signing_key.pub"
-  #- name: Remove packages
-  #  dnf: name={{ item }} state=absent
-  #  with_items:
-  #  - gnash
-  #  - kate-pate
-  #  - lightspark
-  #  - prelink
   - name: Update to the latest
     dnf: name='*' state=latest
   - name: Install packages
     dnf: name={{ item }} state=present
     with_items:
-    - "@development-tools"
-    - "@gnome-desktop"
-    - "@libreoffice"
-    #- "@minimal-environment"
-    - "@multimedia"
-    - "@printing"
-    - "@virtualization"
-    #- "@workstation-product-environment"
     - ansible-lint
     - bash-completion
     - curl
@@ -162,7 +123,6 @@
     - vlc
     - wget
     - youtube-dl
-    #- yum-utils
 
   #
   # Install MS fonts
@@ -196,69 +156,6 @@
   - name: Install English
     shell: dnf langinstall English -y
     when: result|failed
-
-  #- name: Check Arabic
-  #  shell: dnf langlist | grep Arabic
-  #  register: result
-  #  ignore_errors: True
-  #  changed_when: "result.rc != 0"
-  #- name: Install Arabic
-  #  shell: dnf langinstall Arabic -y
-  #  when: result|failed
-
-  #- name: Check Chinese
-  #  shell: dnf langlist | grep Chinese
-  #  register: result
-  #  ignore_errors: True
-  #  changed_when: "result.rc != 0"
-  #- name: Install Chinese
-  #  shell: dnf langinstall Chinese -y
-  #  when: result|failed
-
-  #- name: Check Japanese
-  #  shell: dnf langlist | grep Japanese
-  #  register: result
-  #  ignore_errors: True
-  #  changed_when: "result.rc != 0"
-  #- name: Install Japanese
-  #  shell: dnf langinstall Japanese -y
-  #  when: result|failed
-
-  #- name: Check Slovak
-  #  shell: dnf langlist | grep Slovak
-  #  register: result
-  #  ignore_errors: True
-  #  changed_when: "result.rc != 0"
-  #- name: Install Slovak
-  #  shell: dnf langinstall Slovak -y
-  #  when: result|failed
-
-  #- name: Check Spanish
-  #  shell: dnf langlist | grep Spanish
-  #  register: result
-  #  ignore_errors: True
-  #  changed_when: "result.rc != 0"
-  #- name: Install Spanish
-  #  shell: dnf langinstall Spanish -y
-  #  when: result|failed
-
-  #- name: Check 'Simplified Chinese (China)'
-  #  shell: dnf langlist | grep 'Simplified Chinese (China)'
-  #  register: result
-  #  ignore_errors: True
-  #  changed_when: "result.rc != 0"
-  #- name: Install 'Simplified Chinese (China)'
-  #  shell: dnf langinstall 'Simplified Chinese (China)' -y
-  #  when: result|failed
-
-  #- name: Check 'English (United Kingdom)'
-  #  shell: dnf langlist | grep 'English (United Kingdom)'
-  #  register: result
-  #  ignore_errors: True
-  #  changed_when: "result.rc != 0"
-  #- name: Install 'English (United Kingdom)'
-  #  shell: dnf langinstall 'English (United Kingdom)' -y
-  #  when: result|failed
 
   #
   # Check if var_user is valid
@@ -357,35 +254,4 @@
   #
   - name: Limit max size of journald logs
     ini_file: dest=/etc/systemd/journald.conf section=Journal option=SystemMaxUse value=500M
-
-  #
-  # Gnome Shell
-  #
-  - name: Check if user profile exists
-    shell: ls /etc/dconf/profile/{{ var_user }}
-    register: result
-    ignore_errors: True
-    changed_when: "result.rc != 0"
-  - name: Copy user profile
-    copy: src=gs-user-profile dest="/etc/dconf/profile/{{ var_user }}" mode=644
-    when: result|failed
-  - name: Change username in user profile
-    shell: sed -i s/USERNAME/{{ var_user }}/ /etc/dconf/profile/{{ var_user }}
-    when: result|failed
-  - name: Check settings
-    shell: ls -d /etc/dconf/db/local.d/
-    register: result
-    ignore_errors: True
-    changed_when: "result.rc != 0"
-  - name: Create settings dir
-    file: path=/etc/dconf/db/local.d state=directory mode=755
-    when: result|failed
-  - name: Copy general config
-    copy: src=gs-settings dest=/etc/dconf/db/local.d/00-settings mode=644
-    register: result
-  - name: Export path to Gnome Shell settings
-    lineinfile: dest="/home/{{ var_user }}/.bash_profile" line="export DCONF_PROFILE={{ var_user }}"
-  - name: Update system databases
-    shell: dconf update
-    when: result.changed
 
