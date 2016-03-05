@@ -14,7 +14,16 @@
 [flash-plugin]
 127.0.0.1
 
+[google-talk]
+127.0.0.1
+
 [gtile]
+127.0.0.1
+
+[chrome]
+127.0.0.1
+
+[chromium]
 127.0.0.1
 
 [skype]

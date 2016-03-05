@@ -1,0 +1,7 @@
+---
+# file: chrome.yml
+- hosts: chrome
+  remote_user: root
+  roles:
+    - chrome
+

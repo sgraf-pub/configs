@@ -1,0 +1,6 @@
+---
+  - name: Enable chromium copr repo
+    command: dnf -y copr enable spot/chromium
+  - name: Install chromium
+    dnf: name=chromium state=present
+

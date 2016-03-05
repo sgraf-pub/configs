@@ -1,0 +1,7 @@
+---
+# file: google-talk.yml
+- hosts: google-talk
+  remote_user: root
+  roles:
+    - google-talk
+

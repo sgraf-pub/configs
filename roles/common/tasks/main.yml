@@ -50,26 +50,6 @@
   - name: Install rpmfusion-free
     dnf: name=http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-23.noarch.rpm state=present
     when: result|failed
-  - name: Check google-chrome
-    shell: rpm -q google-chrome-stable
-    register: result
-    ignore_errors: True
-    changed_when: "result.rc != 0"
-  - name: Install google-chrome
-    dnf: name=https://dl.google.com/linux/direct/google-chrome-stable_current_{{ ansible_architecture }}.rpm state=present
-    when: result|failed
-  - name: Fix google-chrome repo gpgkey
-    ini_file: dest=/etc/yum.repos.d/google-chrome.repo section=google-chrome option=gpgkey value="https://dl-ssl.google.com/linux/linux_signing_key.pub"
-  - name: Check google-talkplugin
-    shell: rpm -q google-talkplugin
-    register: result
-    ignore_errors: True
-    changed_when: "result.rc != 0"
-  - name: Install google-talkplugin
-    dnf: name=https://dl.google.com/linux/direct/google-talkplugin_current_{{ ansible_architecture }}.rpm state=present
-    when: result|failed
-  - name: Fix google-talkplugin repo gpgkey
-    ini_file: dest=/etc/yum.repos.d/google-talkplugin.repo section=google-talkplugin option=gpgkey value="https://dl-ssl.google.com/linux/linux_signing_key.pub"
   - name: Update to the latest
     dnf: name='*' state=latest
   - name: Install packages
