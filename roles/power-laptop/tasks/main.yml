@@ -21,8 +21,8 @@
     register: result
     ignore_errors: True
     changed_when: "result.rc != 0"
-  - name: Set profile balanced
-    shell: tuned-adm profile balanced
+  - name: Set profile desktop
+    shell: tuned-adm profile desktop
     when: result|failed
   - name: Copy udev rules
     copy: src=powersave.rules dest=/etc/udev/rules.d/powersave.rules mode=644 owner=root group=root
