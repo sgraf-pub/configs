@@ -83,6 +83,7 @@
     - mencoder
     - meld
     - mmv
+    - mock
     - mplayer
     - nano
     - poppler
@@ -103,6 +104,10 @@
     - vlc
     - wget
     - youtube-dl
+
+  # Add user to mock group
+  - name: Add user to mock group
+    command: usermod -a -G mock {{ var_user }}
 
   #
   # Install MS fonts
