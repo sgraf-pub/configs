@@ -17,7 +17,7 @@
     shell: powertop2tuned -e -f powertop-profile
     when: result|failed
   - name: Check profile
-    shell: tuned-adm active | grep balanced
+    shell: tuned-adm active | grep desktop
     register: result
     ignore_errors: True
     changed_when: "result.rc != 0"
