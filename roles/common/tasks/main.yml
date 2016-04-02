@@ -105,10 +105,6 @@
     - wget
     - youtube-dl
 
-  # Add user to mock group
-  - name: Add user to mock group
-    command: usermod -a -G mock {{ var_user }}
-
   #
   # Install MS fonts
   #
@@ -148,6 +144,14 @@
   - name: Check if username is valid
     shell: ls -d /home/{{ var_user }}
     changed_when: "result.rc != 0"
+
+  #
+  # Fix groups membership
+  #
+  - name: Add user to mock group
+    user: name={{ var_user}} append=yes groups=mock
+  - name: Add user to lp group
+    user: name={{ var_user}} append=yes groups=lp
 
   #
   # Setup mplayer
