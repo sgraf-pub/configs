@@ -43,12 +43,12 @@
   # Install necessary packages
   #
   - name: Check rpmfusion-free
-    shell: rpm -q rpmfusion-free-release-23
+    shell: "rpm -q rpmfusion-free-release-{{ ansible_distribution_major_version }}"
     register: result
     ignore_errors: True
     changed_when: "result.rc != 0"
   - name: Install rpmfusion-free
-    dnf: name=http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-23.noarch.rpm state=present
+    dnf: name="http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_distribution_major_version }}.noarch.rpm" state=present
     when: result|failed
   - name: Update to the latest
     dnf: name='*' state=latest
