@@ -1,8 +1,7 @@
 # file: production
 
 [laptop]
-#127.0.0.1
-10.0.0.3
+127.0.0.1
 
 [server]
 127.0.0.1
