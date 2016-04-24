@@ -154,6 +154,12 @@
     user: name={{ var_user}} append=yes groups=lp
 
   #
+  # Mock should use dnf
+  #
+  - name: Switch mock from yum to dnf
+    lineinfile: dest=/etc/mock/site-defaults.cfg regexp="^config_opts..package_manager" insertafter="^# config_opts..package_manager" line="config_opts['package_manager'] = 'dnf'"
+
+  #
   # Setup mplayer
   #
   - name: Create directory for config of mplayer
