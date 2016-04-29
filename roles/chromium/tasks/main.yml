@@ -1,6 +1,8 @@
 ---
-  - name: Enable chromium copr repo
+  - name: Enable chromium copr repo - spot
     command: dnf -y copr enable spot/chromium
+  - name: Enable chromium copr repo - churchyard
+    command: dnf -y copr enable churchyard/chromium-russianfedora
   - name: Install chromium
     dnf: name=chromium state=present
 
