@@ -34,6 +34,8 @@
   # Enable TRIM
   - name: Enable weekly FS TRIM
     service: name=fstrim.timer state=started enabled=yes
+  - name: Fix /etc/crypttab
+    replace: dest=/etc/crypttab regexp='^(.*)none $' replace='\1none discard' backup=yes
 
   #
   # Set swappiness to reasonable value
