@@ -18,6 +18,10 @@
     service: name=fstrim.timer state=started enabled=yes
   - name: Fix /etc/crypttab
     replace: dest=/etc/crypttab regexp='^(.*)none $' replace='\1none discard' backup=yes
+    register: result
+  - name: Fix initramfs
+    shell: dracut --force -I /etc/crypttab
+    when: result.changed
 
   #
   # Set swappiness to reasonable value
