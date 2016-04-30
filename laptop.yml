@@ -4,6 +4,7 @@
   remote_user: root
   roles:
     - common
+    - btrfs
     - cifs-enable
     - power-laptop
 

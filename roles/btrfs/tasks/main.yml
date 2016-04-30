@@ -1,0 +1,18 @@
+---
+  - name: Install shlock from inn
+    dnf: name=inn state=present
+  - name: Link shlock to bin
+    shell: ln -s /usr/libexec/news/shlock /usr/local/bin/shlock
+    args:
+      creates: /usr/local/bin/shlock
+  - name: Download btrfs-balance
+    get_url: url=http://marc.merlins.org/linux/scripts/btrfs-scrub dest=/usr/local/bin/btrfs-balance mode=0755
+  - name: Disable syslog usage
+    lineinfile: dest=/usr/local/bin/btrfs-balance regexp='syslog' state=absent
+  - name: Disable scrub
+    lineinfile: dest=/usr/local/bin/btrfs-balance regexp='scrub' state=absent
+  - name: Enable weekly cron
+    cron: name="btrfs-balance" weekday="0" minute="0" hour="0"
+      user="root" job="/usr/local/bin/btrfs-balance"
+      cron_file=ansible_btrfs-balance
+
