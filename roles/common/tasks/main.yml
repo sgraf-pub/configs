@@ -249,7 +249,7 @@
     lineinfile: dest=/usr/share/mc/skins/default.ini regexp="^    archive =" line="    archive ="
   - name: Disable doc highlight
     lineinfile: dest=/usr/share/mc/skins/default.ini regexp="^    doc =" line="    doc ="
-  - name: Disable souce highlight
+  - name: Disable source highlight
     lineinfile: dest=/usr/share/mc/skins/default.ini regexp="^    source =" line="    source ="
   - name: Disable media highlight
     lineinfile: dest=/usr/share/mc/skins/default.ini regexp="^    media =" line="    media ="
