@@ -1,5 +1,4 @@
 ---
-#
   #
   # Configure power saving
   #
@@ -30,4 +29,15 @@
   - name: Apply new rules
     shell: udevadm control --reload
     when: result.changed
+  #
+  # Disable turbo / overclocking
+  #
+  - name: Create rc-local file
+    file: path=/etc/rc.d/rc.local state=touch mode="u=rwx,g=rx,o=rx"
+  - name: Start with /usr/bin/bash
+    lineinfile: dest=/etc/rc.d/rc.local insertbefore=BOF state=present line="#!/usr/bin/bash"
+  - name: Disable turbo
+    lineinfile: dest=/etc/rc.d/rc.local state=present line="/usr/bin/echo 1 > /sys/devices/system/cpu/intel_pstate/no_turbo"
+  - name: Start rc-local
+    service: name=rc-local state=started enabled=yes
 
