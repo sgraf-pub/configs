@@ -32,12 +32,20 @@
   #
   # Disable turbo / overclocking
   #
+  - name: Check if turbo is supported
+    shell: /usr/bin/echo 1 > /sys/devices/system/cpu/intel_pstate/no_turbo
+    register: result
+    ignore_errors: True
   - name: Create rc-local file
     file: path=/etc/rc.d/rc.local state=touch mode="u=rwx,g=rx,o=rx"
+    when: result|succeeded
   - name: Start with /usr/bin/bash
     lineinfile: dest=/etc/rc.d/rc.local insertbefore=BOF state=present line="#!/usr/bin/bash"
+    when: result|succeeded
   - name: Disable turbo
     lineinfile: dest=/etc/rc.d/rc.local state=present line="/usr/bin/echo 1 > /sys/devices/system/cpu/intel_pstate/no_turbo"
+    when: result|succeeded
   - name: Start rc-local
     service: name=rc-local state=started enabled=yes
+    when: result|succeeded
 
