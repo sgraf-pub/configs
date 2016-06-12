@@ -53,6 +53,7 @@
     - ffmpeg
     - freemind
     - fuse-sshfs
+    - gedit-plugins
     - ghostscript
     - gimp
     - git
@@ -84,6 +85,7 @@
     - rpmconf
     - screen
     - sdparm
+    - simple-scan
     - smartmontools
     - sysfsutils
     - terminator
