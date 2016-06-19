@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Name=Chromium Web Browser
+GenericName=Web Browser
+Comment=Browse the Web
+Exec=chromium --ignore-gpu-blacklist --enable-gpu-rasterization --force-gpu-rasterization --num-raster-threads=4 --enable-native-gpu-memory-buffers %u
+Icon=chromium
+Terminal=false
+Type=Application
+StartupWMClass=chromium-browser
+MimeType=application/x-extension-htm;application/x-extension-html;application/x-extension-shtml;application/x-extension-xht;application/x-extension-xhtml;application/xhtml+xml;text/html;x-scheme-handler/chrome;x-scheme-handler/ftp;x-scheme-handler/http;x-scheme-handler/https;
+Categories=GTK;Network;WebBrowser;X-MandrivaLinux-Internet-WebBrowsers;X-MandrivaLinux-CrossDesktop;

@@ -9,4 +9,6 @@
     when: result|failed
   - name: Fix google-chrome repo gpgkey
     ini_file: dest=/etc/yum.repos.d/google-chrome.repo section=google-chrome option=gpgkey value="https://dl-ssl.google.com/linux/linux_signing_key.pub"
+  - name: Modify launcher
+    copy: src=google-chrome.desktop dest=/home/{{ var_user }}/.local/share/applications/google-chrome.desktop mode=644 owner={{ var_user }} group={{ var_user }}
 
