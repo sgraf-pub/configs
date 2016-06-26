@@ -7,4 +7,4 @@
     - btrfs
     - cifs-enable
     - power-laptop
-
+    - sane-client

@@ -1,0 +1,9 @@
+---
+  #
+  # Setup sane client
+  #
+  - name: Install sane-backends
+    dnf: name=sane-backends state=present
+  - name: Configure sane clinet
+    lineinfile: dest=/etc/sane.d/net.conf line="{{ var_serverip }}"
+
