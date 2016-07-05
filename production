@@ -26,6 +26,9 @@
 [chromium]
 127.0.0.1
 
+[power-custom]
+127.0.0.1
+
 [skype]
 127.0.0.1
 

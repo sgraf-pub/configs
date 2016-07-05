@@ -17,6 +17,7 @@ $ ansible-playbook google-talk.yml
 $ ansible-playbook gtile.yml -e "var_user=USER"
 $ ansible-playbook chrome.yml -e "var_user=USER"
 $ ansible-playbook chromium.yml -e "var_user=USER"
+$ ansible-playbook power-custom.yml
 $ ansible-playbook skype.yml
 $ ansible-playbook wine.yml
 ```

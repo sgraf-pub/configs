@@ -1,0 +1,7 @@
+---
+# file: power-custom.yml
+- hosts: power-custom
+  remote_user: root
+  roles:
+    - power-custom
+
