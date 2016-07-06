@@ -18,10 +18,12 @@
     service: name=fstrim.timer state=started enabled=yes
   - name: Fix /etc/crypttab
     replace: dest=/etc/crypttab regexp='^(.*)none $' replace='\1none discard' backup=yes
+  - name: Check if /etc/crypttab is in initrd
+    shell: "lsinitrd /boot/initramfs-$(uname -r).img etc/crypttab | grep discard"
     register: result
   - name: Fix initramfs
     shell: dracut --force -I /etc/crypttab
-    when: result.changed
+    when: result|failed
 
   #
   # Set swappiness to reasonable value
