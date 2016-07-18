@@ -7,6 +7,6 @@
     #- btrfs
     - power-server
     - server
-    - usb
+    #- usb
     - sane-server
 
