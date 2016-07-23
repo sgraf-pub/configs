@@ -3,8 +3,8 @@ Version=1.0
 Name=Chromium Web Browser
 GenericName=Web Browser
 Comment=Browse the Web
-Exec=chromium-browser --ignore-gpu-blacklist --enable-gpu-rasterization --force-gpu-rasterization --num-raster-threads=4 --enable-native-gpu-memory-buffers %u
-Icon=chromium-browser
+Exec=chromium --ignore-gpu-blacklist --enable-gpu-rasterization --force-gpu-rasterization --num-raster-threads=4 --enable-native-gpu-memory-buffers %u
+Icon=chromium
 Terminal=false
 Type=Application
 StartupWMClass=chromium-browser
