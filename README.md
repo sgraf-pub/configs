@@ -10,14 +10,14 @@ Ansible playbooks
 -----------------
 
 ```
-$ ansible-playbook laptop.yml -e "var_user=USER var_cifsname=USER var_cifspass=PASS var_serverip=IP"
-$ ansible-playbook acrobat-reader.yml
-$ ansible-playbook flash-plugin.yml
-$ ansible-playbook google-talk.yml
-$ ansible-playbook gtile.yml -e "var_user=USER"
-$ ansible-playbook chrome.yml -e "var_user=USER"
-$ ansible-playbook chromium.yml -e "var_user=USER"
-$ ansible-playbook power-custom.yml
-$ ansible-playbook skype.yml
-$ ansible-playbook wine.yml
+$ ansible-playbook playbooks/laptop.yml -e "var_user=USER var_cifsname=USER var_cifspass=PASS var_serverip=IP"
+$ ansible-playbook playbooks/acrobat-reader.yml
+$ ansible-playbook playbooks/flash-plugin.yml
+$ ansible-playbook playbooks/google-talk.yml
+$ ansible-playbook playbooks/gtile.yml -e "var_user=USER"
+$ ansible-playbook playbooks/chrome.yml -e "var_user=USER"
+$ ansible-playbook playbooks/chromium.yml -e "var_user=USER"
+$ ansible-playbook playbooks/power-custom.yml
+$ ansible-playbook playbooks/skype.yml
+$ ansible-playbook playbooks/wine.yml
 ```
