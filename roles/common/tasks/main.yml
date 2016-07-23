@@ -52,7 +52,6 @@
     - curl
     - dconf-editor
     - dnf-langpacks
-    - ffmpeg
     - freemind
     - fuse-sshfs
     - gedit-plugins
@@ -60,8 +59,6 @@
     - gimp
     - git
     - gnome-tweak-tool
-    - gstreamer-ffmpeg
-    - gstreamer1-libav
     - hdparm
     - htop
     - kate-plugins
@@ -73,11 +70,9 @@
     - lm_sensors
     - lshw
     - mc
-    - mencoder
     - meld
     - mmv
     - mock
-    - mplayer
     - nano
     - poppler
     - powertop
@@ -95,7 +90,6 @@
     - tmux
     - tuned-utils
     - vim-enhanced
-    - vlc
     - wget
     - youtube-dl
 
@@ -152,37 +146,6 @@
   #
   - name: Switch mock from yum to dnf
     lineinfile: dest=/etc/mock/site-defaults.cfg regexp="^config_opts..package_manager" insertafter="^# config_opts..package_manager" line="config_opts['package_manager'] = 'dnf'"
-
-  #
-  # Setup mplayer
-  #
-  - name: Create directory for config of mplayer
-    file: dest="/home/{{ var_user }}/.mplayer" state=directory mode=755 owner={{ var_user }} group={{ var_user }}
-  - name: Copy config of mplayer
-    copy: src=mplayer.config dest=/home/{{ var_user }}/.mplayer/config mode=644 owner={{ var_user }} group={{ var_user }}
-
-  #
-  # Setup vlc
-  #
-  - name: Check vlcrc
-    shell: ls /home/{{ var_user }}/.config/vlc/vlcrc
-    register: result
-    ignore_errors: True
-    changed_when: "result.rc != 0"
-  - name: Create vlcrc dir
-    file: path=/home/{{ var_user }}/.config/vlc state=directory mode=755 owner={{ var_user }} group={{ var_user }}
-    when: result|failed
-  - name: Copy vlcrc file
-    copy: src=vlcrc dest=/home/{{ var_user }}/.config/vlc/vlcrc mode=600 owner={{ var_user }} group={{ var_user }}
-    when: result|failed
-  - name: Check vlc file caching
-    shell: grep 'file-caching=30000' /home/{{ var_user }}/.config/vlc/vlcrc
-    register: result
-    ignore_errors: True
-    changed_when: "result.rc != 0"
-  - name: Fix vlc file caching
-    shell: "sed -i s/.*file-caching.*/file-caching=30000/ /home/{{ var_user }}/.config/vlc/vlcrc"
-    when: result|failed
 
   #
   # Setup htop

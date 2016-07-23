@@ -1,7 +1,0 @@
-[org/gnome/desktop/interface]
-enable-animations=false
-clock-show-date=true
-[org/gnome/desktop/peripherals/touchpad]
-scroll-method='two-finger-scrolling'
-tap-to-click=true
-

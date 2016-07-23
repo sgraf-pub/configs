@@ -1,0 +1,75 @@
+---
+  - name: Install packages
+    dnf: name={{ item }} state=present
+    with_items:
+    - ffmpeg
+    - gstreamer-ffmpeg
+    - gstreamer-plugins-bad
+    - gstreamer-plugins-bad-free
+    - gstreamer-plugins-bad-free-extras
+    - gstreamer-plugins-base
+    - gstreamer-plugins-good
+    - gstreamer-plugins-good-extras
+    - gstreamer-plugins-ugly
+    - gstreamer1-libav
+    - gstreamer1-plugins-bad-free
+    - gstreamer1-plugins-bad-free-extras
+    - gstreamer1-plugins-bad-freeworld
+    - gstreamer1-plugins-base
+    - gstreamer1-plugins-good
+    - gstreamer1-plugins-good-extras
+    - gstreamer1-plugins-ugly
+    - gstreamer1-vaapi
+    - mencoder
+    - mplayer
+    - vlc
+    - x264
+
+  - name: Make sure openh264 repo is enabled
+    command: dnf config-manager --set-enabled fedora-cisco-openh264
+
+  - name: Install openh264
+    dnf: name={{ item }} state=present
+    with_items:
+    - gstreamer1-plugin-openh264
+    - openh264
+
+  #
+  # Check if var_user is valid
+  #
+  - name: Check if username is valid
+    shell: ls -d /home/{{ var_user }}
+    register: result
+    changed_when: "result.rc != 0"
+
+  #
+  # Setup mplayer
+  #
+  - name: Create directory for config of mplayer
+    file: dest="/home/{{ var_user }}/.mplayer" state=directory mode=755 owner={{ var_user }} group={{ var_user }}
+  - name: Copy config of mplayer
+    copy: src=mplayer.config dest=/home/{{ var_user }}/.mplayer/config mode=644 owner={{ var_user }} group={{ var_user }}
+
+  #
+  # Setup vlc
+  #
+  - name: Check vlcrc
+    shell: ls /home/{{ var_user }}/.config/vlc/vlcrc
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
+  - name: Create vlcrc dir
+    file: path=/home/{{ var_user }}/.config/vlc state=directory mode=755 owner={{ var_user }} group={{ var_user }}
+    when: result|failed
+  - name: Copy vlcrc file
+    copy: src=vlcrc dest=/home/{{ var_user }}/.config/vlc/vlcrc mode=600 owner={{ var_user }} group={{ var_user }}
+    when: result|failed
+  - name: Check vlc file caching
+    shell: grep 'file-caching=30000' /home/{{ var_user }}/.config/vlc/vlcrc
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
+  - name: Fix vlc file caching
+    shell: "sed -i s/.*file-caching.*/file-caching=30000/ /home/{{ var_user }}/.config/vlc/vlcrc"
+    when: result|failed
+

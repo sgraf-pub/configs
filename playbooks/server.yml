@@ -5,6 +5,7 @@
   roles:
     - common
     #- btrfs
+    - multimedia
     - power-server
     - server
     #- usb
