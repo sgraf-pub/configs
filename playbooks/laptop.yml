@@ -7,5 +7,5 @@
     #- btrfs
     - cifs-enable
     - multimedia
-    - power-laptop
+    #- power-laptop
     - sane-client
