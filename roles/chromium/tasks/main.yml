@@ -1,6 +1,4 @@
 ---
-  - name: Enable chromium copr repo - churchyard
-    command: dnf -y copr enable churchyard/chromium-russianfedora
   - name: Install chromium
     dnf: name=chromium state=present
   - name: Modify launcher
