@@ -51,7 +51,6 @@
     - bash-completion
     - curl
     - dconf-editor
-    - dnf-langpacks
     - freemind
     - fuse-sshfs
     - gedit-plugins
@@ -108,23 +107,11 @@
   #
   # Install languages
   #
-  - name: Check Czech
-    shell: dnf langlist | grep Czech
-    register: result
-    ignore_errors: True
-    changed_when: "result.rc != 0"
   - name: Install Czech
-    shell: dnf langinstall Czech -y
-    when: result|failed
+    dnf: name=langpacks-cs state=present
 
-  - name: Check English
-    shell: dnf langlist | grep English
-    register: result
-    ignore_errors: True
-    changed_when: "result.rc != 0"
   - name: Install English
-    shell: dnf langinstall English -y
-    when: result|failed
+    dnf: name=langpacks-en state=present
 
   #
   # Check if var_user is valid
