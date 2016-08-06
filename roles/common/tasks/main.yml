@@ -19,11 +19,12 @@
   - name: Fix /etc/crypttab
     replace: dest=/etc/crypttab regexp='^(.*)none $' replace='\1none discard' backup=yes
   - name: Check if /etc/crypttab is in initrd
-    shell: "lsinitrd /boot/initramfs-$(uname -r).img etc/crypttab | grep discard"
+    shell: lsinitrd /boot/initramfs-$(uname -r).img etc/crypttab
     register: result
+    changed_when: False
   - name: Fix initramfs
     shell: dracut --force -I /etc/crypttab
-    when: result|failed
+    when: result.stdout == ""
 
   #
   # Set swappiness to reasonable value
@@ -187,6 +188,8 @@
   #
   - name: Enable dnsmasq
     ini_file: dest=/etc/NetworkManager/NetworkManager.conf section=main option=dns value=dnsmasq
+  - name: Fix default dnsmasq config
+    copy: src=dnsmasq.params.conf dest=/etc/NetworkManager/dnsmasq.d/dnsmasq.params.conf
 
   #
   # Setup journald
