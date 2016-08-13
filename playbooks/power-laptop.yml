@@ -1,6 +1,5 @@
 ---
-# file: power-laptop.yml
-- hosts: power-laptop
+- hosts: generic
   remote_user: root
   roles:
     - power-laptop

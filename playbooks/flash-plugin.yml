@@ -1,6 +1,5 @@
 ---
-# file: flash-plugin.yml
-- hosts: flash-plugin
+- hosts: generic
   remote_user: root
   roles:
     - flash-plugin

@@ -1,6 +1,5 @@
 ---
-# file: wine.yml
-- hosts: wine
+- hosts: generic
   remote_user: root
   roles:
     - wine

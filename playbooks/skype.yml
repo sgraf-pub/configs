@@ -1,6 +1,5 @@
 ---
-# file: skype.yml
-- hosts: skype
+- hosts: generic
   remote_user: root
   roles:
     - skype

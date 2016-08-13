@@ -1,6 +1,5 @@
 ---
-# file: chromium.yml
-- hosts: chromium
+- hosts: generic
   remote_user: root
   roles:
     - chromium

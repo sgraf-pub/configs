@@ -1,6 +1,5 @@
 ---
-# file: acrobat-reader.yml
-- hosts: acrobat-reader
+- hosts: generic
   remote_user: root
   roles:
     - acrobat-reader

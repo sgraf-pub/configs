@@ -1,6 +1,5 @@
 ---
-# file: power-custom.yml
-- hosts: power-custom
+- hosts: generic
   remote_user: root
   roles:
     - power-custom
