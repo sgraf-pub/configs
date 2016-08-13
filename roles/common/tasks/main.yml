@@ -96,14 +96,14 @@
   #
   # Install MS fonts
   #
-  - name: Check msttcore-fonts
-    shell: rpm -q msttcore-fonts-installer
-    register: result
-    ignore_errors: True
-    changed_when: "result.rc != 0"
-  - name: Install msttcore-fonts
-    dnf: name=https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm state=present
-    when: result|failed
+  #- name: Check msttcore-fonts
+  #  shell: rpm -q msttcore-fonts-installer
+  #  register: result
+  #  ignore_errors: True
+  #  changed_when: "result.rc != 0"
+  #- name: Install msttcore-fonts
+  #  dnf: name=https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm state=present
+  #  when: result|failed
 
   #
   # Install languages
