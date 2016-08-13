@@ -25,14 +25,14 @@
     - vlc
     - x264
 
-  - name: Make sure openh264 repo is enabled
-    command: dnf config-manager --set-enabled fedora-cisco-openh264
+  #- name: Make sure openh264 repo is enabled
+  #  command: dnf config-manager --set-enabled fedora-cisco-openh264
 
-  - name: Install openh264
-    dnf: name={{ item }} state=present
-    with_items:
-    - gstreamer1-plugin-openh264
-    - openh264
+  #- name: Install openh264
+  #  dnf: name={{ item }} state=present
+  #  with_items:
+  #  - gstreamer1-plugin-openh264
+  #  - openh264
 
   #
   # Check if var_user is valid
