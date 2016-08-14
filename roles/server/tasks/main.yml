@@ -53,4 +53,14 @@
     copy: src=tlp dest=/etc/default/tlp mode=644 owner=root group=root
   - name: Enable tlp
     service: name=tlp state=started enabled=yes
+  - name: Install smokeping
+    dnf: name=smokeping state=present
+  - name: Copy smokeping settings for httpd
+    copy: src=smokeping.conf dest=/etc/httpd/conf.d/smokeping.conf mode=644 owner=root group=root
+  - name: Copy smokeping settings
+    copy: src=smokeping_config dest=/etc/smokeping/config mode=640 owner=root group=apache
+  - name: Enable smokeping
+    service: name=smokeping state=started enabled=yes
+  - name: Enable httpd
+    service: name=httpd state=started enabled=yes
 
