@@ -142,11 +142,11 @@ menu = www.google.cz
 title = Google CZ
 host = www.google.cz
 
-++ WwwO2Cz
+++ WwwSeznamCz
 
-menu = www.o2.cz
-title = O2 CZ
-host = www.o2.cz
+menu = www.seznam.cz
+title = Seznam CZ
+host = www.seznam.cz
 
 #
 # Lots of more options are available, please have a look in the included documentation.
