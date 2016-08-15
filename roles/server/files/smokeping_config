@@ -142,6 +142,12 @@ menu = www.google.cz
 title = Google CZ
 host = www.google.cz
 
+++ WwwO2Cz
+
+menu = www.o2.cz
+title = O2 CZ
+host = www.o2.cz
+
 #
 # Lots of more options are available, please have a look in the included documentation.
 #
