@@ -15,6 +15,7 @@ $ ansible-playbook playbooks/acrobat-reader.yml
 $ ansible-playbook playbooks/flash-plugin.yml
 $ ansible-playbook playbooks/google-talk.yml
 $ ansible-playbook playbooks/gtile.yml -e "var_user=USER"
+$ ansible-playbook playbooks/hosts.yml
 $ ansible-playbook playbooks/chrome.yml -e "var_user=USER"
 $ ansible-playbook playbooks/chromium.yml -e "var_user=USER"
 $ ansible-playbook playbooks/power-custom.yml
