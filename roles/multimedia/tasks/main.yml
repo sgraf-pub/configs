@@ -49,6 +49,10 @@
     file: dest="/home/{{ var_user }}/.mplayer" state=directory mode=755 owner={{ var_user }} group={{ var_user }}
   - name: Copy config of mplayer
     copy: src=mplayer.config dest=/home/{{ var_user }}/.mplayer/config mode=644 owner={{ var_user }} group={{ var_user }}
+  - name: Create mplayer-speed
+    copy: src=mplayer-speed dest=/usr/local/bin/mplayer-speed mode=755 owner=root group=root
+  - name: Create mplayer-quality
+    copy: src=mplayer-quality dest=/usr/local/bin/mplayer-quality mode=755 owner=root group=root
 
   #
   # Setup vlc

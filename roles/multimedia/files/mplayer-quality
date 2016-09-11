@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+
+mplayer -lavdopts threads=8 -vf pp=de "${1}"
