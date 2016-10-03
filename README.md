@@ -4,7 +4,7 @@ configs
 Deps
 ----
 
-ansible libselinux-python python-dnf
+ansible libsemanage-python libselinux-python python-dnf
 
 Ansible playbooks
 -----------------
