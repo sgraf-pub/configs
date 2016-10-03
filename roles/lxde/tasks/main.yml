@@ -1,0 +1,12 @@
+---
+  - name: Copy touchpad settings
+    copy: src=touchpad.sh dest=/usr/local/bin/touchpad.sh mode=755 owner=root group=root
+  - name: Copy single settings
+    copy: src=single.sh dest=/usr/local/bin/single.sh mode=755 owner=root group=root
+  - name: Copy dual settings
+    copy: src=dual.sh dest=/usr/local/bin/dual.sh mode=755 owner=root group=root
+  - name: Copy lxde-rc.xml
+    copy: src=lxde-rc.xml dest=/home/{{ var_user }}/.config/openbox/lxde-rc.xml  mode=644 owner={{ var_user}} group={{ var_user }}
+  - name: Copy autostart
+    copy: src=autostart dest=/home/{{ var_user }}/.config/lxsession/LXDE/autostart  mode=644 owner={{ var_user}} group={{ var_user }}
+

@@ -18,6 +18,7 @@ $ ansible-playbook playbooks/gtile.yml -e "var_user=USER"
 $ ansible-playbook playbooks/hosts.yml
 $ ansible-playbook playbooks/chrome.yml -e "var_user=USER"
 $ ansible-playbook playbooks/chromium.yml -e "var_user=USER"
+$ ansible-playbook playbooks/lxde.yml -e "var_user=USER"
 $ ansible-playbook playbooks/power-custom.yml
 $ ansible-playbook playbooks/power-laptop.yml
 $ ansible-playbook playbooks/skype.yml
