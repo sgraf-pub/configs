@@ -9,4 +9,8 @@
     copy: src=lxde-rc.xml dest=/home/{{ var_user }}/.config/openbox/lxde-rc.xml  mode=644 owner={{ var_user}} group={{ var_user }}
   - name: Copy autostart
     copy: src=autostart dest=/home/{{ var_user }}/.config/lxsession/LXDE/autostart  mode=644 owner={{ var_user}} group={{ var_user }}
+  - name: Copy autostart
+    copy: src=desktop-items-0.conf dest=/home/{{ var_user }}/.config/pcmanfm/LXDE/desktop-items-0.conf  mode=644 owner={{ var_user}} group={{ var_user }}
+  - name: Copy autostart
+    copy: src=pcmanfm.conf dest=/home/{{ var_user }}/.config/pcmanfm/LXDE/pcmanfm.conf  mode=644 owner={{ var_user}} group={{ var_user }}
 
