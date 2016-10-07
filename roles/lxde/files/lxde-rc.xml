@@ -403,17 +403,6 @@
       </action>
     </keybind>
 
-    <keybind key="W-2">
-      <action name="Execute">
-        <command>dual.sh</command>
-      </action>
-    </keybind>
-    <keybind key="W-1">
-      <action name="Execute">
-        <command>single.sh</command>
-      </action>
-    </keybind>
-
   </keyboard>
   <mouse>
     <dragThreshold>8</dragThreshold>
