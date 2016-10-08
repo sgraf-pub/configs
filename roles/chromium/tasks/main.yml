@@ -1,6 +1,4 @@
 ---
   - name: Install chromium
     dnf: name=chromium state=present
-  - name: Modify launcher
-    copy: src=chromium-browser.desktop dest=/home/{{ var_user }}/.local/share/applications/chromium-browser.desktop mode=644 owner={{ var_user }} group={{ var_user }}
 
