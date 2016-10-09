@@ -7,6 +7,8 @@
   - name: Install google-chrome
     dnf: name=https://dl.google.com/linux/direct/google-chrome-stable_current_{{ ansible_architecture }}.rpm state=present
     when: result|failed
-  - name: Fix google-chrome repo gpgkey
-    ini_file: dest=/etc/yum.repos.d/google-chrome.repo section=google-chrome option=gpgkey value="https://dl-ssl.google.com/linux/linux_signing_key.pub"
+  #- name: Fix google-chrome repo gpgkey
+  #  ini_file: dest=/etc/yum.repos.d/google-chrome.repo section=google-chrome option=gpgkey value="https://dl-ssl.google.com/linux/linux_signing_key.pub"
+  - name: Create google-chrome repo
+    copy: src=google-chrome.repo dest=/etc/yum.repos.d/google-chrome.repo owner=root group=root mode=644
 
