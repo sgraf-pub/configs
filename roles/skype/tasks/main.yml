@@ -1,12 +1,12 @@
 ---
 #
   - name: Check skype
-    shell: rpm -q skype
+    shell: rpm -q skypeforlinux
     register: result
     ignore_errors: True
     changed_when: "result.rc != 0"
   - name: Install skype
-    dnf: name=http://download.skype.com/linux/skype-4.3.0.37-fedora.i586.rpm state=present
+    dnf: name=https://repo.skype.com/latest/skypeforlinux-64-alpha.rpm state=present
     when: result|failed
 
 
