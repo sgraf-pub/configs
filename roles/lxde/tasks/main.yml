@@ -5,10 +5,10 @@
     copy: src=lxde-rc.xml dest=/home/{{ var_user }}/.config/openbox/lxde-rc.xml  mode=644 owner={{ var_user}} group={{ var_user }}
   - name: Copy autostart
     copy: src=autostart dest=/home/{{ var_user }}/.config/lxsession/LXDE/autostart  mode=644 owner={{ var_user}} group={{ var_user }}
-  - name: Copy desktop-items-0.conf
-    copy: src=desktop-items-0.conf dest=/home/{{ var_user }}/.config/pcmanfm/LXDE/desktop-items-0.conf  mode=644 owner={{ var_user}} group={{ var_user }}
-  - name: Copy pcmanfm.conf
-    copy: src=pcmanfm.conf dest=/home/{{ var_user }}/.config/pcmanfm/LXDE/pcmanfm.conf  mode=644 owner={{ var_user}} group={{ var_user }}
+#  - name: Copy desktop-items-0.conf
+#    copy: src=desktop-items-0.conf dest=/home/{{ var_user }}/.config/pcmanfm/LXDE/desktop-items-0.conf  mode=644 owner={{ var_user}} group={{ var_user }}
+#  - name: Copy pcmanfm.conf
+#    copy: src=pcmanfm.conf dest=/home/{{ var_user }}/.config/pcmanfm/LXDE/pcmanfm.conf  mode=644 owner={{ var_user}} group={{ var_user }}
   - name: Copy xscreensaver
     copy: src=xscreensaver dest=/home/{{ var_user }}/.xscreensaver  mode=644 owner={{ var_user}} group={{ var_user }}
 
