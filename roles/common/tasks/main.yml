@@ -29,8 +29,8 @@
   #
   # Set swappiness to reasonable value
   #
-  - name: Set swappiness to some low value
-    sysctl: name=vm.swappiness value=5 state=present
+  - name: Set swappiness to some default value
+    sysctl: name=vm.swappiness value=60 state=present
 
   #
   # Install necessary packages
