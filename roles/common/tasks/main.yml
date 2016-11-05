@@ -52,6 +52,7 @@
     - bash-completion
     - curl
     - dconf-editor
+    - firefox
     - freemind
     - fuse-sshfs
     - gedit-plugins
@@ -182,6 +183,12 @@
   - name: Copy config of screen
     copy: src=screenrc dest={{ item }}/.screenrc mode=644
     with_items: [/root, "/home/{{ var_user }}"]
+
+  #
+  # Setup firefox profiles entry
+  #
+  - name: Setup firefox profiles entry
+    copy: src=firefox-profiles.desktop dest=/usr/local/share/applications/firefox-profiles.desktop mode=644
 
   #
   # Setup dnsmasq
