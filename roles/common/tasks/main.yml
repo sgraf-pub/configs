@@ -187,8 +187,8 @@
   #
   # Setup firefox profiles entry
   #
-  - name: Setup firefox profiles entry
-    copy: src=firefox-profiles.desktop dest=/usr/local/share/applications/firefox-profiles.desktop mode=644
+  #- name: Setup firefox profiles entry
+  #  copy: src=firefox-profiles.desktop dest=/usr/local/share/applications/firefox-profiles.desktop mode=644
 
   #
   # Setup dnsmasq
