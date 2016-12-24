@@ -2,8 +2,8 @@
   #
   # Set automatic makecache for dnf
   #
-  - name: Enable regular dnf makecache
-    service: name=dnf-makecache.timer state=started enabled=yes
+  - name: Disable regular dnf makecache
+    service: name=dnf-makecache.timer state=stopped enabled=no
 
   #
   # Remove yum caches
@@ -43,8 +43,8 @@
   - name: Install rpmfusion-free
     dnf: name="http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_distribution_major_version }}.noarch.rpm" state=present
     when: result|failed
-  - name: Update to the latest
-    dnf: name='*' state=latest
+  #- name: Update to the latest
+  #  dnf: name='*' state=latest
   - name: Install packages
     dnf: name={{ item }} state=present
     with_items:
