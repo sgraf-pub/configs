@@ -11,4 +11,8 @@
 #    copy: src=pcmanfm.conf dest=/home/{{ var_user }}/.config/pcmanfm/LXDE/pcmanfm.conf  mode=644 owner={{ var_user}} group={{ var_user }}
   - name: Copy xscreensaver
     copy: src=xscreensaver dest=/home/{{ var_user }}/.xscreensaver  mode=644 owner={{ var_user}} group={{ var_user }}
+  - name: Install xbacklight
+    dnf: name=xbacklight state=present
+  - name: Install amixer
+    dnf: name=alsa-utils state=present
 
