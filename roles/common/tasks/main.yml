@@ -5,13 +5,17 @@
   - name: Disable regular dnf makecache
     service: name=dnf-makecache.timer state=stopped enabled=no
 
+  - name: Disable regular yum makecache
+    service: name=yum-makecache.timer state=stopped enabled=no
+    ignore_errors: True
+
   #
   # Remove yum caches
   #
-  - name: Remove yum cache
-    file: path="/var/cache/yum" state=absent
-  - name: Remove yum mock cache
-    file: path="/var/cache/mock/fedora-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/yum_cache" state=absent
+  #- name: Remove yum cache
+  #  file: path="/var/cache/yum" state=absent
+  #- name: Remove yum mock cache
+  #  file: path="/var/cache/mock/fedora-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/yum_cache" state=absent
 
   # Enable TRIM
   - name: Enable weekly FS TRIM
@@ -29,8 +33,8 @@
   #
   # Set swappiness to reasonable value
   #
-  - name: Set swappiness to some default value
-    sysctl: name=vm.swappiness value=60 state=present
+  #- name: Set swappiness to some default value
+  #  sysctl: name=vm.swappiness value=60 state=present
 
   #
   # Install necessary packages
@@ -43,8 +47,8 @@
   - name: Install rpmfusion-free
     dnf: name="http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_distribution_major_version }}.noarch.rpm" state=present
     when: result|failed
-  #- name: Update to the latest
-  #  dnf: name='*' state=latest
+  - name: Update to the latest
+    dnf: name='*' state=latest
   - name: Install packages
     dnf: name={{ item }} state=present
     with_items:
@@ -62,7 +66,6 @@
     - gnome-tweak-tool
     - hdparm
     - htop
-    - kate-plugins
     - keepassx
     - krb5-auth-dialog
     - krb5-workstation
@@ -89,7 +92,6 @@
     - terminator
     - thunderbird
     - tmux
-    - tuned-utils
     - vim-enhanced
     - wget
     - youtube-dl
@@ -133,8 +135,8 @@
   #
   # Mock should use dnf
   #
-  - name: Switch mock from yum to dnf
-    lineinfile: dest=/etc/mock/site-defaults.cfg regexp="^config_opts..package_manager" insertafter="^# config_opts..package_manager" line="config_opts['package_manager'] = 'dnf'"
+  #- name: Switch mock from yum to dnf
+  #  lineinfile: dest=/etc/mock/site-defaults.cfg regexp="^config_opts..package_manager" insertafter="^# config_opts..package_manager" line="config_opts['package_manager'] = 'dnf'"
 
   #
   # Setup htop
