@@ -1,38 +1,24 @@
 ---
-  - name: Install packages
+  - name: Install mplayer and vlc
     dnf: name={{ item }} state=present
     with_items:
-    - ffmpeg
-    - gstreamer-ffmpeg
-    - gstreamer-plugins-bad
-    - gstreamer-plugins-bad-free
-    - gstreamer-plugins-bad-free-extras
-    - gstreamer-plugins-base
-    - gstreamer-plugins-good
-    - gstreamer-plugins-good-extras
-    - gstreamer-plugins-ugly
-    - gstreamer1-libav
-    - gstreamer1-plugins-bad-free
-    - gstreamer1-plugins-bad-free-extras
-    - gstreamer1-plugins-bad-freeworld
-    - gstreamer1-plugins-base
-    - gstreamer1-plugins-good
-    - gstreamer1-plugins-good-extras
-    - gstreamer1-plugins-ugly
-    - gstreamer1-vaapi
-    - mencoder
     - mplayer
     - vlc
-    - x264
 
-  #- name: Make sure openh264 repo is enabled
-  #  command: dnf config-manager --set-enabled fedora-cisco-openh264
+  - name: Make sure openh264 repo is enabled
+    command: dnf config-manager --set-enabled fedora-cisco-openh264
 
-  #- name: Install openh264
-  #  dnf: name={{ item }} state=present
-  #  with_items:
-  #  - gstreamer1-plugin-openh264
-  #  - openh264
+  - name: Install codecs
+    dnf: name={{ item }} state=present
+    with_items:
+    - gstreamer1-plugin-mpg123
+    - gstreamer1-plugin-openh264
+    - gstreamer1-plugins-bad-free
+    - gstreamer1-plugins-base
+    - gstreamer1-plugins-good
+    - gstreamer1-plugins-ugly
+    - gstreamer1-plugins-bad-freeworld
+    - gstreamer1-libav
 
   #
   # Check if var_user is valid
