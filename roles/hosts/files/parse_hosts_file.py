@@ -31,8 +31,10 @@ def main():
     # undo rev
     hosts_list = [host[::-1] for host in hosts_list]
 
-    with open("/etc/NetworkManager/dnsmasq.d/dnsmasq.excludes.conf", "w") as text_file:
+    #with open("/etc/NetworkManager/dnsmasq.d/dnsmasq.excludes.conf", "w") as text_file:
+    with open("/etc/unbound/local.d/ads.conf", "w") as text_file:
         for host in hosts_list:
-            text_file.write("address=/%s/\n" % host)
+            #text_file.write("address=/%s/\n" % host)
+            text_file.write('local-zone: "%s" always_nxdomain\n' % host)
 
 main()

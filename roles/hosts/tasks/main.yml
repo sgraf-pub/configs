@@ -1,6 +1,9 @@
 ---
   - name: Add latest dns excludes
-    #shell: curl -s https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts | grep '^0\.0\.0\.0' | awk '{ print "address=/"$2"/" }' > /etc/NetworkManager/dnsmasq.d/dnsmasq.excludes.conf
     script: parse_hosts_file.py
-  - name: Fix default dnsmasq config
-    copy: src=dnsmasq.params2.conf dest=/etc/NetworkManager/dnsmasq.d/dnsmasq.params2.conf
+  - name: Set file perms
+    file:
+      path: /etc/unbound/local.d/ads.conf
+      owner: root
+      group: unbound
+      mode: 0664
