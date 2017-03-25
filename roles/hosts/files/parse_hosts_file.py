@@ -31,6 +31,9 @@ def main():
     # undo rev
     hosts_list = [host[::-1] for host in hosts_list]
 
+    # do not break google search
+    hosts_list.remove('googleadservices.com')
+
     #with open("/etc/NetworkManager/dnsmasq.d/dnsmasq.excludes.conf", "w") as text_file:
     with open("/etc/unbound/local.d/ads.conf", "w") as text_file:
         for host in hosts_list:
