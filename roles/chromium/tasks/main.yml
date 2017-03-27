@@ -11,7 +11,7 @@
       chdir: /tmp/chromium_plugins/
       creates: /tmp/chromium_plugins/opt/google/chrome/PepperFlash/
   - name: Copy PepperFlash
-    shell: "rsync -a /tmp/chromium_plugins/opt/google/chrome/PepperFlash/ /usr/lib64/chromium-browser/PepperFlash/"
+    shell: "rsync -a /usr/lib64/flash-plugin/ /usr/lib64/chromium-browser/PepperFlash/"
   - name: Copy Widevine
     shell: "rsync -a /tmp/chromium_plugins/opt/google/chrome/libwidevinecdm* /usr/lib64/chromium-browser/"
   - name: Remove temp dir
