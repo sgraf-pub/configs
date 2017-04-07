@@ -74,7 +74,7 @@ parse_exit_code () {
             for i in ${final_ecode[@]}; do
                 if [ ${i} != "0" ] ; then
                     PS1+="${LIGHT_RED}:: [   FAIL   ] :: "
-                    PS1+="${EXIT_CODES[$i]} (Expected 0, got ${i})"
+                    PS1+="${EXIT_CODES[$i]} (exit code ${i})"
                 else
                     PS1+="${LIGHT_GREEN}:: [   PASS   ] ::"
                 fi
