@@ -156,12 +156,12 @@
   #
   # Setup ssh
   #
-  - name: Create directory for config of ssh
-    file: dest={{ item }}/.ssh state=directory mode=700
-    with_items: [/root, "/home/{{ var_user }}"]
-  - name: Copy config of ssh
-    copy: src=ssh.config dest={{ item }}/.ssh/config mode=644
-    with_items: [/root, "/home/{{ var_user }}"]
+  #- name: Create directory for config of ssh
+  #  file: dest={{ item }}/.ssh state=directory mode=700
+  #  with_items: [/root, "/home/{{ var_user }}"]
+  #- name: Copy config of ssh
+  #  copy: src=ssh.config dest={{ item }}/.ssh/config mode=644
+  #  with_items: [/root, "/home/{{ var_user }}"]
 
   #
   # Setup vim
