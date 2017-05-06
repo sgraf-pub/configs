@@ -1,0 +1,8 @@
+#!/usr/bin/bash
+
+cp ~/.config/vlc/vlcrc ~/.config/vlc/vlcrc_backup
+sed -i s/.*deinterlace=.*/deinterlace=0/ ~/.config/vlc/vlcrc
+sed -i s/.*postproc-q=.*/postproc-q=6/ ~/.config/vlc/vlcrc
+sed -i s/.*video-filter=.*/video-filter=postproc/ ~/.config/vlc/vlcrc
+vlc "$@"
+mv ~/.config/vlc/vlcrc_backup ~/.config/vlc/vlcrc
