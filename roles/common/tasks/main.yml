@@ -210,18 +210,22 @@
   #
   # Fix mc file highliting
   #
+  - name: Create directory for default skin
+    file: path=/home/{{ var_user }}/.local/share/mc/skins state=directory mode=755 owner={{ var_user }} group={{ var_user }}
+  - name: Copy default skin
+    copy: src=/usr/share/mc/skins/default.ini dest="/home/{{ var_user }}/.local/share/mc/skins/default.ini"
   - name: Disable temp highlight
-    lineinfile: dest=/usr/share/mc/skins/default.ini regexp="^    temp =" line="    temp ="
+    lineinfile: dest="/home/{{ var_user }}/.local/share/mc/skins/default.ini" regexp="^    temp =" line="    temp ="
   - name: Disable archive highlight
-    lineinfile: dest=/usr/share/mc/skins/default.ini regexp="^    archive =" line="    archive ="
+    lineinfile: dest="/home/{{ var_user }}/.local/share/mc/skins/default.ini" regexp="^    archive =" line="    archive ="
   - name: Disable doc highlight
-    lineinfile: dest=/usr/share/mc/skins/default.ini regexp="^    doc =" line="    doc ="
+    lineinfile: dest="/home/{{ var_user }}/.local/share/mc/skins/default.ini" regexp="^    doc =" line="    doc ="
   - name: Disable source highlight
-    lineinfile: dest=/usr/share/mc/skins/default.ini regexp="^    source =" line="    source ="
+    lineinfile: dest="/home/{{ var_user }}/.local/share/mc/skins/default.ini" regexp="^    source =" line="    source ="
   - name: Disable media highlight
-    lineinfile: dest=/usr/share/mc/skins/default.ini regexp="^    media =" line="    media ="
+    lineinfile: dest="/home/{{ var_user }}/.local/share/mc/skins/default.ini" regexp="^    media =" line="    media ="
   - name: Disable graph highlight
-    lineinfile: dest=/usr/share/mc/skins/default.ini regexp="^    graph =" line="    graph ="
+    lineinfile: dest="/home/{{ var_user }}/.local/share/mc/skins/default.ini" regexp="^    graph =" line="    graph ="
   - name: Disable database highlight
-    lineinfile: dest=/usr/share/mc/skins/default.ini regexp="^    database =" line="    database ="
+    lineinfile: dest="/home/{{ var_user }}/.local/share/mc/skins/default.ini" regexp="^    database =" line="    database ="
 
