@@ -96,4 +96,13 @@
   - name: Create vlc-quality
     copy: src=vlc-quality dest=/usr/local/bin/vlc-quality mode=755 owner=root group=root
 
+  - name: Install pkgs for VDPAU accel for Intel
+    dnf: name={{ item }} state=present
+    with_items:
+    - libvdpau-va-gl
+    - vdpauinfo
+    - libva-utils
+    - libva-intel-driver
+  - name: Export VDPAU settings
+    copy: src=vdpau.sh dest=/etc/profile.d/vdpau.sh mode=755 owner=root group=root
 
