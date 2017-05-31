@@ -19,7 +19,6 @@
     - gstreamer1-plugins-ugly
     - gstreamer1-plugins-bad-freeworld
     - gstreamer1-libav
-    - gstreamer1-vaapi
 
   #
   # Check if var_user is valid
@@ -100,10 +99,14 @@
   - name: Install pkgs for VDPAU accel for Intel
     dnf: name={{ item }} state=present
     with_items:
-    - libvdpau-va-gl
-    - vdpauinfo
-    - libva-utils
+    - gstreamer1-vaapi
     - libva-intel-driver
+    - libva-utils
+    - libva-vdpau-driver
+    - libvdpau-va-gl
+    - mesa-vdpau-drivers
+    - vdpauinfo
+
   - name: Export VDPAU settings
     copy: src=vdpau.sh dest=/etc/profile.d/vdpau.sh mode=755 owner=root group=root
 
