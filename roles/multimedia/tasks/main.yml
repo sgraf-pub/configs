@@ -103,10 +103,17 @@
     - libva-intel-driver
     - libva-utils
     - libva-vdpau-driver
+    - libvdpau
     - libvdpau-va-gl
     - mesa-vdpau-drivers
     - vdpauinfo
 
-  - name: Export VDPAU settings
-    copy: src=vdpau.sh dest=/etc/profile.d/vdpau.sh mode=755 owner=root group=root
+  #- name: Export VDPAU/LIBVA settings to profile
+  #  copy: src=vdpau.sh dest=/etc/profile.d/vdpau.sh mode=755 owner=root group=root
+
+  - name: Set VDPAU driver
+    lineinfile: path=/etc/environment regexp='^VDPAU_DRIVER=' line='VDPAU_DRIVER=va_gl'
+
+  - name: Set LIBVA driver
+    lineinfile: path=/etc/environment regexp='^LIBVA_DRIVER_NAME=' line='LIBVA_DRIVER_NAME=i965'
 
