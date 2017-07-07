@@ -54,7 +54,10 @@
   #- name: Enable tlp
   #  service: name=tlp state=started enabled=yes
   - name: Install smokeping
-    dnf: name=smokeping state=present
+    dnf: name={{ item }} state=present
+    with_items:
+    - smokeping
+    - sendmail
   - name: Copy smokeping settings for httpd
     copy: src=smokeping.conf dest=/etc/httpd/conf.d/smokeping.conf mode=644 owner=root group=root
   - name: Copy smokeping settings
