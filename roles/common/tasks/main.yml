@@ -56,6 +56,7 @@
     - bash-completion
     - curl
     - dconf-editor
+    - dnf-plugin-system-upgrade
     - "f{{ ansible_distribution_major_version }}-backgrounds-extras-gnome"
     - firefox
     - freemind
