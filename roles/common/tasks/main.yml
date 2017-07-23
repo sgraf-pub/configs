@@ -230,3 +230,15 @@
   - name: Disable database highlight
     lineinfile: dest="/home/{{ var_user }}/.local/share/mc/skins/default.ini" regexp="^    database =" line="    database ="
 
+  #
+  # Install systemd-zram-service
+  #
+  - name: Download systemd-zram-service
+    shell: lftp -c 'open http://download.opensuse.org/repositories/home:/deltafox/openSUSE_Tumbleweed/noarch/; mget systemd-zram-service*.rpm'
+    args:
+      chdir: /tmp/
+  - name: Install systemd-zram-service
+    dnf: name='/tmp/systemd-zram-service*.rpm' state=latest
+  - name: Enable systemd-zram-service
+    service: name=zramswap state=started enabled=yes
+
