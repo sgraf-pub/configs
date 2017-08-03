@@ -234,11 +234,11 @@
   # Install systemd-zram-service
   #
   - name: Download systemd-zram-service
-    shell: lftp -c 'open http://download.opensuse.org/repositories/home:/deltafox/openSUSE_Tumbleweed/noarch/; mget systemd-zram-service*.rpm'
+    shell: lftp -c 'open http://download.opensuse.org/repositories/home:/malcolmlewis:/openSUSE_General/openSUSE_Tumbleweed/noarch/; mget -c systemd-zram-service*.rpm'
     args:
       chdir: /tmp/
   - name: Install systemd-zram-service
-    dnf: name='/tmp/systemd-zram-service*.rpm' state=latest
+    shell: "dnf install -y /tmp/systemd-zram-service*.rpm"
   - name: Enable systemd-zram-service
     service: name=zramswap state=started enabled=yes
 
