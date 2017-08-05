@@ -1,0 +1,26 @@
+#! /bin/bash
+
+LOG_FILE="/var/log/btrfs-balance.log"
+
+# redirect all stdout to log gile
+exec >> $LOG_FILE
+# timestamp the job
+echo "[`date`] btrfs balance job started."
+echo "----------------------------------------"
+
+# for each btrfs type system mounted, balance and record output
+while read d m t x
+do
+  [[ $t != "btrfs" ]] && continue
+  echo ""
+  echo "[`date`] balancing $m"
+  /usr/sbin/btrfs balance start -musage=0 -v $m
+  /usr/sbin/btrfs balance start -musage=20 -v $m
+  /usr/sbin/btrfs balance start -dusage=0 -v $m
+  /usr/sbin/btrfs balance start -dusage=20 -v $m
+done </proc/mounts
+
+echo "----------------------------------------"
+echo "[`date`] Balance job ended."
+exit 0;
+
