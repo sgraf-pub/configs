@@ -24,5 +24,6 @@ $ ansible-playbook playbooks/lxde-monitors.yml
 $ ansible-playbook playbooks/power-custom.yml
 $ ansible-playbook playbooks/power-laptop.yml
 $ ansible-playbook playbooks/skype.yml
+$ ansible-playbook playbooks/stderr.yml -e "var_user=USER"
 $ ansible-playbook playbooks/wine.yml
 ```
