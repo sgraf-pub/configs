@@ -172,6 +172,13 @@
     with_items: [/root, "/home/{{ var_user }}"]
 
   #
+  # Setup readline
+  #
+  - name: Copy config for readline
+    copy: src=inputrc dest={{ item }}/.inputrc mode=644
+    with_items: [/root, "/home/{{ var_user }}"]
+
+  #
   # Setup bash prompt
   #
   - name: Copy config of bash prompt
