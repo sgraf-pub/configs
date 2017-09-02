@@ -14,7 +14,7 @@ def run(cmd):
 
 def main():
     # get only hostnames
-    hosts_list = [host for host in run("curl -s https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts | grep '^0\.0\.0\.0' | awk '{ print $2 }' | rev | sort | uniq").split('\n') if host]
+    hosts_list = [host for host in run("curl -s https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts | grep '^0\.0\.0\.0' | awk '{ print $2 }' | rev | sort | uniq").split('\n') if host]
 
     # keep only parrent domains
     for index in xrange(len(hosts_list)):
