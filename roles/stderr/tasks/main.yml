@@ -16,11 +16,11 @@
       chdir: /tmp/stderred/
 
   - name: Copy libpolyfill.so
-    copy: src=/tmp/stderred/build/libpolyfill.so dest=/usr/local/lib/libpolyfill.so mode=755
+    copy: remote_src=true src=/tmp/stderred/build/libpolyfill.so dest=/usr/local/lib/libpolyfill.so mode=755
   - name: Copy libstderred.so
-    copy: src=/tmp/stderred/build/libstderred.so dest=/usr/local/lib/libstderred.so mode=755
+    copy: remote_src=true src=/tmp/stderred/build/libstderred.so dest=/usr/local/lib/libstderred.so mode=755
   - name: Copy libpolyfill.so
-    copy: src=/tmp/stderred/build/libtest_stderred.so dest=/usr/local/lib/libtest_stderred.so mode=755
+    copy: remote_src=true src=/tmp/stderred/build/libtest_stderred.so dest=/usr/local/lib/libtest_stderred.so mode=755
 
   - name: Load stderr by default
     lineinfile: dest="{{ item }}/.bashrc" line='export LD_PRELOAD="/usr/local/lib/libstderred.so${LD_PRELOAD:+:$LD_PRELOAD}"'
