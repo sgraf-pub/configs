@@ -1,0 +1,11 @@
+---
+# file: laptop.yml
+- hosts: laptop
+  remote_user: root
+  roles:
+    - common
+    - btrfs
+    - cifs-enable
+    - multimedia-free
+    #- power-laptop
+    - sane-client
