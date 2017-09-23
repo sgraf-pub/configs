@@ -10,32 +10,8 @@
     service: name=unbound state=started enabled=no
   - name: Enable dnssec-triggerd
     service: name=dnssec-triggerd state=started enabled=yes
-  #- name: Download dnssec plugin
-  #  get_url:
-  #    url: https://secure.nic.cz/files/dnssec-validator/2.2.0/dnssec-plugin-2.2.0.x-linux-x86_64.sh
-  #    dest: "/home/{{ var_user }}/Downloads/"
-  #    mode: "u=rwx,g=r,o=r"
-  #  become: true
-  #  become_user: "{{ var_user }}"
-  #- name: Install dnssec plugin
-  #  command: ./dnssec-plugin-2.2.0.x-linux-x86_64.sh -g
-  #  become: true
-  #  become_user: "{{ var_user }}"
-  #  args:
-  #    chdir: "/home/{{ var_user }}/Downloads/"
-  #    creates: dnssec-pkg.crx
-  #- name: Download tlsa plugin
-  #  get_url:
-  #    url: https://secure.nic.cz/files/dnssec-validator/2.2.0/tlsa-plugin-2.2.0.x-linux-x86_64.sh
-  #    dest: "/home/{{ var_user }}/Downloads/"
-  #    mode: "u=rwx,g=r,o=r"
-  #  become: true
-  #  become_user: "{{ var_user }}"
-  #- name: Install tlsa plugin
-  #  command: ./tlsa-plugin-2.2.0.x-linux-x86_64.sh -g
-  #  become: true
-  #  become_user: "{{ var_user }}"
-  #  args:
-  #    chdir: "/home/{{ var_user }}/Downloads/"
-  #    creates: tlsa-pkg.crx
+  - name: Copy dnssec-enable
+    copy: src=dnssec-enable.sh dest=/usr/local/bin/dnssec-enable.sh mode=755
+  - name: Copy dnssec-disable
+    copy: src=dnssec-disable.sh dest=/usr/local/bin/dnssec-disable.sh mode=755
 
