@@ -249,3 +249,5 @@
   - name: Enable systemd-zram-service
     service: name=zramswap state=started enabled=yes
 
+  - name: Enable FlatHub
+    shell: "flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo"
