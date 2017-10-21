@@ -111,6 +111,7 @@
     with_items:
     - gstreamer1-vaapi
     - libva-intel-driver
+    - libva-intel-hybrid-driver
     - libva-utils
     - libva-vdpau-driver
     - libvdpau
@@ -120,10 +121,8 @@
 
   #- name: Export VDPAU/LIBVA settings to profile
   #  copy: src=vdpau.sh dest=/etc/profile.d/vdpau.sh mode=755 owner=root group=root
-
-  - name: Set VDPAU driver
-    lineinfile: path=/etc/environment regexp='^VDPAU_DRIVER=' line='VDPAU_DRIVER=va_gl'
-
-  - name: Set LIBVA driver
-    lineinfile: path=/etc/environment regexp='^LIBVA_DRIVER_NAME=' line='LIBVA_DRIVER_NAME=i965'
+  #- name: Set VDPAU driver
+  #  lineinfile: path=/etc/environment regexp='^VDPAU_DRIVER=' line='VDPAU_DRIVER=va_gl'
+  #- name: Set LIBVA driver
+  #  lineinfile: path=/etc/environment regexp='^LIBVA_DRIVER_NAME=' line='LIBVA_DRIVER_NAME=i965'
 

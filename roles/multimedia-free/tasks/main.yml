@@ -12,3 +12,16 @@
     - gstreamer1-plugins-good
     - gstreamer1-plugins-ugly-free
 
+  - name: Install pkgs for VDPAU accel for Intel
+    dnf: name={{ item }} state=present
+    with_items:
+    - gstreamer1-vaapi
+    - libva-intel-hybrid-driver
+    - libva-utils
+    - libva-vdpau-driver
+    - libvdpau
+    - libvdpau-va-gl
+    - mesa-vdpau-drivers
+    - vdpauinfo
+
+
