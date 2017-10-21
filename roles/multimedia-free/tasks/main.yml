@@ -24,4 +24,6 @@
     - mesa-vdpau-drivers
     - vdpauinfo
 
+  - name: Install vulkan drivers
+    dnf: name=vulkan state=present
 
