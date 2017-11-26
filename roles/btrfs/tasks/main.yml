@@ -1,4 +1,10 @@
 ---
+  - name: Download duperemove
+    shell: lftp -c 'open http://download.opensuse.org/repositories/filesystems/openSUSE_Tumbleweed/x86_64/; mget -c duperemove*.rpm'
+    args:
+      chdir: /tmp/
+  - name: Install duperemove
+    shell: "dnf install -y /tmp/duperemove*.rpm"
   - name: Download btrfs-balance
     copy: src=btrfs-balance dest=/usr/local/bin/btrfs-balance mode=0755
   - name: Enable weekly cron
