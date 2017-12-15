@@ -5,10 +5,10 @@
       chdir: /tmp/
   - name: Install duperemove
     shell: "dnf install -y /tmp/duperemove*.rpm"
-  - name: Download btrfs-balance
-    copy: src=btrfs-balance dest=/usr/local/bin/btrfs-balance mode=0755
-  - name: Enable weekly cron
-    cron: name="btrfs-balance" weekday="0" minute="0" hour="0"
-      user="root" job="/usr/local/bin/btrfs-balance"
-      cron_file=ansible_btrfs-balance
+  - name: Download btrfs-maintenance
+    copy: src=btrfs-maintenance dest=/etc/cron.weekly/btrfs-maintenance mode=0755
+  - name: Remove previous btrfs-balance
+    file: state=absent path=/usr/local/bin/btrfs-balance
+  - name: Remove previous weekly cron
+    file: state=absent path=/etc/cron.d/ansible_btrfs-balance
 
