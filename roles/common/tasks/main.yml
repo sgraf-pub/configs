@@ -202,10 +202,10 @@
   #
   # Setup dnsmasq
   #
-  #- name: Enable dnsmasq
-  #  ini_file: dest=/etc/NetworkManager/NetworkManager.conf section=main option=dns value=dnsmasq
-  #- name: Fix default dnsmasq config
-  #  copy: src=dnsmasq.params.conf dest=/etc/NetworkManager/dnsmasq.d/dnsmasq.params.conf
+  - name: Enable dnsmasq
+    ini_file: dest=/etc/NetworkManager/NetworkManager.conf section=main option=dns value=dnsmasq
+  - name: Fix default dnsmasq config
+    copy: src=dnsmasq.params.conf dest=/etc/NetworkManager/dnsmasq.d/dnsmasq.params.conf
 
   #
   # Setup journald
