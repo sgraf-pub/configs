@@ -1,6 +1,6 @@
 ---
   - name: Download duperemove
-    shell: lftp -c 'open http://download.opensuse.org/repositories/filesystems/openSUSE_Tumbleweed/x86_64/; mget -c duperemove*.rpm'
+    shell: lftp -c 'open http://download.opensuse.org/tumbleweed/repo/oss/suse/x86_64/; mget -c duperemove*.rpm'
     args:
       chdir: /tmp/
   - name: Install duperemove
