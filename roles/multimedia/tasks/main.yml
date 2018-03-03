@@ -13,6 +13,7 @@
     with_items:
     - mplayer
     - vlc
+    - mpv
 
   - name: Make sure openh264 repo is enabled
     command: dnf config-manager --set-enabled fedora-cisco-openh264
@@ -49,6 +50,14 @@
     copy: src=mplayer-speed dest=/usr/local/bin/mplayer-speed mode=755 owner=root group=root
   - name: Create mplayer-quality
     copy: src=mplayer-quality dest=/usr/local/bin/mplayer-quality mode=755 owner=root group=root
+
+  #
+  # Setup mpv
+  #
+  - name: Create directory for config of mpv
+    file: dest="/home/{{ var_user }}/.config/mpv" state=directory mode=755 owner={{ var_user }} group={{ var_user }}
+  - name: Copy config of mpv
+    copy: src=mpv.conf dest=/home/{{ var_user }}/.config/mpv/mpv.conf mode=644 owner={{ var_user }} group={{ var_user }}
 
   #
   # Setup vlc
