@@ -72,7 +72,6 @@
     - krb5-auth-dialog
     - krb5-workstation
     - lftp
-    - linphone
     - lm_sensors
     - lshw
     - mc
