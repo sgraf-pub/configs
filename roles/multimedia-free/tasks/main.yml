@@ -12,7 +12,7 @@
     - gstreamer1-plugins-good
     - gstreamer1-plugins-ugly-free
 
-  - name: Install pkgs for VDPAU accel for Intel
+  - name: Install pkgs for VAAPI and VDPAU
     dnf: name={{ item }} state=present
     with_items:
     - gstreamer1-vaapi
@@ -26,4 +26,3 @@
 
   - name: Install vulkan drivers
     dnf: name=vulkan state=present
-
