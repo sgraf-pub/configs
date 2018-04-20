@@ -12,7 +12,7 @@
     changed_when: "result.rc != 0"
   - name: Set init 3
     shell: systemctl set-default multi-user.target
-    when: result|failed
+    when: result is failed
   - name: Install samba
     dnf: name=samba state=present
   - name: Check selinux boolean for Samba
@@ -22,7 +22,7 @@
     changed_when: "result.rc != 0"
   - name: Set selinux boolean for Samba
     shell: setsebool -P samba_export_all_rw=1
-    when: result|failed
+    when: result is failed
   - name: Copy samba config
     copy: src=smb.conf dest=/etc/samba/smb.conf mode=644 owner=root group=root
   - name: Check samba user
@@ -32,7 +32,7 @@
     changed_when: "result.rc != 0"
   - name: Create samba user
     shell: echo -e "{{ var_cifspass }}\n{{ var_cifspass }}" | smbpasswd -s -a {{ var_cifsname }}
-    when: result|failed
+    when: result is failed
   - name: Create DATA mount point
     file: path=/media/DATA state=directory
   - name: Create BACKUP mount point
@@ -71,7 +71,7 @@
     changed_when: "result.rc != 0"
   - name: Install rpmfusion-nonfree
     dnf: name="http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ ansible_distribution_major_version }}.noarch.rpm" state=present
-    when: result|failed
+    when: result is failed
   - name: Install unrar
     dnf: name=unrar state=present
   - name: Download set_disk_parameters.sh

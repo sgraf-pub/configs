@@ -46,7 +46,7 @@
   #  changed_when: "result.rc != 0"
   #- name: Install rpmfusion-free
   #  dnf: name="http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_distribution_major_version }}.noarch.rpm" state=present
-  #  when: result|failed
+  #  when: result is failed
   #- name: Update to the latest
   #  dnf: name='*' state=latest
   - name: Install packages
@@ -105,7 +105,7 @@
   #  changed_when: "result.rc != 0"
   #- name: Install msttcore-fonts
   #  dnf: name=https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm state=present
-  #  when: result|failed
+  #  when: result is failed
 
   #
   # Install languages
@@ -147,7 +147,7 @@
     changed_when: "result.rc != 0"
   - name: Create htoprc dir
     file: path=/home/{{ var_user }}/.config/htop state=directory mode=755 owner={{ var_user }} group={{ var_user }}
-    when: result|failed
+    when: result is failed
   - name: Copy htoprc file
     copy: src=htoprc dest=/home/{{ var_user }}/.config/htop/htoprc mode=600 owner={{ var_user }} group={{ var_user }}
 
