@@ -74,4 +74,7 @@
     when: result|failed
   - name: Install unrar
     dnf: name=unrar state=present
+  - name: Download set_disk_parameters.sh
+    copy: src=set_disk_parameters.sh dest=/etc/cron.daily/set_disk_parameters.sh mode=0755
+
 
