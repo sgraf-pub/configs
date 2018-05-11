@@ -12,7 +12,7 @@
     changed_when: "result.rc != 0"
   - name: Create mount point
     file: path=/media/pocitac-byt state=directory
-    when: result|failed
+    when: result is failed
   - name: Check credentials file
     shell: ls /etc/credentials.txt
     register: result
@@ -20,7 +20,7 @@
     changed_when: "result.rc != 0"
   - name: Create credentials file
     file: path=/etc/credentials.txt state=touch mode=600
-    when: result|failed
+    when: result is failed
   - name: Customize username
     lineinfile: dest=/etc/credentials.txt line=username={{ var_cifsname }}
   - name: Customize password
@@ -32,7 +32,7 @@
     changed_when: "result.rc != 0"
   - name: Create config of cifs
     file: path=/etc/auto.cifs state=touch mode=644
-    when: result|failed
+    when: result is failed
   - name: Change config of cifs
     lineinfile: dest=/etc/auto.cifs line="DATA -fstype=cifs,rw,noperm,credentials=/etc/credentials.txt ://{{ var_serverip }}/DATA"
   - name: Add cifs to master config
