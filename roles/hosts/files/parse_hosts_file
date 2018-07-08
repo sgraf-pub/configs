@@ -14,7 +14,7 @@ def run(cmd):
 
 def main():
     # get only hostnames
-    hosts_list = [host for host in run("/usr/bin/curl -s https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt | /usr/bin/grep '^0\.0\.0\.0' | /usr/bin/awk '{ print $2 }' | /usr/bin/rev | /usr/bin/sort | /usr/bin/uniq").split('\n') if host]
+    hosts_list = [host for host in run("/usr/bin/curl -s https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts | /usr/bin/grep '^0\.0\.0\.0' | /usr/bin/awk '{ print $2 }' | /usr/bin/rev | /usr/bin/sort | /usr/bin/uniq").split('\n') if host]
 
     # keep only parrent domains
     for index in xrange(len(hosts_list)):
