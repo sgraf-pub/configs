@@ -249,6 +249,9 @@
   - name: Enable FlatHub
     shell: "flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo"
 
+  - name: Enable WinePak
+    shell: "flatpak remote-add --if-not-exists winepak https://dl.winepak.org/repo/winepak.flatpakrepo"
+
   #- name: 4.12.x kernel causing touchpad issues on Thinkpad
   #  copy: src=90-psmouse.rules dest=/etc/udev/rules.d/90-psmouse.rules mode=755
   - name: Undo touchpad workaround
