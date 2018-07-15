@@ -75,6 +75,8 @@
   - name: Install unrar
     dnf: name=unrar state=present
   - name: Download set_disk_parameters.sh
-    copy: src=set_disk_parameters.sh dest=/etc/cron.daily/set_disk_parameters.sh mode=0755
+    copy: src=set_disk_parameters.sh dest=/etc/cron.weekly/set_disk_parameters.sh mode=0755
+  - name: Download fix_grub2.sh
+    copy: src=fix_grub2.sh dest=/etc/cron.weekly/fix_grub2.sh mode=0755
 
 
