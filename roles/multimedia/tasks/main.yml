@@ -18,6 +18,7 @@
     - gstreamer1-plugins-ugly
     - gstreamer1-plugins-ugly-free
     - gstreamer1-libav
+    - compat-ffmpeg28
 
   - name: Install pkgs for VAAPI and VDPAU
     dnf: name={{ item }} state=present
@@ -26,10 +27,7 @@
     - libva-intel-driver
     - libva-intel-hybrid-driver
     - libva-utils
-    - libva-vdpau-driver
     - libvdpau
-    - libvdpau-va-gl
-    - mesa-vdpau-drivers
     - vdpauinfo
 
   - name: Install vulkan drivers

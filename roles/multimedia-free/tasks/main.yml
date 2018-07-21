@@ -14,10 +14,7 @@
     - gstreamer1-vaapi
     - libva-intel-hybrid-driver
     - libva-utils
-    - libva-vdpau-driver
     - libvdpau
-    - libvdpau-va-gl
-    - mesa-vdpau-drivers
     - vdpauinfo
 
   - name: Install vulkan drivers
