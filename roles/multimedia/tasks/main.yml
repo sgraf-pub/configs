@@ -20,7 +20,7 @@
     - gstreamer1-libav
     - compat-ffmpeg28
 
-  - name: Install pkgs for VAAPI and VDPAU
+  - name: Install pkgs for VAAPI, VDPAU and Vulkan
     dnf: name={{ item }} state=present
     with_items:
     - gstreamer1-vaapi
@@ -29,7 +29,6 @@
     - libva-utils
     - libvdpau
     - vdpauinfo
-
-  - name: Install vulkan drivers
-    dnf: name=vulkan state=present
+    - vulkan
+    - vulkan-tools
 

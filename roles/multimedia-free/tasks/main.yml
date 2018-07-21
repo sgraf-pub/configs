@@ -16,7 +16,6 @@
     - libva-utils
     - libvdpau
     - vdpauinfo
-
-  - name: Install vulkan drivers
-    dnf: name=vulkan state=present
+    - vulkan
+    - vulkan-tools
 
