@@ -1,3 +1,0 @@
-#!/usr/bin/bash
-
-mplayer -lavdopts fast:skiploopfilter=all:threads=4 "$@"

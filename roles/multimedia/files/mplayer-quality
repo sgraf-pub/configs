@@ -1,3 +1,0 @@
-#!/usr/bin/bash
-
-mplayer -lavdopts threads=4 -vf pp=ac "$@"
