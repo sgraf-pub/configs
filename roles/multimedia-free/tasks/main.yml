@@ -27,3 +27,6 @@
     - vulkan
     - vulkan-tools
 
+  - name: Export VDPAU settings
+    copy: src=vdpau.sh dest=/etc/profile.d/vdpau.sh mode=755 owner=root group=root
+
