@@ -10,16 +10,14 @@
     service: name=fstrim.timer state=started enabled=yes
   - name: Fix /etc/crypttab
     replace: dest=/etc/crypttab regexp='^(.*)none $' replace='\1none discard' backup=yes
+    register: result1
   - name: Check if /etc/crypttab is in initrd
     shell: lsinitrd /boot/initramfs-$(uname -r).img etc/crypttab
-    register: result
+    register: result2
     changed_when: False
   - name: Fix initramfs
     shell: dracut --force -I /etc/crypttab
-    when: result.stdout == ""
-
-  - name: Install packages
-    dnf: name='@Fedora Workstation' state=present
+    when: result2.stdout == "" or result1.changed
 
   #
   # Install languages
