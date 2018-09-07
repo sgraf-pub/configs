@@ -86,6 +86,13 @@
     with_items: [/root, "/home/{{ var_user }}"]
 
   #
+  # Setup tmux
+  #
+  - name: Copy config of tmux
+    copy: src=tmux.conf dest={{ item }}/.tmux.conf mode=644
+    with_items: [/root, "/home/{{ var_user }}"]
+
+  #
   # Setup dnsmasq
   #
   - name: Enable dnsmasq
