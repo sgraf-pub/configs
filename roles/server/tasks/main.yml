@@ -74,6 +74,8 @@
     when: result is failed
   - name: Install unrar
     dnf: name=unrar state=present
+  - name: Install smartmontools
+    dnf: name=smartmontools state=present
   - name: Download set_disk_parameters.sh
     copy: src=set_disk_parameters.sh dest=/etc/cron.weekly/set_disk_parameters.sh mode=0755
   - name: Download fix_grub2.sh
