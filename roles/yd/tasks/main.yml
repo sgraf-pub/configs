@@ -18,4 +18,14 @@
     - AtomicParsley
     - python3-pyxattr
     - python3-crypto
+    - npm
+  - name: Install phantomjs
+    command: npm install phantomjs
+    become: true
+    become_user: {{ var_user }}
+  - name: Link PhantomJS executable
+    file:
+      src: /home/medvidek/node_modules/phantomjs/lib/phantom/bin/phantomjs
+      dest: /usr/local/bin/phantomjs
+      state: link
 
