@@ -1,3 +1,3 @@
 #!/bin/bash
-/usr/sbin/grub2-mkconfig -o /boot/grub2/grub.cfg
+/usr/sbin/grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
 
