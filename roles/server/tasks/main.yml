@@ -76,8 +76,8 @@
     dnf: name=unrar state=present
   - name: Install smartmontools
     dnf: name=smartmontools state=present
-  - name: Download set_disk_parameters.sh
-    copy: src=set_disk_parameters.sh dest=/etc/cron.weekly/set_disk_parameters.sh mode=0755
+  - name: Download 69-hdparm.rules
+    copy: src=69-hdparm.rules dest=/etc/udev/rules.d/69-hdparm.rules mode=0644
   - name: Download fix_grub2.sh
     copy: src=fix_grub2.sh dest=/etc/cron.weekly/fix_grub2.sh mode=0755
 
