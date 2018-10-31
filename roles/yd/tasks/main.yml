@@ -3,7 +3,7 @@
   # download videos from youtube.com or other video platforms
   #
   - name: Install smokeping
-    dnf: name={{ item }} state=present
+    dnf: name="{{ item }}" state=present
     with_items:
     - youtube-dl
     - aria2
@@ -22,7 +22,7 @@
   - name: Install phantomjs
     command: npm install phantomjs
     become: true
-    become_user: {{ var_user }}
+    become_user: "{{ var_user }}"
   - name: Link PhantomJS executable
     file:
       src: /home/medvidek/node_modules/phantomjs/lib/phantom/bin/phantomjs
