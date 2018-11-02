@@ -1,12 +1,12 @@
 ---
-  - name: Install lftp
-    dnf: name=lftp state=present
-  - name: Download duperemove
-    shell: lftp -c 'open http://download.opensuse.org/tumbleweed/repo/oss/x86_64/; mget -c duperemove*.rpm'
-    args:
-      chdir: /tmp/
-  - name: Install duperemove
-    shell: "dnf install -y /tmp/duperemove*.rpm"
+  #- name: Install lftp
+  #  dnf: name=lftp state=present
+  #- name: Download duperemove
+  #  shell: lftp -c 'open http://download.opensuse.org/tumbleweed/repo/oss/x86_64/; mget -c duperemove*.rpm'
+  #  args:
+  #    chdir: /tmp/
+  #- name: Install duperemove
+  #  shell: "dnf install -y /tmp/duperemove*.rpm"
   - name: Download btrfs-maintenance
     copy: src=btrfs-maintenance dest=/etc/cron.weekly/btrfs-maintenance mode=0755
   - name: Remove previous btrfs-balance
