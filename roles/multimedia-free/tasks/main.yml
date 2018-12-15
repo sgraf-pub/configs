@@ -8,25 +8,19 @@
     - gstreamer1-plugins-good
     - gstreamer1-plugins-ugly-free
 
-  - name: Install pkgs for VAAPI, VDPAU and Vulkan
+  - name: Install pkgs for VAAPI and Vulkan
     dnf: name={{ item }} state=present
     with_items:
     #
     - gstreamer1-vaapi
     - libva-intel-hybrid-driver
     - libva-utils
-    - libva-vdpau-driver
     - mesa-dri-drivers
-    #
-    - libvdpau
-    - libvdpau-va-gl
-    - mesa-vdpau-drivers
-    - vdpauinfo
     #
     - mesa-vulkan-drivers
     - vulkan
     - vulkan-tools
 
-  - name: Export VDPAU settings
-    copy: src=vdpau.sh dest=/etc/profile.d/vdpau.sh mode=755 owner=root group=root
+  - name: Rm vdpau settings
+    file: name=/etc/profile.d/vdpau.sh state=absent
 
