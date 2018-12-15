@@ -8,19 +8,11 @@ exec &> $LOG_FILE
 echo "[`date`] btrfs balance job started."
 echo "----------------------------------------"
 
-# for each btrfs type system mounted, balance and record output
-#while read d m t x
-#do
-#  [[ $t != "btrfs" ]] && continue
-  m='/'
-  echo ""
-  echo "[`date`] balancing $m"
-  /usr/sbin/duperemove -hdr --hashfile=/var/tmp/duperemove.hash $m
-  /usr/sbin/btrfs balance start -musage=0 -v $m
-  /usr/sbin/btrfs balance start -musage=20 -v $m
-  /usr/sbin/btrfs balance start -dusage=0 -v $m
-  /usr/sbin/btrfs balance start -dusage=20 -v $m
-#done </proc/mounts
+m='/'
+echo ""
+echo "[`date`] balancing $m"
+/usr/sbin/duperemove -hdr --hashfile=/var/tmp/duperemove.hash $m
+/usr/sbin/btrfs balance start -musage=20 -dusage=20 -v $m
 
 echo "----------------------------------------"
 echo "[`date`] Balance job ended."
