@@ -45,25 +45,6 @@
     dnf: name=dnf-automatic state=present
   - name: Enable dnf-automatic
     service: name=dnf-automatic-install.timer state=started enabled=yes
-  #- name: Install tlp
-  #  dnf: name=tlp state=present
-  #- name: Copy tlp configuration file
-  #  copy: src=tlp dest=/etc/default/tlp mode=644 owner=root group=root
-  #- name: Enable tlp
-  #  service: name=tlp state=started enabled=yes
-  #- name: Install smokeping
-  #  dnf: name={{ item }} state=present
-  #  with_items:
-  #  - smokeping
-  #  - sendmail
-  #- name: Copy smokeping settings for httpd
-  #  copy: src=smokeping.conf dest=/etc/httpd/conf.d/smokeping.conf mode=644 owner=root group=root
-  #- name: Copy smokeping settings
-  #  copy: src=smokeping_config dest=/etc/smokeping/config mode=640 owner=root group=apache
-  #- name: Enable smokeping
-  #  service: name=smokeping state=started enabled=yes
-  #- name: Enable httpd
-  #  service: name=httpd state=started enabled=yes
   - name: Check rpmfusion-nonfree
     shell: "rpm -q rpmfusion-nonfree-release-{{ ansible_distribution_major_version }}"
     register: result
@@ -80,5 +61,6 @@
     copy: src=69-hdparm.rules dest=/etc/udev/rules.d/69-hdparm.rules mode=0644
   - name: Download fix_grub2.sh
     copy: src=fix_grub2.sh dest=/etc/cron.weekly/fix_grub2.sh mode=0755
-
+  - name: Download remove_mac_files.sh
+    copy: src=remove_mac_files.sh dest=/etc/cron.weekly/remove_mac_files.sh mode=755
 
