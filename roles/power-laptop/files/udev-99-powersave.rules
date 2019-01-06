@@ -1,5 +1,11 @@
+# PCI and I2C runtime power management
 SUBSYSTEM=="pci", ATTR{power/control}="auto"
 SUBSYSTEM=="i2c", ATTR{power/control}="auto"
-ACTION=="add", SUBSYSTEM=="usb", TEST=="power/autosuspend" ATTR{power/autosuspend}="60"
+
+# USB autosuspend
+ACTION=="add", SUBSYSTEM=="usb", ATTR{power/control}="auto"
+ACTION=="add", SUBSYSTEM=="usb", TEST=="power/autosuspend" ATTR{power/autosuspend}="600"
+
+# Disable wake-on-LAN
 ACTION=="add", SUBSYSTEM=="net", KERNEL=="eth*" RUN+="/usr/sbin/ethtool -s %k wol d"
 ACTION=="add", SUBSYSTEM=="net", KERNEL=="enp*" RUN+="/usr/sbin/ethtool -s %k wol d"
