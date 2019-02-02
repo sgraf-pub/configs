@@ -4,7 +4,7 @@ SUBSYSTEM=="i2c", ATTR{power/control}="auto"
 
 # USB autosuspend
 ACTION=="add", SUBSYSTEM=="usb", ATTR{power/control}="auto"
-ACTION=="add", SUBSYSTEM=="usb", TEST=="power/autosuspend" ATTR{power/autosuspend}="600"
+ACTION=="add", SUBSYSTEM=="usb", TEST=="power/autosuspend" ATTR{power/autosuspend}="60"
 
 # Disable wake-on-LAN
 ACTION=="add", SUBSYSTEM=="net", KERNEL=="eth*" RUN+="/usr/sbin/ethtool -s %k wol d"
