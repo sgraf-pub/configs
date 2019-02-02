@@ -13,4 +13,6 @@
     file: state=absent path=/usr/local/bin/btrfs-balance
   - name: Remove previous weekly cron
     file: state=absent path=/etc/cron.d/ansible_btrfs-balance
+  - name: Install duperemove
+    dnf: name=duperemove state=present
 
