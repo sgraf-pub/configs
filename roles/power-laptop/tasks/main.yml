@@ -12,3 +12,7 @@
     copy: src=sysctl-powersave.conf dest=/etc/sysctl.d/powersave.conf mode=644 owner=root group=root
   - name: Copy modprobe rules
     copy: src=modprobe-powersave.conf dest=/etc/modprobe.d/powersave.conf mode=644 owner=root group=root
+  - name: Install thermald
+    dnf: name=thermald state=present
+  - name: Enable thermald
+    service: name=thermald.service state=started enabled=yes
