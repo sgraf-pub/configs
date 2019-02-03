@@ -3,15 +3,12 @@
   # Configure power saving
   #
   - name: Copy udev rules
-    copy: src=udev-99-powersave.rules dest=/etc/udev/rules.d/99-powersave.rules mode=644 owner=root group=root
-    register: result
-  - name: Apply new rules
-    shell: udevadm control --reload
-    when: result.changed
+    copy: src=udev-99-powersave.rules dest=/etc/udev/rules.d/99-powersave.rules mode=0644 owner=root group=root
+    notify: udevadm reload
   - name: Copy sysctl rules
-    copy: src=sysctl-powersave.conf dest=/etc/sysctl.d/powersave.conf mode=644 owner=root group=root
+    copy: src=sysctl-powersave.conf dest=/etc/sysctl.d/powersave.conf mode=0644 owner=root group=root
   - name: Copy modprobe rules
-    copy: src=modprobe-powersave.conf dest=/etc/modprobe.d/powersave.conf mode=644 owner=root group=root
+    copy: src=modprobe-powersave.conf dest=/etc/modprobe.d/powersave.conf mode=0644 owner=root group=root
   - name: Install thermald
     dnf: name=thermald state=present
   - name: Enable thermald

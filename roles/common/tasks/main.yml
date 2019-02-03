@@ -8,16 +8,14 @@
   # Enable TRIM
   - name: Enable weekly FS TRIM
     service: name=fstrim.timer state=started enabled=yes
+    notify: rebuild initramfs
   - name: Fix /etc/crypttab
     replace: dest=/etc/crypttab regexp='^(.*)none $' replace='\1none discard' backup=yes
-    register: result1
+    notify: rebuild initramfs
   - name: Check if /etc/crypttab is in initrd
     shell: lsinitrd /boot/initramfs-$(uname -r).img etc/crypttab
-    register: result2
     changed_when: False
-  - name: Fix initramfs
-    shell: dracut --force -I /etc/crypttab
-    when: result2.stdout == "" or result1.changed
+    notify: rebuild initramfs
 
   #
   # Install languages
@@ -32,7 +30,11 @@
   # Check if var_user is valid
   #
   - name: Check if username is valid
-    shell: ls -d /home/{{ var_user }}
+    stat: path="/home/{{ var_user }}"
+    register: st
+  - name: Error if username is invalid
+    fail: msg="Invalid username"
+    when: st.stat.exists == False
 
   #
   # Fix groups membership
@@ -43,36 +45,30 @@
   #
   # Setup htop
   #
-  - name: Check htoprc
-    shell: ls -d /home/{{ var_user }}/.config/htop/
-    register: result
-    ignore_errors: True
-    changed_when: "result.rc != 0"
   - name: Create htoprc dir
-    file: path=/home/{{ var_user }}/.config/htop state=directory mode=755 owner={{ var_user }} group={{ var_user }}
-    when: result is failed
+    file: path=/home/{{ var_user }}/.config/htop state=directory mode=0755 owner={{ var_user }} group={{ var_user }}
   - name: Copy htoprc file
-    copy: src=htoprc dest=/home/{{ var_user }}/.config/htop/htoprc mode=600 owner={{ var_user }} group={{ var_user }}
+    copy: src=htoprc dest=/home/{{ var_user }}/.config/htop/htoprc mode=0600 owner={{ var_user }} group={{ var_user }}
 
   #
   # Setup vim
   #
   - name: Copy config of vim
-    copy: src=vimrc dest={{ item }}/.vimrc mode=644
+    copy: src=vimrc dest={{ item }}/.vimrc mode=0644
     with_items: [/root, "/home/{{ var_user }}"]
 
   #
   # Setup readline
   #
   - name: Copy config for readline
-    copy: src=inputrc dest={{ item }}/.inputrc mode=644
+    copy: src=inputrc dest={{ item }}/.inputrc mode=0644
     with_items: [/root, "/home/{{ var_user }}"]
 
   #
   # Setup bash prompt
   #
   - name: Copy config of bash prompt
-    copy: src=bashrc.ps1.sh dest={{ item }}/.bashrc.ps1.sh mode=755
+    copy: src=bashrc.ps1.sh dest={{ item }}/.bashrc.ps1.sh mode=0755
     with_items: [/root, "/home/{{ var_user }}"]
   - name: Load new bash prompt by default
     lineinfile: dest="{{ item }}/.bashrc" line="source ~/.bashrc.ps1.sh"
@@ -82,14 +78,14 @@
   # Setup screen
   #
   - name: Copy config of screen
-    copy: src=screenrc dest={{ item }}/.screenrc mode=644
+    copy: src=screenrc dest={{ item }}/.screenrc mode=0644
     with_items: [/root, "/home/{{ var_user }}"]
 
   #
   # Setup tmux
   #
   - name: Copy config of tmux
-    copy: src=tmux.conf dest={{ item }}/.tmux.conf mode=644
+    copy: src=tmux.conf dest={{ item }}/.tmux.conf mode=0644
     with_items: [/root, "/home/{{ var_user }}"]
 
   #
@@ -112,30 +108,41 @@
   - name: Install MC
     dnf: name=mc state=present
   - name: Create directory for default skin
-    file: path=/home/{{ var_user }}/.local/share/mc/skins state=directory mode=755 owner={{ var_user }} group={{ var_user }}
+    file: path=/home/{{ var_user }}/.local/share/mc/skins state=directory mode=0755 owner={{ var_user }} group={{ var_user }}
+  - name: Check if there is custom skin configuration
+    stat: path="/home/{{ var_user }}/.local/share/mc/skins/default.ini"
+    register: st
   - name: Copy default skin
     copy: src=/usr/share/mc/skins/default.ini dest="/home/{{ var_user }}/.local/share/mc/skins/default.ini"
+    when: st.stat.exists == False
   - name: Disable temp highlight
     lineinfile: dest="/home/{{ var_user }}/.local/share/mc/skins/default.ini" regexp="^    temp =" line="    temp ="
+    when: st.stat.exists == True
   - name: Disable archive highlight
     lineinfile: dest="/home/{{ var_user }}/.local/share/mc/skins/default.ini" regexp="^    archive =" line="    archive ="
+    when: st.stat.exists == True
   - name: Disable doc highlight
     lineinfile: dest="/home/{{ var_user }}/.local/share/mc/skins/default.ini" regexp="^    doc =" line="    doc ="
+    when: st.stat.exists == True
   - name: Disable source highlight
     lineinfile: dest="/home/{{ var_user }}/.local/share/mc/skins/default.ini" regexp="^    source =" line="    source ="
+    when: st.stat.exists == True
   - name: Disable media highlight
     lineinfile: dest="/home/{{ var_user }}/.local/share/mc/skins/default.ini" regexp="^    media =" line="    media ="
+    when: st.stat.exists == True
   - name: Disable graph highlight
     lineinfile: dest="/home/{{ var_user }}/.local/share/mc/skins/default.ini" regexp="^    graph =" line="    graph ="
+    when: st.stat.exists == True
   - name: Disable database highlight
     lineinfile: dest="/home/{{ var_user }}/.local/share/mc/skins/default.ini" regexp="^    database =" line="    database ="
+    when: st.stat.exists == True
 
   - name: Enable FlatHub
-    shell: "flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo"
+    flatpak_remote: name=flathub state=present flatpakrepo_url="https://flathub.org/repo/flathub.flatpakrepo"
 
   - name: Enable WinePak
-    shell: "flatpak remote-add --if-not-exists winepak https://dl.winepak.org/repo/winepak.flatpakrepo"
+    flatpak_remote: name=winepak state=present flatpakrepo_url="https://dl.winepak.org/repo/winepak.flatpakrepo"
 
   - name: Enable official Fedora flatpak repo
-    shell: "flatpak remote-add --if-not-exists fedora oci+https://registry.fedoraproject.org"
+    flatpak_remote: name=fedora state=present flatpakrepo_url="oci+https://registry.fedoraproject.org"
 

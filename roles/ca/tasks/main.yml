@@ -2,20 +2,17 @@
   file: path=/etc/pki/ca-trust/source/anchors state=directory
 - name: Copy postsignum_qca2_root.pem into anchors dir
   get_url: url=http://www.postsignum.cz/files/ca/postsignum_qca2_root.pem dest=/etc/pki/ca-trust/source/anchors/postsignum_qca2_root.pem
-  register: postsignum_1
+  notify: update-ca-trust
 - name: Copy postsignum_qca2_sub.pem into anchors dir
   get_url: url=http://www.postsignum.cz/files/ca/postsignum_qca2_sub.pem dest=/etc/pki/ca-trust/source/anchors/postsignum_qca2_sub.pem
-  register: postsignum_2
+  notify: update-ca-trust
 - name: Copy postsignum_qca3_sub.pem into anchors dir
   get_url: url=http://www.postsignum.cz/files/ca/postsignum_qca3_sub.pem dest=/etc/pki/ca-trust/source/anchors/postsignum_qca3_sub.pem
-  register: postsignum_3
+  notify: update-ca-trust
 - name: Copy postsignum_vca2_sub.pem into anchors dir
   get_url: url=http://www.postsignum.cz/files/ca/postsignum_vca2_sub.pem dest=/etc/pki/ca-trust/source/anchors/postsignum_vca2_sub.pem
-  register: postsignum_4
+  notify: update-ca-trust
 - name: Copy postsignum_vca3_sub.pem into anchors dir
   get_url: url=http://www.postsignum.cz/files/ca/postsignum_vca3_sub.pem dest=/etc/pki/ca-trust/source/anchors/postsignum_vca3_sub.pem
-  register: postsignum_5
-- name: Run update-ca-trust
-  command: update-ca-trust
-  when: postsignum_1.changed or postsignum_2.changed or postsignum_3.changed or postsignum_4.changed or postsignum_5.changed
+  notify: update-ca-trust
 

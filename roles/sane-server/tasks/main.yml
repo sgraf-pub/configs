@@ -7,17 +7,18 @@
   - name: Install drivers
     dnf: name=sane-backends-drivers-scanners state=present
   - name: Copy udev rule to set proper group
-    copy: src=70-saned.rules dest=/usr/lib/udev/rules.d/70-saned.rules mode=644 owner=root group=root
-    register: result
-  - name: Apply new rules
-    shell: udevadm control --reload
-    when: result.changed
+    copy: src=70-saned.rules dest=/usr/lib/udev/rules.d/70-saned.rules mode=0644 owner=root group=root
+    notify: udevadm reload
   - name: Configure sane clinet
     lineinfile: dest=/etc/sane.d/net.conf line='localhost'
   - name: Configure sane daemon - add local subnet
     lineinfile: dest=/etc/sane.d/saned.conf line='{{ var_serverip }}/24'
+  - name: Check if rc-local file exist
+    stat: path=/etc/rc.d/rc.local
+    register: st
   - name: Create rc-local file
-    file: path=/etc/rc.d/rc.local state=touch mode="u=rwx,g=rx,o=rx"
+    file: path=/etc/rc.d/rc.local state=touch mode=0755
+    when: st.stat.exists == False
   - name: Start with /usr/bin/bash
     lineinfile: dest=/etc/rc.d/rc.local insertbefore=BOF state=present line="#!/usr/bin/bash"
   - name: Add starting sane daemon
