@@ -6,9 +6,8 @@
     - common
     - btrfs
     - multimedia
-    #- power-server
+    - power-laptop
     - server
-    #- usb
     - sane-server
     - yd
 
