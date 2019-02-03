@@ -1,6 +1,0 @@
----
-- hosts: generic
-  remote_user: root
-  roles:
-    - chrome
-
