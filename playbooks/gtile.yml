@@ -1,6 +1,0 @@
----
-- hosts: generic
-  remote_user: "{{ var_user }}"
-  roles:
-    - gtile
-
