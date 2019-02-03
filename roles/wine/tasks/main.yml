@@ -1,6 +1,0 @@
----
-#
-  - name: Install wine
-    dnf: name=wine.i686 state=present
-
-
