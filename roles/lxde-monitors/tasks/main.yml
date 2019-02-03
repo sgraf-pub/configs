@@ -1,6 +1,0 @@
----
-  - name: Copy set-monitors.sh
-    copy: src=set-monitors.sh dest=/usr/local/bin/set-monitors.sh mode=755 owner=root group=root
-  - name: Copy PostLogin
-    copy: src=PostLogin dest=/etc/lxdm/PostLogin  mode=755 owner=root group=root
-
