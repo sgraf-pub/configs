@@ -121,27 +121,9 @@ parse_git () {
     fi
 }
 
-timer_start () {
-    timer=${timer:-$SECONDS}
-}
-
-timer_stop () {
-    timer_show=$(($SECONDS - $timer))
-    unset timer
-}
-
-trap 'timer_start' DEBUG
-
 generate_ps () {
     local ecode="${?} ${PIPESTATUS[@]}"
-    timer_stop
     PS1=
-    # Show timer only if command took > 1m
-    if (( timer_show > 60 )); then
-        PS1="${BROWN}Total time spent: "
-        PS1+=$(date -d@${timer_show} -u +%Hh%Mm%Ss)
-        PS1+="${RESET_COLOR}"'\n'
-    fi
     parse_exit_code "${ecode}"
     PS1+="[\u@\h"
     PS1+=" ${LIGHT_BLUE}\w${RESET_COLOR}]"
