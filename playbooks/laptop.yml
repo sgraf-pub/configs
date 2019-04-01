@@ -4,10 +4,10 @@
   remote_user: root
   roles:
     - common
-    - btrfs
-    - cifs-enable
-    - multimedia-free
-    - multimedia
-    - power-laptop
-    - sane-client
-    - ca
+    #- btrfs
+    #- cifs-enable
+    #- multimedia-free
+    #- multimedia
+    #- power-laptop
+    #- sane-client
+    #- ca
