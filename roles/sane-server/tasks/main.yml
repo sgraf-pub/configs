@@ -4,7 +4,9 @@
   #
   - name: Install sane-backends
     dnf: name=sane-backends-daemon state=present
-  - name: Install drivers
+  - name: Install samsung driver
+    dnf: name=splix state=present
+  - name: Install scanner drivers
     dnf: name=sane-backends-drivers-scanners state=present
   - name: Copy udev rule to set proper group
     copy: src=70-saned.rules dest=/usr/lib/udev/rules.d/70-saned.rules mode=0644 owner=root group=root
