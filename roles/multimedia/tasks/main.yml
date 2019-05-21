@@ -7,11 +7,3 @@
       name: ['gstreamer1-plugins-bad-freeworld', 'gstreamer1-plugins-ugly', 'gstreamer1-libav', 'compat-ffmpeg28']
       state: present
 
-  - name: Install pkgs for VAAPI and Vulkan
-    dnf:
-      name: ['libva-intel-driver']
-      state: present
-
-  - name: Rm vdpau settings
-    file: name=/etc/profile.d/vdpau.sh state=absent
-

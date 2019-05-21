@@ -1,23 +1,5 @@
 ---
   #
-  # Set automatic makecache for dnf
-  #
-  - name: Enable regular dnf makecache
-    service: name=dnf-makecache.timer state=started enabled=yes
-
-  # Enable TRIM
-  - name: Enable weekly FS TRIM
-    service: name=fstrim.timer state=started enabled=yes
-    notify: rebuild initramfs
-  - name: Fix /etc/crypttab
-    replace: dest=/etc/crypttab regexp='^(.*)none $' replace='\1none discard' backup=yes
-    notify: rebuild initramfs
-  - name: Check if /etc/crypttab is in initrd
-    shell: lsinitrd /boot/initramfs-$(uname -r).img etc/crypttab
-    changed_when: False
-    notify: rebuild initramfs
-
-  #
   # Install languages
   #
   - name: Install Czech
@@ -95,47 +77,6 @@
     ini_file: dest=/etc/NetworkManager/NetworkManager.conf section=main option=dns value=dnsmasq
   - name: Fix default dnsmasq config
     copy: src=dnsmasq.params.conf dest=/etc/NetworkManager/dnsmasq.d/dnsmasq.params.conf
-
-  #
-  # Setup journald
-  #
-  - name: Limit max size of journald logs
-    ini_file: dest=/etc/systemd/journald.conf section=Journal option=SystemMaxUse value=500M
-
-  #
-  # Fix mc file highliting
-  #
-  - name: Install MC
-    dnf: name=mc state=present
-  - name: Create directory for default skin
-    file: path=/home/{{ var_user }}/.local/share/mc/skins state=directory mode=0755 owner={{ var_user }} group={{ var_user }}
-  - name: Check if there is custom skin configuration
-    stat: path="/home/{{ var_user }}/.local/share/mc/skins/default.ini"
-    register: st
-  - name: Copy default skin
-    copy: src=/usr/share/mc/skins/default.ini dest="/home/{{ var_user }}/.local/share/mc/skins/default.ini"
-    when: st.stat.exists == False
-  - name: Disable temp highlight
-    lineinfile: dest="/home/{{ var_user }}/.local/share/mc/skins/default.ini" regexp="^    temp =" line="    temp ="
-    when: st.stat.exists == True
-  - name: Disable archive highlight
-    lineinfile: dest="/home/{{ var_user }}/.local/share/mc/skins/default.ini" regexp="^    archive =" line="    archive ="
-    when: st.stat.exists == True
-  - name: Disable doc highlight
-    lineinfile: dest="/home/{{ var_user }}/.local/share/mc/skins/default.ini" regexp="^    doc =" line="    doc ="
-    when: st.stat.exists == True
-  - name: Disable source highlight
-    lineinfile: dest="/home/{{ var_user }}/.local/share/mc/skins/default.ini" regexp="^    source =" line="    source ="
-    when: st.stat.exists == True
-  - name: Disable media highlight
-    lineinfile: dest="/home/{{ var_user }}/.local/share/mc/skins/default.ini" regexp="^    media =" line="    media ="
-    when: st.stat.exists == True
-  - name: Disable graph highlight
-    lineinfile: dest="/home/{{ var_user }}/.local/share/mc/skins/default.ini" regexp="^    graph =" line="    graph ="
-    when: st.stat.exists == True
-  - name: Disable database highlight
-    lineinfile: dest="/home/{{ var_user }}/.local/share/mc/skins/default.ini" regexp="^    database =" line="    database ="
-    when: st.stat.exists == True
 
   - name: Enable FlatHub
     flatpak_remote: name=flathub state=present flatpakrepo_url="https://flathub.org/repo/flathub.flatpakrepo"
