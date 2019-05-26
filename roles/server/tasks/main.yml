@@ -54,4 +54,6 @@
     copy: src=fix_grub2.sh dest=/etc/cron.weekly/fix_grub2.sh mode=0755
   - name: Download remove_mac_files.sh
     copy: src=remove_mac_files.sh dest=/etc/cron.weekly/remove_mac_files.sh mode=0755
+  - name: Download dnsmasq settings
+    copy: src=params.conf dest=/etc/NetworkManager/dnsmasq.d/params.conf mode=0644
 

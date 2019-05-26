@@ -75,14 +75,9 @@
   #
   - name: Enable dnsmasq
     ini_file: dest=/etc/NetworkManager/NetworkManager.conf section=main option=dns value=dnsmasq
-  - name: Fix default dnsmasq config
-    copy: src=dnsmasq.params.conf dest=/etc/NetworkManager/dnsmasq.d/dnsmasq.params.conf
 
   - name: Enable FlatHub
     flatpak_remote: name=flathub state=present flatpakrepo_url="https://flathub.org/repo/flathub.flatpakrepo"
-
-  - name: Enable WinePak
-    flatpak_remote: name=winepak state=present flatpakrepo_url="https://dl.winepak.org/repo/winepak.flatpakrepo"
 
   - name: Enable official Fedora flatpak repo
     flatpak_remote: name=fedora state=present flatpakrepo_url="oci+https://registry.fedoraproject.org"
