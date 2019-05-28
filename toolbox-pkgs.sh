@@ -12,5 +12,7 @@ sudo dnf install -y \
     pciutils \
     bind-utils \
     ansible \
-    policycoreutils
+    policycoreutils \
+    smartmontools \
+    lshw
 
