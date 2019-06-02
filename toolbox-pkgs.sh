@@ -14,5 +14,6 @@ sudo dnf install -y \
     ansible \
     policycoreutils \
     smartmontools \
-    lshw
+    lshw \
+    rpm-build
 
