@@ -15,5 +15,6 @@ sudo dnf install -y \
     policycoreutils \
     smartmontools \
     lshw \
-    rpm-build
+    rpm-build \
+    screenfetch
 
