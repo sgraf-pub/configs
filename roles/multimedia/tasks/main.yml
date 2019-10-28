@@ -1,9 +1,10 @@
 ---
+  # https://docs.fedoraproject.org/en-US/quick-docs/assembly_installing-plugins-for-playing-movies-and-music/
   - name: Install rpmfusion-free
     dnf: name="http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_distribution_major_version }}.noarch.rpm" state=present
 
   - name: Install codecs
     dnf:
-      name: ['gstreamer1-plugins-bad-freeworld', 'gstreamer1-plugins-ugly', 'gstreamer1-libav', 'compat-ffmpeg28']
+      name: ['gstreamer1-libav', 'gstreamer1-plugins-bad-free', 'gstreamer1-plugins-bad-free', 'gstreamer1-plugins-bad-free-extras', 'gstreamer1-plugins-bad-freeworld', 'gstreamer1-plugins-bad-nonfree', 'gstreamer1-plugins-good', 'gstreamer1-plugins-ugly', 'lame-libs', 'lame-libs']
       state: present
 
