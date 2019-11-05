@@ -17,5 +17,6 @@ sudo dnf install -y \
     smartmontools \
     lshw \
     rpm-build \
-    screenfetch
+    screenfetch \
+    mailx
 
