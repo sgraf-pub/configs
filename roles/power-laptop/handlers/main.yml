@@ -1,3 +1,0 @@
-- name: udevadm reload
-  command: udevadm control --reload
-
