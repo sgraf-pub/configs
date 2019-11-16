@@ -2,12 +2,10 @@
   #
   # Setup sane daemon
   #
-  - name: Install sane-backends
-    dnf: name=sane-backends-daemon state=present
-  - name: Install drivers
-    dnf: name=sane-backends-drivers-scanners state=present
+  - name: Add user to lp group
+    user: name={{ var_user}} append=yes groups=lp
   - name: Copy udev rule to set proper group
-    copy: src=70-saned.rules dest=/usr/lib/udev/rules.d/70-saned.rules mode=0644 owner=root group=root
+    copy: src=70-saned.rules dest=/etc/udev/rules.d/70-saned.rules mode=0644 owner=root group=root
     notify: udevadm reload
   - name: Configure sane clinet
     lineinfile: dest=/etc/sane.d/net.conf line='localhost'
@@ -25,5 +23,4 @@
     lineinfile: dest=/etc/rc.d/rc.local state=present line="/usr/sbin/saned -a {{ var_cifsname }}"
   - name: Start rc-local
     service: name=rc-local state=started enabled=yes
-
 

@@ -1,12 +1,6 @@
 ---
   - name: Add latest dns excludes
     script: parse_hosts_file
-  #- name: Set file perms
-  #  file:
-  #    path: /etc/unbound/local.d/ads.conf
-  #    owner: root
-  #    group: unbound
-  #    mode: 0664
   - name: Download parse_hosts_file
     copy: src=parse_hosts_file dest=/etc/cron.weekly/parse_hosts_file mode=0755
 

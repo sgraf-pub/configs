@@ -4,10 +4,7 @@
   remote_user: root
   roles:
     - common
-    - btrfs
-    - multimedia
-    - power-laptop
     - server
     - sane-server
-    - yd
+    - hosts
 

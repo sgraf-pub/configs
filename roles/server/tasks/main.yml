@@ -5,13 +5,6 @@
   #
   - name: Lock instead of suspend for LidSwitch
     ini_file: dest=/etc/systemd/logind.conf section=Login option=HandleLidSwitch value=lock
-  - name: Set multi-user target
-    file:
-      src: /usr/lib/systemd/system/multi-user.target
-      dest: /etc/systemd/system/default.target
-      state: link
-  - name: Install samba
-    dnf: name=samba state=present
   - name: Check selinux boolean for Samba
     shell: getsebool samba_export_all_rw | grep on
     register: result
@@ -38,20 +31,10 @@
     service: name=smb state=started enabled=yes
   - name: Disable firewall
     service: name=firewalld state=stopped enabled=no
-  - name: Install dnf-automatic
-    dnf: name=dnf-automatic state=present
-  - name: Enable dnf-automatic
-    service: name=dnf-automatic-install.timer state=started enabled=yes
-  - name: Install rpmfusion-nonfree
-    dnf: name="http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ ansible_distribution_major_version }}.noarch.rpm" state=present
-  - name: Install unrar
-    dnf: name=unrar state=present
-  - name: Install smartmontools
-    dnf: name=smartmontools state=present
   - name: Download 69-hdparm.rules
     copy: src=69-hdparm.rules dest=/etc/udev/rules.d/69-hdparm.rules mode=0644
-  - name: Download fix_grub2.sh
-    copy: src=fix_grub2.sh dest=/etc/cron.weekly/fix_grub2.sh mode=0755
   - name: Download remove_mac_files.sh
     copy: src=remove_mac_files.sh dest=/etc/cron.weekly/remove_mac_files.sh mode=0755
+  - name: Download dnsmasq settings
+    copy: src=params.conf dest=/etc/NetworkManager/dnsmasq.d/params.conf mode=0644
 
