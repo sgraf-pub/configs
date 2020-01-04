@@ -115,6 +115,10 @@ parse_git () {
                     PS1+=" ${YELLOW}-${behind}"
                 fi
             fi
+            git stash show &>/dev/null
+            if (( $? == 0 )); then
+                PS1+=" ${LIGHT_PURPLE}S"
+            fi
             PS1+="${RESET_COLOR}"
         fi
         PS1+=")"
