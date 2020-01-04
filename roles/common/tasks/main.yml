@@ -60,7 +60,7 @@
   #
   # Setup dnsmasq
   #
-  - name: Enable dnsmasq
-    ini_file: dest=/etc/NetworkManager/NetworkManager.conf section=main option=dns value=dnsmasq
-    become: true
-    become_user: root
+  #- name: Enable dnsmasq
+  #  ini_file: dest=/etc/NetworkManager/NetworkManager.conf section=main option=dns value=dnsmasq
+  #  become: true
+  #  become_user: root
