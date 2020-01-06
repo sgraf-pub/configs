@@ -95,32 +95,34 @@ parse_git () {
     if [[ -n ${branchname} ]]; then
         PS1+="(${LIGHT_BLUE}${branchname:2}${RESET_COLOR}"
         if [[ $(stat -f -L -c %T $PWD) != 'nfs' ]]; then
-            gitstatus=$(git status --porcelain 2> /dev/null)
-            if [[ -n "${gitstatus}" ]] ; then
-                workt=$(echo -e "${gitstatus}" | cut -c2 | sort | uniq | \
-                    tr -d '\n ')
-                stage=$(echo -e "${gitstatus}" | cut -c1 | sort | uniq | \
-                    grep -v -e '\?' -e '\!' | tr -d '\n ')
-            fi
-            if [[ -n ${stage} || -n ${workt} ]]; then
-                PS1+=" ${YELLOW}${stage}${LIGHT_RED}${workt}"
-            fi
-            ahead=$(git rev-list --count @{upstream}..HEAD 2>/dev/null)
-            behind=$(git rev-list --count HEAD..@{upstream} 2>/dev/null)
-            if [[ -n ${ahead} ]]; then
-                if [ ${ahead} -ne 0 ]; then
-                    PS1+=" ${YELLOW}+${ahead}"
-                fi
-                if [ ${behind} -ne 0 ]; then
-                    PS1+=" ${YELLOW}-${behind}"
-                fi
-            fi
-            git stash show &>/dev/null
-            if (( $? == 0 )); then
-                PS1+=" ${LIGHT_PURPLE}S"
-            fi
-            PS1+="${RESET_COLOR}"
+            gitstatus=$(git status --short 2> /dev/null)
+        else
+            gitstatus=$(git status --untracked-files=no --short 2> /dev/null)
         fi
+        if [[ -n "${gitstatus}" ]] ; then
+            workt=$(echo -e "${gitstatus}" | cut -c2 | sort | uniq | \
+                tr -d '\n ')
+            stage=$(echo -e "${gitstatus}" | cut -c1 | sort | uniq | \
+                grep -v -e '\?' -e '\!' | tr -d '\n ')
+        fi
+        if [[ -n ${stage} || -n ${workt} ]]; then
+            PS1+=" ${YELLOW}${stage}${LIGHT_RED}${workt}"
+        fi
+        ahead=$(git rev-list --count @{upstream}..HEAD 2>/dev/null)
+        behind=$(git rev-list --count HEAD..@{upstream} 2>/dev/null)
+        if [[ -n ${ahead} ]]; then
+            if [ ${ahead} -ne 0 ]; then
+                PS1+=" ${YELLOW}+${ahead}"
+            fi
+            if [ ${behind} -ne 0 ]; then
+                PS1+=" ${YELLOW}-${behind}"
+            fi
+        fi
+        git stash show &>/dev/null
+        if (( $? == 0 )); then
+            PS1+=" ${LIGHT_PURPLE}S"
+        fi
+        PS1+="${RESET_COLOR}"
         PS1+=")"
     fi
 }
