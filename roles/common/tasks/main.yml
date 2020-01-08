@@ -48,7 +48,19 @@
     lineinfile: dest="/home/{{ var_user }}/.bashrc" line="source ~/.bashrc.ps1.sh"
     become: true
     become_user: "{{ var_user }}"
- 
+  - name: Remove duplicates from history file
+    lineinfile: dest="/home/{{ var_user }}/.bashrc" line="export HISTCONTROL=erasedups"
+    become: true
+    become_user: "{{ var_user }}"
+  - name: Set reasonable history size
+    lineinfile: dest="/home/{{ var_user }}/.bashrc" line="export HISTSIZE=10000"
+    become: true
+    become_user: "{{ var_user }}"
+  - name: Allow forward history search with Ctrl+S
+    lineinfile: dest="/home/{{ var_user }}/.bashrc" line="[[ $- == *i* ]] && stty -ixon"
+    become: true
+    become_user: "{{ var_user }}"
+
   #
   # Setup tmux
   #
