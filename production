@@ -1,12 +1,10 @@
 # file: production
 
 [laptop]
-localhost              ansible_connection=local
+localhost ansible_connection=local
 
 [server]
-127.0.0.1
-
-# flavours
+localhost
 
 [generic]
-127.0.0.1
+localhost
