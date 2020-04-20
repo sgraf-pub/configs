@@ -11,6 +11,6 @@ Ansible playbooks
 -----------------
 
 ```
-$ ansible-playbook playbooks/laptop.yml -e "var_user=USER" --ask-become-pass
-$ ansible-playbook playbooks/server.yml -e "var_user=USER var_cifsname=USER var_cifspass=PASS var_serverip=IP" --ask-become-pass
+$ ansible-playbook playbooks/laptop.yml -e "var_user=$USER" --ask-become-pass
+$ ansible-playbook playbooks/server.yml -e "var_user=$USER var_cifsname=USER var_cifspass=PASS var_serverip=IP" --ask-become-pass
 ```
