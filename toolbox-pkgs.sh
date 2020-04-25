@@ -18,5 +18,6 @@ sudo dnf install -y \
     lshw \
     rpm-build \
     screenfetch \
-    mailx
+    mailx \
+    simple-scan
 
