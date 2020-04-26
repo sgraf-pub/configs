@@ -4,7 +4,7 @@ configs
 Server packages
 ---------------
 $ rpm-ostree install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
-$ rpm-ostree install abcde ansible crontabs duperemove ffmpeg htop java-1.8.0-openjdk lame lm_sensors mc mmv python3-eyed3 samba sane-backends-daemon smartmontools splix tmux unrar vim vobcopy youtube-dl
+$ rpm-ostree install abcde ansible crontabs duperemove ffmpeg java-1.8.0-openjdk lame mc mmv python3-eyed3 samba sane-backends-daemon smartmontools splix thermald tmux unrar vim vobcopy youtube-dl
 
 
 Ansible playbooks
