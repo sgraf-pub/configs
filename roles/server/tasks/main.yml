@@ -5,36 +5,61 @@
   #
   - name: Lock instead of suspend for LidSwitch
     ini_file: dest=/etc/systemd/logind.conf section=Login option=HandleLidSwitch value=lock
+    become: true
+    become_user: root
   - name: Check selinux boolean for Samba
     shell: getsebool samba_export_all_rw | grep on
     register: result
     ignore_errors: True
     changed_when: "result.rc != 0"
+    become: true
+    become_user: root
   - name: Set selinux boolean for Samba
     command: setsebool -P samba_export_all_rw=1
     when: result is failed
+    become: true
+    become_user: root
   - name: Copy samba config
     copy: src=smb.conf dest=/etc/samba/smb.conf mode=0644 owner=root group=root
+    become: true
+    become_user: root
   - name: Check samba user
     shell: pdbedit -L | grep {{ var_cifsname }}
     register: result
     ignore_errors: True
     changed_when: "result.rc != 0"
+    become: true
+    become_user: root
   - name: Create samba user
     shell: echo -e "{{ var_cifspass }}\n{{ var_cifspass }}" | smbpasswd -s -a {{ var_cifsname }}
     when: result is failed
+    become: true
+    become_user: root
   - name: Create DATA mount point
     file: path=/media/DATA state=directory
+    become: true
+    become_user: root
   - name: Create BACKUP mount point
     file: path=/media/BACKUP state=directory
+    become: true
+    become_user: root
   - name: Start samba service
     service: name=smb state=started enabled=yes
+    become: true
+    become_user: root
   - name: Disable firewall
     service: name=firewalld state=stopped enabled=no
+    become: true
+    become_user: root
   - name: Download 69-hdparm.rules
     copy: src=69-hdparm.rules dest=/etc/udev/rules.d/69-hdparm.rules mode=0644
+    become: true
+    become_user: root
   - name: Download remove_mac_files.sh
     copy: src=remove_mac_files.sh dest=/etc/cron.weekly/remove_mac_files.sh mode=0755
-  - name: Download dnsmasq settings
-    copy: src=params.conf dest=/etc/NetworkManager/dnsmasq.d/params.conf mode=0644
-
+    become: true
+    become_user: root
+#  - name: Download dnsmasq settings
+#    copy: src=params.conf dest=/etc/NetworkManager/dnsmasq.d/params.conf mode=0644
+#    become: true
+#    become_user: root

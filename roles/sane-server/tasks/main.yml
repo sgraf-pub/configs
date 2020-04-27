@@ -4,23 +4,40 @@
   #
   - name: Add user to lp group
     user: name={{ var_user}} append=yes groups=lp
+    become: true
+    become_user: root
   - name: Copy udev rule to set proper group
     copy: src=70-saned.rules dest=/etc/udev/rules.d/70-saned.rules mode=0644 owner=root group=root
     notify: udevadm reload
+    become: true
+    become_user: root
   - name: Configure sane clinet
     lineinfile: dest=/etc/sane.d/net.conf line='localhost'
+    become: true
+    become_user: root
   - name: Configure sane daemon - add local subnet
     lineinfile: dest=/etc/sane.d/saned.conf line='{{ var_serverip }}/24'
+    become: true
+    become_user: root
   - name: Check if rc-local file exist
     stat: path=/etc/rc.d/rc.local
     register: st
+    become: true
+    become_user: root
   - name: Create rc-local file
     file: path=/etc/rc.d/rc.local state=touch mode=0755
     when: st.stat.exists == False
+    become: true
+    become_user: root
   - name: Start with /usr/bin/bash
     lineinfile: dest=/etc/rc.d/rc.local insertbefore=BOF state=present line="#!/usr/bin/bash"
+    become: true
+    become_user: root
   - name: Add starting sane daemon
     lineinfile: dest=/etc/rc.d/rc.local state=present line="/usr/sbin/saned -a {{ var_cifsname }}"
+    become: true
+    become_user: root
   - name: Start rc-local
     service: name=rc-local state=started enabled=yes
-
+    become: true
+    become_user: root
