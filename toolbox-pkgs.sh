@@ -19,5 +19,6 @@ sudo dnf install -y \
     rpm-build \
     screenfetch \
     mailx \
-    simple-scan
+    simple-scan \
+    glibc-all-langpacks
 
