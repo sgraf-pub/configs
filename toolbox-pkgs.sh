@@ -1,5 +1,4 @@
 #!/usr/bin/bash
-sudo dnf update -y
 sudo dnf install -y \
     mc \
     vim \
@@ -17,7 +16,7 @@ sudo dnf install -y \
     smartmontools \
     lshw \
     rpm-build \
-    screenfetch \
+    neofetch \
     mailx \
     simple-scan \
     glibc-all-langpacks
