@@ -70,6 +70,14 @@
     become_user: "{{ var_user }}"
 
   #
+  # Powertop rules
+  #
+  - name: Enable more powersaving
+    copy: src=01-powertop.conf dest=/etc/sysctl.d/01-powertop.conf
+    become: true
+    become_user: root
+
+  #
   # Setup dnsmasq
   #
   #- name: Enable dnsmasq
