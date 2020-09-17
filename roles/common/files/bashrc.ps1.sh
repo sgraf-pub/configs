@@ -94,11 +94,7 @@ parse_git () {
     branchname=$(git branch 2>/dev/null | grep '\*')
     if [[ -n ${branchname} ]]; then
         PS1+="(${LIGHT_BLUE}${branchname:2}${RESET_COLOR}"
-        if [[ $(stat -f -L -c %T $PWD) != 'nfs' ]]; then
-            gitstatus=$(git status --short 2> /dev/null)
-        else
-            gitstatus=$(git status --untracked-files=no --short 2> /dev/null)
-        fi
+        gitstatus=$(git status --short 2> /dev/null)
         if [[ -n "${gitstatus}" ]] ; then
             workt=$(echo -e "${gitstatus}" | cut -c2 | sort | uniq | \
                 tr -d '\n ')
