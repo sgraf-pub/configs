@@ -76,6 +76,10 @@
     copy: src=01-powertop.conf dest=/etc/sysctl.d/01-powertop.conf
     become: true
     become_user: root
+  - name: Disable wol
+    copy: src=81-wol.rules dest=/etc/udev/rules.d/81-wol.rules
+    become: true
+    become_user: root
 
   #
   # Setup dnsmasq
