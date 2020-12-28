@@ -55,11 +55,3 @@
     copy: src=69-hdparm.rules dest=/etc/udev/rules.d/69-hdparm.rules mode=0644
     become: true
     become_user: root
-  - name: Download remove_mac_files.sh
-    copy: src=remove_mac_files.sh dest=/etc/cron.weekly/remove_mac_files.sh mode=0755
-    become: true
-    become_user: root
-#  - name: Download dnsmasq settings
-#    copy: src=params.conf dest=/etc/NetworkManager/dnsmasq.d/params.conf mode=0644
-#    become: true
-#    become_user: root
