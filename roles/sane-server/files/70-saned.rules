@@ -1,1 +1,1 @@
-ACTION=="add", ENV{libsane_matched}=="yes", GROUP="lp", MODE="0660"
+ACTION=="add", ENV{libsane_matched}=="yes", GROUP="saned", MODE="0660"
