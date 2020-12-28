@@ -35,14 +35,6 @@
     when: result is failed
     become: true
     become_user: root
-  - name: Create DATA mount point
-    file: path=/media/DATA state=directory
-    become: true
-    become_user: root
-  - name: Create BACKUP mount point
-    file: path=/media/BACKUP state=directory
-    become: true
-    become_user: root
   - name: Start samba service
     service: name=smb state=started enabled=yes
     become: true
