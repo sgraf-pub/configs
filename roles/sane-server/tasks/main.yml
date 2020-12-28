@@ -8,7 +8,6 @@
     become_user: root
   - name: Copy udev rule to set proper group
     copy: src=70-saned.rules dest=/etc/udev/rules.d/70-saned.rules mode=0644 owner=root group=root
-    notify: udevadm reload
     become: true
     become_user: root
   - name: Configure sane clinet
