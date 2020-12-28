@@ -1,9 +1,19 @@
 ---
+  - name: run this on fedora type systems
+    set_fact:
+      var_home: 'home'
+    when: ansible_distribution == 'Fedora'
+
+  - name: run this on OSX type systems
+    set_fact:
+      var_home: 'Users'
+    when: ansible_distribution == 'MacOSX'
+
   #
   # Check if var_user is valid
   #
   - name: Check if username is valid
-    stat: path="/home/{{ var_user }}"
+    stat: path=/{{ var_home }}/{{ var_user }}
     register: st
   - name: Error if username is invalid
     fail: msg="Invalid username"
@@ -13,11 +23,11 @@
   # Setup htop
   #
   - name: Create htoprc dir
-    file: path=/home/{{ var_user }}/.config/htop state=directory mode=0755 owner={{ var_user }} group={{ var_user }}
+    file: path=/{{ var_home }}/{{ var_user }}/.config/htop state=directory
     become: true
     become_user: "{{ var_user }}"
   - name: Copy htoprc file
-    copy: src=htoprc dest=/home/{{ var_user }}/.config/htop/htoprc mode=0600 owner={{ var_user }} group={{ var_user }}
+    copy: src=htoprc dest=/{{ var_home }}/{{ var_user }}/.config/htop/htoprc
     become: true
     become_user: "{{ var_user }}"
  
@@ -25,7 +35,7 @@
   # Setup vim
   #
   - name: Copy config of vim
-    copy: src=vimrc dest=/home/{{ var_user }}/.vimrc mode=0644
+    copy: src=vimrc dest=/{{ var_home }}/{{ var_user }}/.vimrc
     become: true
     become_user: "{{ var_user }}"
  
@@ -33,7 +43,7 @@
   # Setup readline
   #
   - name: Copy config for readline
-    copy: src=inputrc dest=/home/{{ var_user }}/.inputrc mode=0644
+    copy: src=inputrc dest=/{{ var_home }}/{{ var_user }}/.inputrc
     become: true
     become_user: "{{ var_user }}"
  
@@ -41,23 +51,23 @@
   # Setup bash prompt
   #
   - name: Copy config of bash prompt
-    copy: src=bashrc.ps1.sh dest=/home/{{ var_user }}/.bashrc.ps1.sh mode=0755
+    copy: src=bashrc.ps1.sh dest=/{{ var_home }}/{{ var_user }}/.bashrc.ps1.sh
     become: true
     become_user: "{{ var_user }}"
   - name: Load new bash prompt by default
-    lineinfile: dest="/home/{{ var_user }}/.bashrc" line="source ~/.bashrc.ps1.sh"
+    lineinfile: dest="/{{ var_home }}/{{ var_user }}/.bashrc" line="source ~/.bashrc.ps1.sh"
     become: true
     become_user: "{{ var_user }}"
   - name: Remove duplicates from history file
-    lineinfile: dest="/home/{{ var_user }}/.bashrc" line="export HISTCONTROL=erasedups"
+    lineinfile: dest="/{{ var_home }}/{{ var_user }}/.bashrc" line="export HISTCONTROL=erasedups"
     become: true
     become_user: "{{ var_user }}"
   - name: Set reasonable history size
-    lineinfile: dest="/home/{{ var_user }}/.bashrc" line="export HISTSIZE=10000"
+    lineinfile: dest="/{{ var_home }}/{{ var_user }}/.bashrc" line="export HISTSIZE=10000"
     become: true
     become_user: "{{ var_user }}"
   - name: Allow forward history search with Ctrl+S
-    lineinfile: dest="/home/{{ var_user }}/.bashrc" line="[[ $- == *i* ]] && stty -ixon"
+    lineinfile: dest="/{{ var_home }}/{{ var_user }}/.bashrc" line="[[ $- == *i* ]] && stty -ixon"
     become: true
     become_user: "{{ var_user }}"
 
@@ -65,7 +75,7 @@
   # Setup tmux
   #
   - name: Copy config of tmux
-    copy: src=tmux.conf dest=/home/{{ var_user }}/.tmux.conf mode=0644
+    copy: src=tmux.conf dest=/{{ var_home }}/{{ var_user }}/.tmux.conf
     become: true
     become_user: "{{ var_user }}"
 
@@ -76,15 +86,15 @@
     copy: src=01-powertop.conf dest=/etc/sysctl.d/01-powertop.conf
     become: true
     become_user: root
+    when: ansible_distribution == 'Fedora'
   - name: Disable wol
     copy: src=81-wol.rules dest=/etc/udev/rules.d/81-wol.rules
     become: true
     become_user: root
+    when: ansible_distribution == 'Fedora'
+  - name: PCI powermgmt
+    copy: src=82-pci.rules dest=/etc/udev/rules.d/82-pci.rules
+    become: true
+    become_user: root
+    when: ansible_distribution == 'Fedora'
 
-  #
-  # Setup dnsmasq
-  #
-  #- name: Enable dnsmasq
-  #  ini_file: dest=/etc/NetworkManager/NetworkManager.conf section=main option=dns value=dnsmasq
-  #  become: true
-  #  become_user: root
