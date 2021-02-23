@@ -22,3 +22,5 @@ endif
 set encoding=utf-8
 set list listchars=tab:»·,trail:·
 
+set backspace=indent,eol,start
+
