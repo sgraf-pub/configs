@@ -65,23 +65,14 @@ parse_exit_code () {
     else
         final_ecode=${temp_ecode[@]:1}
     fi
-    if [ "${final_ecode}" != "0" ]; then
-        local display_ecode=0
-        for i in ${final_ecode[@]}; do
-            [ ${i} != "0" ] && display_ecode=1
-        done
-        if [ ${display_ecode} -eq 1 ] ; then
-            for i in ${final_ecode[@]}; do
-                if [ ${i} != "0" ] ; then
-                    PS1+="${LIGHT_RED}:: [   FAIL   ] :: "
-                    PS1+="${EXIT_CODES[$i]} (exit code ${i})"
-                else
-                    PS1+="${LIGHT_GREEN}:: [   PASS   ] ::"
-                fi
-                PS1+="${RESET_COLOR}\n"
-            done
+    for i in ${final_ecode[@]}; do
+        if [ ${i} != "0" ] ; then
+            PS1+="${LIGHT_RED} ${EXIT_CODES[$i]} (exit code ${i})\n"
+            PS1+=" ❌ ${RESET_COLOR}"
+        else
+            PS1+="${LIGHT_GREEN} ✅ ${RESET_COLOR}"
         fi
-    fi
+    done
 }
 
 parse_git () {
