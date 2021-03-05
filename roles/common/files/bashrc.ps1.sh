@@ -12,6 +12,9 @@ BROWN='\[\e[0;33m\]';       YELLOW='\[\e[1;33m\]'
 LIGHT_GRAY='\[\e[0;37m\]';  WHITE='\[\e[1;37m\]'
 RESET_COLOR='\[\e[00m\]'
 
+FANCY_X='\[\342\234\]\227'
+CHECKMARK='\[\342\234\]\223'
+
 unset EXIT_CODES
 # Exit codes definitions, see bash(1),
 EXIT_CODES[1]='Catchall for general errors / Operation not permitted'
@@ -68,9 +71,9 @@ parse_exit_code () {
     for i in ${final_ecode[@]}; do
         if [ ${i} != "0" ] ; then
             PS1+="${LIGHT_RED} ${EXIT_CODES[$i]} (exit code ${i})\n"
-            PS1+=" ❌ ${RESET_COLOR}"
+            PS1+=" ${FANCY_X} ${RESET_COLOR}"
         else
-            PS1+="${LIGHT_GREEN} ✅ ${RESET_COLOR}"
+            PS1+="${LIGHT_GREEN} ${CHECKMARK} ${RESET_COLOR}"
         fi
     done
 }
