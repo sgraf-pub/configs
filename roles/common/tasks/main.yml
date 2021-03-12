@@ -2,7 +2,7 @@
   - name: run this on fedora type systems
     set_fact:
       var_home: 'home'
-    when: ansible_distribution == 'Fedora'
+    when: (ansible_distribution == 'Fedora') or (ansible_distribution == 'CentOS')
 
   - name: run this on OSX type systems
     set_fact:
