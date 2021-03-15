@@ -9,12 +9,12 @@
   - lineinfile:
       path: /etc/cups/cupsd.conf
       insertafter: '^Listen localhost:631'
-      line: 'Listen 192.168.0.25:631'
+      line: 'Listen 192.168.68.53:631'
   - lineinfile:
       path: /etc/cups/cupsd.conf
       firstmatch: true
       insertafter: '^  Order allow,deny'
-      line: '  Allow 192.168.0.*'
+      line: '  Allow 192.168.68.*'
   - systemd:
       name: saned.socket
       enabled: yes
