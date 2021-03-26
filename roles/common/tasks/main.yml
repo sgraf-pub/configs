@@ -128,14 +128,27 @@
     become: true
     become_user: root
     when: ansible_distribution == 'Fedora'
+  - name: Check if sysroot exists
+    stat: path=/sysroot/
+    register: st
+  - name: Enable duperemove for sysroot
+    systemd: name='duperemove-weekly@-.timer' state=started enabled=yes
+    become: true
+    become_user: root
+    when: (ansible_distribution == 'Fedora') and (st.stat.exists == False)
   - name: Enable duperemove for sysroot
     systemd: name='duperemove-weekly@-sysroot-.timer' state=started enabled=yes
     become: true
     become_user: root
-    when: ansible_distribution == 'Fedora'
+    when: (ansible_distribution == 'Fedora') and (st.stat.exists == True)
+  - name: Enable duperemove for home
+    systemd: name='duperemove-weekly@-home-.timer' state=started enabled=yes
+    become: true
+    become_user: root
+    when: (ansible_distribution == 'Fedora') and (st.stat.exists == False)
   - name: Enable duperemove for home
     systemd: name='duperemove-weekly@-var-home-.timer' state=started enabled=yes
     become: true
     become_user: root
-    when: ansible_distribution == 'Fedora'
+    when: (ansible_distribution == 'Fedora') and (st.stat.exists == True)
 
