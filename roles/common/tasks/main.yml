@@ -98,3 +98,44 @@
     become_user: root
     when: ansible_distribution == 'Fedora'
 
+  #
+  # Setup deduplication
+  #
+  - name: Check if duperemove is installed
+    command: rpm -q duperemove
+    register: st
+    when: ansible_distribution == 'Fedora'
+  - name: Error if duperemove is missing
+    fail: msg="Pls install duperemove pkg first"
+    when: (ansible_distribution == 'Fedora') and (st is failed)
+  - name: Add duperemove@.service
+    copy: src='duperemove@.service' dest='/etc/systemd/system/duperemove@.service'
+    become: true
+    become_user: root
+    when: ansible_distribution == 'Fedora'
+  - name: Add duperemove-weekly@.timer
+    copy: src='duperemove-weekly@.timer' dest='/etc/systemd/system/duperemove-weekly@.timer'
+    become: true
+    become_user: root
+    when: ansible_distribution == 'Fedora'
+  - name: Add duperemove config
+    copy: src='duperemove' dest='/etc/default/duperemove'
+    become: true
+    become_user: root
+    when: ansible_distribution == 'Fedora'
+  - name: Reload systemd
+    systemd: daemon_reload=yes
+    become: true
+    become_user: root
+    when: ansible_distribution == 'Fedora'
+  - name: Enable duperemove for sysroot
+    systemd: name='duperemove-weekly@-sysroot-.timer' state=started enabled=yes
+    become: true
+    become_user: root
+    when: ansible_distribution == 'Fedora'
+  - name: Enable duperemove for home
+    systemd: name='duperemove-weekly@-var-home-.timer' state=started enabled=yes
+    become: true
+    become_user: root
+    when: ansible_distribution == 'Fedora'
+
