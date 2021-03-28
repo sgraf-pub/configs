@@ -15,5 +15,5 @@ IOWeight=25
 CPUWeight=25
 ExecStartPre=/bin/mkdir -p ${HashDir}
 ExecStartPre=-/bin/df -h %I
-ExecStart=/usr/sbin/duperemove --hashfile=${HashDir}/%i.hashfile -r -d -h -A $OPTIONS %I
+ExecStart=/usr/sbin/duperemove --hashfile=${HashDir}/%i.hashfile -r -d -h $OPTIONS %I
 ExecStopPost=-/bin/df -h %I
