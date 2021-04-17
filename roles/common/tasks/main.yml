@@ -152,3 +152,19 @@
     become_user: root
     when: (ansible_distribution == 'Fedora') and (st.stat.exists == True)
 
+  #
+  # Update script
+  #
+  - name: Creates directory
+    file:
+      path: /{{ var_home }}/{{ var_user }}/.local/bin
+      state: directory
+    become: true
+    become_user: "{{ var_user }}"
+    when: ansible_distribution == 'Fedora'
+  - name: Add update script
+    copy: src=up dest=/{{ var_home }}/{{ var_user }}/.local/bin/up mode=0755
+    become: true
+    become_user: "{{ var_user }}"
+    when: ansible_distribution == 'Fedora'
+
