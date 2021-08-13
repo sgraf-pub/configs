@@ -80,20 +80,20 @@
     become_user: "{{ var_user }}"
 
   #
-  # Powertop rules
+  # Remove previous powertop rules
   #
-  - name: Enable more powersaving
-    copy: src=01-powertop.conf dest=/etc/sysctl.d/01-powertop.conf
+  - name: Remove /etc/sysctl.d/01-powertop.conf
+    file: path='/etc/sysctl.d/01-powertop.conf' state=absent
     become: true
     become_user: root
     when: (ansible_distribution == 'Fedora') or (ansible_distribution == 'openSUSE Leap')
-  - name: Disable wol
-    copy: src=81-wol.rules dest=/etc/udev/rules.d/81-wol.rules
+  - name: Remove /etc/udev/rules.d/81-wol.rules
+    file: path='/etc/udev/rules.d/81-wol.rules' state=absent
     become: true
     become_user: root
     when: (ansible_distribution == 'Fedora') or (ansible_distribution == 'openSUSE Leap')
-  - name: PCI powermgmt
-    copy: src=82-pci.rules dest=/etc/udev/rules.d/82-pci.rules
+  - name: Remove /etc/udev/rules.d/82-pci.rules
+    file: path='/etc/udev/rules.d/82-pci.rules' state=absent
     become: true
     become_user: root
     when: (ansible_distribution == 'Fedora') or (ansible_distribution == 'openSUSE Leap')
