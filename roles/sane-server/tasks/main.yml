@@ -4,21 +4,33 @@
   #
   - name: Copy udev rule to set proper group
     copy: src=70-saned.rules dest=/etc/udev/rules.d/70-saned.rules mode=0644 owner=root group=root
+    become: true
+    become_user: root
   - name: Disable v4l
     file: path=/etc/sane.d/v4l.conf state=absent
+    become: true
+    become_user: root
   - lineinfile:
       path: /etc/cups/cupsd.conf
       insertafter: '^Listen localhost:631'
       line: 'Listen 192.168.68.53:631'
+    become: true
+    become_user: root
   - lineinfile:
       path: /etc/cups/cupsd.conf
       firstmatch: true
       insertafter: '^  Order allow,deny'
       line: '  Allow 192.168.68.*'
+    become: true
+    become_user: root
   - systemd:
       name: saned.socket
       enabled: yes
-  - systemd:
-      name: airsaned.service
-      enabled: yes
+    become: true
+    become_user: root
+  #- systemd:
+  #    name: airsaned.service
+  #    enabled: yes
+  #  become: true
+  #  become_user: root
 

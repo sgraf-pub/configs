@@ -35,10 +35,12 @@
     when: result is failed
     become: true
     become_user: root
-  - firewalld:
-      service: ipp
-      permanent: true
-      state: enabled
+  - firewalld: service=ipp permanent=true state=enabled
+    become: true
+    become_user: root
+  - firewalld: service=samba permanent=true state=enabled
+    become: true
+    become_user: root
   - name: Download 69-hdparm.rules
     copy: src=69-hdparm.rules dest=/etc/udev/rules.d/69-hdparm.rules mode=0644
     become: true
