@@ -117,15 +117,15 @@
   #
   # Antivirus
   #
-  - name: Install clamav
-    dnf:
-      name:
-        - clamav
-        - clamav-update
-        - clamav-scanner-systemd
-      state: latest
-    become: true
-    become_user: root
+  #- name: Install clamav
+  #  dnf:
+  #    name:
+  #      - clamav
+  #      - clamav-update
+  #      - clamav-scanner-systemd
+  #    state: latest
+  #  become: true
+  #  become_user: root
   - name: Add clamav config
     copy: src=scan.conf dest=/etc/clamd.d/scan.conf mode=0644
     become: true
@@ -135,6 +135,8 @@
       path: /etc/clamd.d/scan.conf
       regexp: '^OnAccessIncludePath '
       line: "OnAccessIncludePath /{{ var_home }}/{{ var_user }}"
+    become: true
+    become_user: root
   - name: Get clamav selinux boolean
     shell: getsebool antivirus_can_scan_system | grep on
     register: result
@@ -149,7 +151,7 @@
     become_user: root
   - name: Start freshclamav
     systemd:
-      name: clamd-freshclam.service
+      name: clamav-freshclam.service
       enabled: yes
       state: started
     become: true
