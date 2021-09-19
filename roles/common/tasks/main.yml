@@ -114,3 +114,52 @@
     become_user: "{{ var_user }}"
     when: (ansible_distribution == 'Fedora') or (ansible_distribution == 'openSUSE Leap')
 
+  #
+  # Antivirus
+  #
+  - name: Install clamav
+    dnf:
+      name:
+        - clamav
+        - clamav-update
+        - clamav-scanner-systemd
+      state: latest
+    become: true
+    become_user: root
+  - name: Add clamav config
+    copy: src=scan.conf dest=/etc/clamd.d/scan.conf mode=0644
+    become: true
+    become_user: root
+  - name: Get clamav selinux boolean
+    shell: getsebool antivirus_can_scan_system | grep on
+    register: result
+    ignore_errors: True
+    changed_when: "result.rc != 0"
+    become: true
+    become_user: root
+  - name: Set clamav selinux boolean
+    command: setsebool -P antivirus_can_scan_system 1
+    when: result is failed
+    become: true
+    become_user: root
+  - name: Start freshclamav
+    systemd:
+      name: clamd-freshclam.service
+      enabled: yes
+      state: started
+    become: true
+    become_user: root
+  - name: Start clamd
+    systemd:
+      name: clamd@scan.service
+      enabled: yes
+      state: started
+    become: true
+    become_user: root
+  - name: Start clamonacc
+    systemd:
+      name: clamav-clamonacc.service
+      enabled: yes
+      state: started
+    become: true
+    become_user: root
