@@ -1,7 +1,0 @@
----
-  #
-  # Setup sane client
-  #
-  - name: Configure sane clinet
-    lineinfile: dest=/etc/sane.d/net.conf line="{{ var_serverip }}"
-

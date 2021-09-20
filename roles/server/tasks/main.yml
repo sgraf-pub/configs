@@ -35,9 +35,6 @@
     when: result is failed
     become: true
     become_user: root
-  - firewalld: service=ipp permanent=true state=enabled
-    become: true
-    become_user: root
   - firewalld: service=samba permanent=true state=enabled
     become: true
     become_user: root
