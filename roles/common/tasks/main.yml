@@ -2,7 +2,7 @@
   - name: run this on fedora type systems
     set_fact:
       var_home: 'home'
-    when: (ansible_distribution == 'Fedora') or (ansible_distribution == 'openSUSE Leap')
+    when: ansible_distribution != 'MacOSX'
 
   - name: run this on OSX type systems
     set_fact:
@@ -86,17 +86,17 @@
     file: path='/etc/sysctl.d/01-powertop.conf' state=absent
     become: true
     become_user: root
-    when: (ansible_distribution == 'Fedora') or (ansible_distribution == 'openSUSE Leap')
+    when: ansible_distribution != 'MacOSX'
   - name: Remove /etc/udev/rules.d/81-wol.rules
     file: path='/etc/udev/rules.d/81-wol.rules' state=absent
     become: true
     become_user: root
-    when: (ansible_distribution == 'Fedora') or (ansible_distribution == 'openSUSE Leap')
+    when: ansible_distribution != 'MacOSX'
   - name: Remove /etc/udev/rules.d/82-pci.rules
     file: path='/etc/udev/rules.d/82-pci.rules' state=absent
     become: true
     become_user: root
-    when: (ansible_distribution == 'Fedora') or (ansible_distribution == 'openSUSE Leap')
+    when: ansible_distribution != 'MacOSX'
 
   #
   # Update script
@@ -107,66 +107,10 @@
       state: directory
     become: true
     become_user: "{{ var_user }}"
-    when: (ansible_distribution == 'Fedora') or (ansible_distribution == 'openSUSE Leap')
+    when: ansible_distribution != 'MacOSX'
   - name: Add update script
     copy: src=up dest=/{{ var_home }}/{{ var_user }}/.local/bin/up mode=0755
     become: true
     become_user: "{{ var_user }}"
-    when: (ansible_distribution == 'Fedora') or (ansible_distribution == 'openSUSE Leap')
+    when: ansible_distribution != 'MacOSX'
 
-  #
-  # Antivirus
-  #
-  #- name: Install clamav
-  #  dnf:
-  #    name:
-  #      - clamav
-  #      - clamav-update
-  #      - clamav-scanner-systemd
-  #    state: latest
-  #  become: true
-  #  become_user: root
-  - name: Add clamav config
-    copy: src=scan.conf dest=/etc/clamd.d/scan.conf mode=0644
-    become: true
-    become_user: root
-  - name: Change homedir
-    lineinfile:
-      path: /etc/clamd.d/scan.conf
-      regexp: '^OnAccessIncludePath '
-      line: "OnAccessIncludePath /{{ var_home }}/{{ var_user }}"
-    become: true
-    become_user: root
-  - name: Get clamav selinux boolean
-    shell: getsebool antivirus_can_scan_system | grep on
-    register: result
-    ignore_errors: True
-    changed_when: "result.rc != 0"
-    become: true
-    become_user: root
-  - name: Set clamav selinux boolean
-    command: setsebool -P antivirus_can_scan_system 1
-    when: result is failed
-    become: true
-    become_user: root
-  - name: Start freshclamav
-    systemd:
-      name: clamav-freshclam.service
-      enabled: yes
-      state: started
-    become: true
-    become_user: root
-  - name: Start clamd
-    systemd:
-      name: clamd@scan.service
-      enabled: yes
-      state: started
-    become: true
-    become_user: root
-  - name: Start clamonacc
-    systemd:
-      name: clamav-clamonacc.service
-      enabled: yes
-      state: started
-    become: true
-    become_user: root
