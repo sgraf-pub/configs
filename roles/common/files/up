@@ -6,6 +6,7 @@ else
     sudo dnf update -y
 fi
 sudo dbus-run-session flatpak update -y
+dbus-run-session flatpak update -y
 for container in $(podman ps -a | grep toolbox | awk '{ print $NF }'); do
     toolbox run -c "${container}" sudo yum update -y
 done
