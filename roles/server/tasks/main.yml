@@ -30,6 +30,11 @@
     changed_when: "result.rc != 0"
     become: true
     become_user: root
+  - name: Create a user
+    shell: useradd {{ var_cifsname }}
+    when: result is failed
+    become: true
+    become_user: root
   - name: Create samba user
     shell: echo -e "{{ var_cifspass }}\n{{ var_cifspass }}" | smbpasswd -s -a {{ var_cifsname }}
     when: result is failed
