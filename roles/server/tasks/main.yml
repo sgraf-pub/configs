@@ -43,7 +43,19 @@
   - firewalld: service=samba permanent=true state=enabled
     become: true
     become_user: root
-  - name: Download 69-hdparm.rules
-    copy: src=69-hdparm.rules dest=/etc/udev/rules.d/69-hdparm.rules mode=0644
+  - name: Configure btrbk
+    copy: src=btrbk.conf dest=/etc/btrbk/btrbk.conf mode=0644 owner=root group=root
+    become: true
+    become_user: root
+  - name: Configure zram
+    copy: src=zram-generator.conf dest=/etc/systemd/zram-generator.conf mode=0644 owner=root group=root
+    become: true
+    become_user: root
+  - name: Configure minidlna
+    copy: src=minidlna.conf dest=/etc/minidlna.conf mode=0644 owner=root group=root
+    become: true
+    become_user: root
+  - name: Configure fstrim
+    copy: src=fstrim.sh dest=/etc/cron.daily/fstrim.sh mode=0755 owner=root group=root
     become: true
     become_user: root
