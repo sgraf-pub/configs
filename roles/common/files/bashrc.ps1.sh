@@ -124,6 +124,7 @@ generate_ps () {
     PS1+="[\u@\h"
     PS1+=" ${LIGHT_BLUE}\w${RESET_COLOR}]"
     parse_git
+    [[ ! -z ${VIRTUAL_ENV} ]] && PS1+="(${VIRTUAL_ENV##*/})"
     if [ \u == "root" ]; then
         PS1+="# "
     else
