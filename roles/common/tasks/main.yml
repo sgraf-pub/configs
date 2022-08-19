@@ -20,18 +20,6 @@
     when: st.stat.exists == False
 
   #
-  # Setup htop
-  #
-  - name: Create htoprc dir
-    file: path=/{{ var_home }}/{{ var_user }}/.config/htop state=directory
-    become: true
-    become_user: "{{ var_user }}"
-  - name: Copy htoprc file
-    copy: src=htoprc dest=/{{ var_home }}/{{ var_user }}/.config/htop/htoprc
-    become: true
-    become_user: "{{ var_user }}"
- 
-  #
   # Setup vim
   #
   - name: Copy config of vim
