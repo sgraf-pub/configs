@@ -1,25 +1,10 @@
 #!/usr/bin/env bash
 set -xe
-if command -v rpm-ostree; then
+if [ ! -e "/run/ostree-booted" ] && [ -x "/usr/bin/dnf" ]; then
+    sudo dnf update -y
+fi
+if [ -e "/run/ostree-booted" ] && [ -x "/usr/bin/rpm-ostree" ]; then
     sudo rpm-ostree upgrade
-else
-    if command -v dnf; then
-        sudo dnf makecache
-        sudo dnf update -y
-    fi
-fi
-# apt --version fails on MacOSX
-if apt --version &> /dev/null; then
-    command -v apt
-    sudo apt update
-    sudo apt upgrade -y
-fi
-if command -v snap; then
-    sudo snap refresh
-fi
-if command -v flatpak; then
-    dbus-run-session flatpak update -y
-    dbus-run-session flatpak remove --unused -y
 fi
 if command -v podman; then
     for container in $(podman ps -a | grep toolbox | awk '{ print $NF }'); do
@@ -31,11 +16,4 @@ if brew --version &> /dev/null; then
     command -v brew
     brew update
     brew upgrade
-fi
-if command -v fwupdmgr; then
-    set +e
-    sudo fwupdmgr refresh
-    sudo fwupdmgr get-updates
-    sudo fwupdmgr update
-    set -e
 fi
