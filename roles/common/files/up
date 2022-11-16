@@ -11,6 +11,10 @@ if command -v podman; then
         toolbox run -c "${container}" sudo dnf update -y
     done
 fi
+if command -v flatpak; then
+    sudo flatpak update -y
+    sudo flatpak remove --unused -y
+fi
 # brew --version fails on linux
 if brew --version &> /dev/null; then
     command -v brew
