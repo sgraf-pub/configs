@@ -12,8 +12,8 @@ if command -v podman; then
     done
 fi
 if command -v flatpak; then
-    sudo flatpak update -y
-    sudo flatpak remove --unused -y
+    flatpak update -y
+    flatpak remove --unused -y
 fi
 # brew --version fails on linux
 if brew --version &> /dev/null; then
