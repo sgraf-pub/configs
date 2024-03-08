@@ -52,29 +52,29 @@
   #
   # Setup tmux
   #
-  - name: Copy config of tmux
-    copy: src=tmux.conf dest={{ var_home }}/.tmux.conf
-    become: true
-    become_user: "{{ var_user }}"
+  #- name: Copy config of tmux
+  #  copy: src=tmux.conf dest={{ var_home }}/.tmux.conf
+  #  become: true
+  #  become_user: "{{ var_user }}"
 
   #
   # Remove previous powertop rules
   #
-  - name: Remove /etc/sysctl.d/01-powertop.conf
-    file: path='/etc/sysctl.d/01-powertop.conf' state=absent
-    become: true
-    become_user: root
-    when: ansible_distribution != 'MacOSX'
-  - name: Remove /etc/udev/rules.d/81-wol.rules
-    file: path='/etc/udev/rules.d/81-wol.rules' state=absent
-    become: true
-    become_user: root
-    when: ansible_distribution != 'MacOSX'
-  - name: Remove /etc/udev/rules.d/82-pci.rules
-    file: path='/etc/udev/rules.d/82-pci.rules' state=absent
-    become: true
-    become_user: root
-    when: ansible_distribution != 'MacOSX'
+  #- name: Remove /etc/sysctl.d/01-powertop.conf
+  #  file: path='/etc/sysctl.d/01-powertop.conf' state=absent
+  #  become: true
+  #  become_user: root
+  #  when: ansible_distribution != 'MacOSX'
+  #- name: Remove /etc/udev/rules.d/81-wol.rules
+  #  file: path='/etc/udev/rules.d/81-wol.rules' state=absent
+  #  become: true
+  #  become_user: root
+  #  when: ansible_distribution != 'MacOSX'
+  #- name: Remove /etc/udev/rules.d/82-pci.rules
+  #  file: path='/etc/udev/rules.d/82-pci.rules' state=absent
+  #  become: true
+  #  become_user: root
+  #  when: ansible_distribution != 'MacOSX'
 
   #
   # Update script
@@ -86,8 +86,8 @@
     become: true
     become_user: "{{ var_user }}"
     when: ansible_distribution != 'MacOSX'
-  - name: Add update script
-    copy: src=up dest={{ var_home }}/.local/bin/up mode=0755
-    become: true
-    become_user: "{{ var_user }}"
+  #- name: Add update script
+  #  copy: src=up dest={{ var_home }}/.local/bin/up mode=0755
+  #  become: true
+  #  become_user: "{{ var_user }}"
 
