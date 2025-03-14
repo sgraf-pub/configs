@@ -60,16 +60,18 @@ EXIT_CODES[159]='SIGSYS,31,Core Bad argument to routine (SVr4) / SIGUNUSED,'\
 parse_exit_code () {
     local temp_ecode=( $1 )
     local final_ecode=
-    if [ ${temp_ecode} != ${temp_ecode[@]:(-1)} ]; then
-        final_ecode=${temp_ecode}
+    if [ ${#temp_ecode[@]} -eq 2 ]; then
+        final_ecode=${temp_ecode[1]}
     else
-        final_ecode=${temp_ecode[@]:1}
+        final_ecode=${temp_ecode[*]:1}
     fi
-    for i in ${final_ecode[@]}; do
-        if [ ${i} != "0" ] ; then
+    for i in ${final_ecode[*]}; do
+        if [ "${i}" != "0" ] ; then
             PS1+="${LIGHT_RED} ${EXIT_CODES[$i]} (exit code ${i})\n"
-            PS1+="${RESET_COLOR}"
+        else
+            PS1+="${LIGHT_GREEN} OK (exit code 0)\n"
         fi
+        PS1+="${RESET_COLOR}"
     done
 }
 
@@ -88,7 +90,7 @@ parse_git () {
             workt=$(echo -e "${gitstatus}" | cut -c2 | sort | uniq | \
                 tr -d '\n ')
             stage=$(echo -e "${gitstatus}" | cut -c1 | sort | uniq | \
-                grep -v -e '\?' -e '\!' | tr -d '\n ')
+                grep -vE -e '\?' -e '\!' | tr -d '\n ')
         fi
         if [[ -n ${stage} || -n ${workt} ]]; then
             PS1+=" ${YELLOW}${stage}${LIGHT_RED}${workt}"
@@ -96,15 +98,14 @@ parse_git () {
         ahead=$(git rev-list --count @{upstream}..HEAD 2>/dev/null)
         behind=$(git rev-list --count HEAD..@{upstream} 2>/dev/null)
         if [[ -n ${ahead} ]]; then
-            if [ ${ahead} -ne 0 ]; then
+            if [ "${ahead}" -ne 0 ]; then
                 PS1+=" ${YELLOW}+${ahead}"
             fi
-            if [ ${behind} -ne 0 ]; then
+            if [ "${behind}" -ne 0 ]; then
                 PS1+=" ${YELLOW}-${behind}"
             fi
         fi
-        git stash show &>/dev/null
-        if (( $? == 0 )); then
+        if git stash show &>/dev/null; then
             PS1+=" ${LIGHT_PURPLE}S"
         fi
         PS1+="${RESET_COLOR}"
@@ -119,7 +120,7 @@ generate_ps () {
     PS1+="[\u@\h"
     PS1+=" ${LIGHT_BLUE}\w${RESET_COLOR}]"
     parse_git
-    [[ ! -z ${VIRTUAL_ENV} ]] && PS1+="(${VIRTUAL_ENV##*/})"
+    [[ -n ${VIRTUAL_ENV} ]] && PS1+="(${VIRTUAL_ENV##*/})"
     if [ \u == "root" ]; then
         PS1+="# "
     else
@@ -128,4 +129,3 @@ generate_ps () {
 }
 
 PROMPT_COMMAND=generate_ps
-
