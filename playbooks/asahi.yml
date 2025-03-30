@@ -1,0 +1,6 @@
+---
+# file: asahi.yml
+- hosts: laptop
+  remote_user: root
+  roles:
+    - { role: asahi, become: yes }

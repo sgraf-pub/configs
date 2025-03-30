@@ -1,0 +1,99 @@
+---
+  - name: Prepare target basics
+    ansible.builtin.dnf:
+      name:
+        - ansible-core
+        - ansible-collection-community-general
+        - ansible-collection-ansible-posix
+      state: present
+  - name: Install langpacks
+    ansible.builtin.dnf:
+      name:
+        - langpacks-en
+        - langpacks-cs
+      state: present
+  - name: Set timezone
+    community.general.timezone:
+      name: "Europe/Prague"
+  - name: Install Others
+    ansible.builtin.dnf:
+      name:
+        #
+        - ansible-lint
+        - bat
+        - btrfsmaintenance
+        - cpufetch
+        - distrobox
+        - duf
+        - ffmpeg-free
+        - firewalld
+        - git
+        - gnome-backgrounds-extras
+        - gnome-shell-extension-appindicator
+        - gnome-shell-extension-background-logo
+        - gnome-tweaks
+        - htop
+        - inxi
+        - lame
+        - mc
+        - mmv
+        - mozilla-openh264
+        - ncdu
+        - ramalama
+        - screenfetch
+        - pwgen
+        - tldr
+        - tmux
+        - vim
+        - wget
+        - xlsclients
+      state: present
+  - name: Enable balance timer
+    ansible.builtin.service:
+      name: btrfs-balance.timer
+      enabled: true
+  - name: Enable scrub timer
+    ansible.builtin.service:
+      name: btrfs-scrub.timer
+      enabled: true
+  - name: Enable firewalld
+    ansible.builtin.service:
+      name: firewalld.service
+      enabled: true
+      state: started
+  - name: Disable ssh on firewall
+    ansible.posix.firewalld:
+      service: ssh
+      permanent: true
+      immediate: true
+      state: disabled
+  - name: Enable mdns on firewall
+    ansible.posix.firewalld:
+      service: mdns
+      permanent: true
+      immediate: true
+      state: enabled
+  - name: Install Fontconig
+    ansible.builtin.dnf:
+      name:
+        - curl
+        - cabextract
+        - xorg-x11-font-utils
+        - fontconfig
+      state: present
+  - name: Install Microsoft Fonts
+    ansible.builtin.dnf:
+      name:
+        - "https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm"
+      state: present
+      disable_gpg_check: true
+  - name: Disable UDP ports
+    ansible.posix.firewalld:
+      port: 1025-65535/udp
+      permanent: true
+      state: disabled
+  - name: Disable TCP ports
+    ansible.posix.firewalld:
+      port: 1025-65535/tcp
+      permanent: true
+      state: disabled
