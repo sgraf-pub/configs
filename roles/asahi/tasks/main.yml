@@ -39,11 +39,13 @@
         - mmv
         - mozilla-openh264
         - ncdu
+        - powertop
         - ramalama
         - screenfetch
         - pwgen
         - tldr
         - tmux
+        - tuned-utils
         - vim
         - wget
         - xlsclients
