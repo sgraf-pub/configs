@@ -1,9 +1,4 @@
 ---
-- name: Create file /etc/profile.d/vulkan.sh
-  ansible.builtin.file:
-    path: /etc/profile.d/vulkan.sh
-    state: touch
-    mode: "0644"
 - name: Enable Vulkan video decode
   ansible.builtin.copy:
     content: |
