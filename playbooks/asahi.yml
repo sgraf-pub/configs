@@ -4,3 +4,4 @@
   remote_user: root
   roles:
     - { role: asahi, become: yes }
+    - { role: linux, become: yes }
