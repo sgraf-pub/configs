@@ -1,93 +1,97 @@
 ---
-  #
-  # Check if var_user is valid
-  #
-  - name: Check if username is valid
-    stat: path={{ var_home }}
-    register: st
-  - name: Error if username is invalid
-    fail: msg="Invalid username"
-    when: st.stat.exists == False
+#
+# Check if var_user is valid
+#
+- name: Check if username is valid
+  ansible.builtin.stat:
+    path: "{{ var_home }}"
+  register: st
+- name: Error if username is invalid
+  ansible.builtin.fail:
+    msg: "Invalid username"
+  when: not st.stat.exists
 
-  #
-  # Setup vim
-  #
-  - name: Copy config of vim
-    copy: src=vimrc dest={{ var_home }}/.vimrc
-    become: true
-    become_user: "{{ var_user }}"
- 
-  #
-  # Setup readline
-  #
-  - name: Copy config for readline
-    copy: src=inputrc dest={{ var_home }}/.inputrc
-    become: true
-    become_user: "{{ var_user }}"
- 
-  #
-  # Setup bash prompt
-  #
-  - name: Copy config of bash prompt
-    copy: src=bashrc.ps1.sh dest={{ var_home }}/.bashrc.ps1.sh
-    become: true
-    become_user: "{{ var_user }}"
-  - name: Load new bash prompt by default
-    lineinfile: dest="{{ var_home }}/.bashrc" line="source ~/.bashrc.ps1.sh"
-    become: true
-    become_user: "{{ var_user }}"
-  - name: Remove duplicates from history file
-    lineinfile: dest="{{ var_home }}/.bashrc" line="export HISTCONTROL=erasedups"
-    become: true
-    become_user: "{{ var_user }}"
-  - name: Set reasonable history size
-    lineinfile: dest="{{ var_home }}/.bashrc" line="export HISTSIZE=10000"
-    become: true
-    become_user: "{{ var_user }}"
-  - name: Allow forward history search with Ctrl+S
-    lineinfile: dest="{{ var_home }}/.bashrc" line="[[ $- == *i* ]] && stty -ixon"
-    become: true
-    become_user: "{{ var_user }}"
+#
+# Setup vim
+#
+- name: Copy config of vim
+  ansible.builtin.copy:
+    src: vimrc
+    dest: "{{ var_home }}/.vimrc"
+    mode: "0644"
+  become: true
+  become_user: "{{ var_user }}"
 
-  #
-  # Setup tmux
-  #
-  #- name: Copy config of tmux
-  #  copy: src=tmux.conf dest={{ var_home }}/.tmux.conf
-  #  become: true
-  #  become_user: "{{ var_user }}"
+#
+# Setup readline
+#
+- name: Copy config for readline
+  ansible.builtin.copy:
+    src: inputrc
+    dest: "{{ var_home }}/.inputrc"
+    mode: "0644"
+  become: true
+  become_user: "{{ var_user }}"
 
-  #
-  # Remove previous powertop rules
-  #
-  #- name: Remove /etc/sysctl.d/01-powertop.conf
-  #  file: path='/etc/sysctl.d/01-powertop.conf' state=absent
-  #  become: true
-  #  become_user: root
-  #  when: ansible_distribution != 'MacOSX'
-  #- name: Remove /etc/udev/rules.d/81-wol.rules
-  #  file: path='/etc/udev/rules.d/81-wol.rules' state=absent
-  #  become: true
-  #  become_user: root
-  #  when: ansible_distribution != 'MacOSX'
-  #- name: Remove /etc/udev/rules.d/82-pci.rules
-  #  file: path='/etc/udev/rules.d/82-pci.rules' state=absent
-  #  become: true
-  #  become_user: root
-  #  when: ansible_distribution != 'MacOSX'
+#
+# Setup bash prompt
+#
+- name: Copy config of bash prompt
+  ansible.builtin.copy:
+    src: bashrc.ps1.sh
+    dest: "{{ var_home }}/.bashrc.ps1.sh"
+    mode: "0644"
+  become: true
+  become_user: "{{ var_user }}"
+- name: Load new bash prompt by default
+  ansible.builtin.lineinfile:
+    dest: "{{ var_home }}/.bashrc"
+    line: "source ~/.bashrc.ps1.sh"
+    mode: "0644"
+  become: true
+  become_user: "{{ var_user }}"
+- name: Remove duplicates from history file
+  ansible.builtin.lineinfile:
+    dest: "{{ var_home }}/.bashrc"
+    line: "export HISTCONTROL=erasedups"
+  become: true
+  become_user: "{{ var_user }}"
+- name: Set reasonable history size
+  ansible.builtin.lineinfile:
+    dest: "{{ var_home }}/.bashrc"
+    line: "export HISTSIZE=10000"
+  become: true
+  become_user: "{{ var_user }}"
+- name: Allow forward history search with Ctrl+S
+  ansible.builtin.lineinfile:
+    dest: "{{ var_home }}/.bashrc"
+    line: "[[ $- == *i* ]] && stty -ixon"
+  become: true
+  become_user: "{{ var_user }}"
 
-  #
-  # Update script
-  #
-  - name: Creates directory
-    file:
-      path: "{{ var_home }}/.local/bin"
-      state: directory
-    become: true
-    become_user: "{{ var_user }}"
-    when: ansible_distribution != 'MacOSX'
-  #- name: Add update script
-  #  copy: src=up dest={{ var_home }}/.local/bin/up mode=0755
-  #  become: true
-  #  become_user: "{{ var_user }}"
+#
+# Setup tmux
+#
+- name: Copy config of tmux
+  ansible.builtin.copy:
+    src: tmux.conf
+    dest: "{{ var_home }}/.tmux.conf"
+    mode: "0644"
+  become: true
+  become_user: "{{ var_user }}"
 
+#
+# Update script
+#
+- name: Creates directory
+  ansible.builtin.file:
+    path: "{{ var_home }}/.local/bin"
+    state: directory
+    mode: "0755"
+  become: true
+  become_user: "{{ var_user }}"
+  when: ansible_distribution != 'MacOSX'
+# - name: Add update script
+#   ansible.builtin.copy: src=up dest={{ var_home }}/.local/bin/up mode=0755
+#   become: true
+#   become_user: "{{ var_user }}"
