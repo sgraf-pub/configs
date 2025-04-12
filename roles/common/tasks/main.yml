@@ -50,12 +50,6 @@
     mode: "0644"
   become: true
   become_user: "{{ var_user }}"
-- name: Remove duplicates from history file
-  ansible.builtin.lineinfile:
-    dest: "{{ var_home }}/.bashrc"
-    line: "export HISTCONTROL=erasedups"
-  become: true
-  become_user: "{{ var_user }}"
 - name: Set reasonable history size
   ansible.builtin.lineinfile:
     dest: "{{ var_home }}/.bashrc"
