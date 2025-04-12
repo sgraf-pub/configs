@@ -29,31 +29,46 @@
       - ansible-lint
       - bat
       - btrfsmaintenance
+      - cheese
+      - clamtk
+      - compsize
       - cpufetch
       - distrobox
       - duf
+      - egl-utils
+      - fastfetch
       - ffmpeg-free
       - firewalld
       - git
       - gnome-backgrounds-extras
+      - gnome-firmware
       - gnome-shell-extension-appindicator
       - gnome-shell-extension-background-logo
       - gnome-tweaks
       - htop
       - inxi
       - lame
+      - libva-utils
+      - lm_sensors
+      - lshw
       - mc
       - mmv
       - mozilla-openh264
       - ncdu
+      - nvme-cli
       - powertop
+      - pwgen
       - ramalama
+      - remove-retired-packages
+      - rpmconf
       - screenfetch
+      - smartmontools
       - pwgen
       - tldr
       - tmux
       - tuned-utils
       - vim
+      - vulkan-tools
       - wget
       - xlsclients
     state: present
