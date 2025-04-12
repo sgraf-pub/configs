@@ -72,10 +72,38 @@
       - wget
       - xlsclients
     state: present
+- name: Enable fstrim timer
+  ansible.builtin.service:
+    name: fstrim.timer
+    enabled: true
+- name: Save list of btrfs mount points
+  ansible.builtin.shell:
+    cmd: set -o pipefail && /usr/bin/grep btrfs /etc/fstab | /usr/bin/awk '{ print $2 }' | /usr/bin/tr '\n' ',' | /usr/bin/sed 's/.$//'
+  register: fstab_mounts
+  changed_when: false
+- name: Config defrag paths
+  ansible.builtin.lineinfile:
+    dest: /etc/sysconfig/btrfsmaintenance
+    regexp: '^BTRFS_DEFRAG_PATHS='
+    line: BTRFS_DEFRAG_PATHS="{{ fstab_mounts.stdout }}"
+- name: Enable defrag timer
+  ansible.builtin.service:
+    name: btrfs-defrag.timer
+    enabled: true
+- name: Config balance paths
+  ansible.builtin.lineinfile:
+    dest: /etc/sysconfig/btrfsmaintenance
+    regexp: '^BTRFS_BALANCE_MOUNTPOINTS='
+    line: BTRFS_BALANCE_MOUNTPOINTS="{{ fstab_mounts.stdout }}"
 - name: Enable balance timer
   ansible.builtin.service:
     name: btrfs-balance.timer
     enabled: true
+- name: Config scrub paths
+  ansible.builtin.lineinfile:
+    dest: /etc/sysconfig/btrfsmaintenance
+    regexp: '^BTRFS_SCRUB_MOUNTPOINTS='
+    line: BTRFS_SCRUB_MOUNTPOINTS="{{ fstab_mounts.stdout }}"
 - name: Enable scrub timer
   ansible.builtin.service:
     name: btrfs-scrub.timer
