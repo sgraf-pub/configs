@@ -78,7 +78,7 @@
     enabled: true
 - name: Save list of btrfs mount points
   ansible.builtin.shell:
-    cmd: set -o pipefail && /usr/bin/grep btrfs /etc/fstab | /usr/bin/awk '{ print $2 }' | /usr/bin/tr '\n' ',' | /usr/bin/sed 's/.$//'
+    cmd: set -o pipefail && /usr/bin/grep btrfs /etc/fstab | /usr/bin/awk '{ print $2 }' | /usr/bin/tr '\n' ':' | /usr/bin/sed 's/.$//'
   register: fstab_mounts
   changed_when: false
 - name: Config defrag paths
