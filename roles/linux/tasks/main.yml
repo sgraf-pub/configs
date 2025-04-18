@@ -108,3 +108,19 @@
   ansible.builtin.service:
     name: btrfs-scrub.timer
     enabled: true
+- name: Test if system has battery
+  ansible.builtin.command:
+    cmd: test -d /sys/class/power_supply/BAT0 -o -d /sys/class/power_supply/macsmc-battery
+  register: battery_status
+  changed_when: false
+- name: Update Writeback Time
+  ansible.builtin.copy:
+    content: vm.dirty_writeback_centisecs = 1500
+    dest: /etc/sysctl.d/dirty.conf
+    mode: "0644"
+  when: battery_status.rc == 0
+- name: Disable NMI watchdog
+  ansible.builtin.copy:
+    content: kernel.nmi_watchdog = 0
+    dest: /etc/sysctl.d/disable_watchdog.conf
+    mode: "0644"
