@@ -113,6 +113,7 @@
     cmd: test -d /sys/class/power_supply/BAT0 -o -d /sys/class/power_supply/macsmc-battery
   register: battery_status
   changed_when: false
+  ignore_errors: true
 - name: Update Writeback Time
   ansible.builtin.copy:
     content: vm.dirty_writeback_centisecs = 1500
