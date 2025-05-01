@@ -25,6 +25,7 @@
 - name: Install Others
   ansible.builtin.dnf:
     name:
+      - "@multimedia"
       #
       - ansible-lint
       - bat
