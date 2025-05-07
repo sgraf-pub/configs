@@ -6,12 +6,6 @@
              export ANV_VIDEO_ENCODE=1
     dest: /etc/profile.d/vulkan.sh
     mode: "0644"
-- name: Enable wakeup from USB
-  ansible.builtin.copy:
-    content: |
-             ACTION=="add", SUBSYSTEM=="usb", TEST=="power/wakeup", ATTR{power/wakeup}="enabled"
-    dest: /etc/udev/rules.d/50-usb_wakeup.rules
-    mode: "0644"
 - name: Prepare target basics
   ansible.builtin.dnf:
     name:
