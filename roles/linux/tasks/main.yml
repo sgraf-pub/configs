@@ -117,7 +117,9 @@
   ignore_errors: true
 - name: Update Writeback Time
   ansible.builtin.copy:
-    content: vm.dirty_writeback_centisecs = 1500
+    content: |
+             vm.laptop_mode = 5
+             vm.dirty_writeback_centisecs = 1500
     dest: /etc/sysctl.d/dirty.conf
     mode: "0644"
   when: battery_status.rc == 0
