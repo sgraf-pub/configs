@@ -135,3 +135,14 @@
     option: alpm
     value: med_power_with_dipm
     mode: "0644"
+- name: Check if ASPM is set
+  ansible.builtin.command:
+    cmd: grep pcie_aspm /proc/cmdline
+  register: aspm_status
+  changed_when: false
+  ignore_errors: true
+- name: Set ASPM
+  ansible.builtin.command:
+    cmd: grubby --args="pcie_aspm.policy=powersave" --update-kernel=ALL
+  changed_when: false
+  when: aspm_status.rc == 1
