@@ -1,5 +1,6 @@
 #!/usr/bin/bash -ex
-sudo dnf group install -y gnome-desktop --exclude=gnome-boxes
+sudo dnf group install -y --setopt=group_package_types=mandatory --setopt=install_weak_deps=False \
+  gnome-desktop --exclude=gnome-boxes,gnome-connection,gnome-software
 sudo dnf group install -y multimedia
 sudo dnf install -y langpacks-cs langpacks-en
 sudo dnf install -y vim crudini
