@@ -128,3 +128,10 @@
     content: kernel.nmi_watchdog = 0
     dest: /etc/sysctl.d/disable_watchdog.conf
     mode: "0644"
+- name: Configure sata power mgmt
+  community.general.ini_file:
+    path: /usr/lib/tuned/profiles/balanced/tuned.conf
+    section: scsi_host
+    option: alpm
+    value: med_power_with_dipm
+    mode: "0644"
