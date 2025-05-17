@@ -4,4 +4,5 @@
   remote_user: root
   roles:
     - common
-    - { role: linux, become: yes }
+    - { role: linux, become: true }
+    - { role: duperemove, become: true }
