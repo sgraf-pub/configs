@@ -153,3 +153,9 @@
     option: compression-algorithm
     value: zstd
     mode: "0644"
+- name: PCI PM rules
+  ansible.builtin.copy:
+    content: |
+             SUBSYSTEM=="ata_port", KERNEL=="ata*", ATTR{device/power/control}="auto"
+    dest: /etc/udev/rules.d/pci_pm.rules
+    mode: "0644"
