@@ -146,3 +146,10 @@
     cmd: grubby --args="pcie_aspm.policy=powersave" --update-kernel=ALL
   changed_when: false
   when: aspm_status.rc == 1
+- name: Use zstd for zram
+  community.general.ini_file:
+    path: /usr/lib/systemd/zram-generator.conf
+    section: zram0
+    option: compression-algorithm
+    value: zstd
+    mode: "0644"
