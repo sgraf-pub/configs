@@ -159,3 +159,9 @@
              SUBSYSTEM=="ata_port", KERNEL=="ata*", ATTR{device/power/control}="auto"
     dest: /etc/udev/rules.d/pci_pm.rules
     mode: "0644"
+- name: Disable WoL
+  ansible.builtin.copy:
+    content: |
+             ACTION=="add", SUBSYSTEM=="net", NAME=="en*", RUN+="/usr/bin/ethtool -s $name wol d"
+    dest: /etc/udev/rules.d/wol.rules
+    mode: "0644"
