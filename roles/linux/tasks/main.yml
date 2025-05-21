@@ -163,5 +163,6 @@
   ansible.builtin.copy:
     content: |
              ACTION=="add", SUBSYSTEM=="net", NAME=="en*", RUN+="/usr/bin/ethtool -s $name wol d"
+             ACTION=="add", SUBSYSTEM=="net", NAME=="wl*", ATTR{device/power/wakeup}="disabled"
     dest: /etc/udev/rules.d/wol.rules
     mode: "0644"
