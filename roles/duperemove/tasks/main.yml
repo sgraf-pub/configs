@@ -23,14 +23,8 @@
     url: "https://gist.githubusercontent.com/Arano-kai/cdacb092f8fe2b0eea2d927960fbb924/raw/d2d7d9218b48be1ef755b00c87220dc0e9f177e7/duperemove-weekly@.timer"
     dest: "/etc/systemd/system/duperemove-weekly@.timer"
     mode: '0644'
-- name: Save list of btrfs mount points
-  ansible.builtin.shell:
-    cmd: set -o pipefail && systemd-escape $(/usr/bin/grep btrfs /etc/fstab | /usr/bin/awk '{ print $2 }') | tr ' ' '\n'
-  register: fstab_mounts
-  changed_when: false
 - name: Create timers
   ansible.builtin.systemd_service:
-    name: duperemove-weekly@{{ item }}.timer
+    name: duperemove-weekly@-.timer
     state: started
     enabled: true
-  loop: "{{ fstab_mounts.stdout_lines }}"

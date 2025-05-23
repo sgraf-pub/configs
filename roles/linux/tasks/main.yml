@@ -95,7 +95,7 @@
   ansible.builtin.lineinfile:
     dest: /etc/sysconfig/btrfsmaintenance
     regexp: '^BTRFS_BALANCE_MOUNTPOINTS='
-    line: BTRFS_BALANCE_MOUNTPOINTS="{{ fstab_mounts.stdout }}"
+    line: BTRFS_BALANCE_MOUNTPOINTS="auto"
 - name: Enable balance timer
   ansible.builtin.service:
     name: btrfs-balance.timer
@@ -104,7 +104,7 @@
   ansible.builtin.lineinfile:
     dest: /etc/sysconfig/btrfsmaintenance
     regexp: '^BTRFS_SCRUB_MOUNTPOINTS='
-    line: BTRFS_SCRUB_MOUNTPOINTS="{{ fstab_mounts.stdout }}"
+    line: BTRFS_SCRUB_MOUNTPOINTS="auto"
 - name: Enable scrub timer
   ansible.builtin.service:
     name: btrfs-scrub.timer
