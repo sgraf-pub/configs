@@ -6,3 +6,4 @@
     - common
     - { role: linux, become: true }
     - { role: duperemove, become: true }
+    - git

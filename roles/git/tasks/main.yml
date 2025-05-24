@@ -1,0 +1,39 @@
+#
+# Basic git setup
+#
+- name: Set git to pull --rebase as default
+  git_config: name="pull.rebase" scope=global value="true"
+- name: Set git autostash as default
+  git_config: name="rebase.autoStash" scope=global value="true"
+#- name: Set git push simple
+#  git_config: name="push.default" scope=global value="simple"
+- name: Set git lg alias
+  git_config: name="alias.lg" scope=global value='log --pretty=format:"%h - %an, %cr - %s" --graph'
+- name: Set remotebranch alias
+  git_config: name="alias.remotebranch" scope=global value="for-each-ref --format='%(refname:short) <- %(upstream:short)' refs/heads"
+- name: Set git color.ui
+  git_config: name="color.ui" scope=global value="true"
+- name: Set git color.branch
+  git_config: name="color.branch" scope=global value="true"
+- name: Set git color.diff
+  git_config: name="color.diff" scope=global value="true"
+- name: Set git color.interactive
+  git_config: name="color.interactive" scope=global value="true"
+- name: Set git color.status
+  git_config: name="color.status" scope=global value="true"
+- name: Set git color.ui
+  git_config: name="color.ui" scope=global value="true"
+- name: Set git core.editor
+  git_config: name="core.editor" scope=global value="vim"
+- name: Set git transfer.fsckobjects
+  git_config: name="transfer.fsckobjects" scope=global value="true"
+- name: Set git fetch.fsckobjects
+  git_config: name="fetch.fsckobjects" scope=global value="true"
+- name: Set git receive.fsckobjects
+  git_config: name="receive.fsckobjects" scope=global value="true"
+- name: Set git diff.noprefix
+  git_config: name="diff.noprefix" scope=global value="true"
+- name: Enable core.preloadIndex
+  git_config: name="core.preloadIndex" scope=global value="true"
+- name: Enable gc.auto
+  git_config: name="gc.auto" scope=global value="6700"
