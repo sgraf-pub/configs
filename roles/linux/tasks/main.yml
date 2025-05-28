@@ -156,6 +156,7 @@
 - name: PCI PM rules
   ansible.builtin.copy:
     content: |
+             SUBSYSTEM=="pci", ATTR{power/control}="auto"
              SUBSYSTEM=="ata_port", KERNEL=="ata*", ATTR{device/power/control}="auto"
     dest: /etc/udev/rules.d/pci_pm.rules
     mode: "0644"
