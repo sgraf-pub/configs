@@ -119,7 +119,6 @@
   ansible.builtin.copy:
     content: |
              vm.laptop_mode = 5
-             vm.dirty_writeback_centisecs = 1500
     dest: /etc/sysctl.d/dirty.conf
     mode: "0644"
   when: battery_status.rc == 0
@@ -153,13 +152,6 @@
     option: compression-algorithm
     value: zstd
     mode: "0644"
-- name: PCI PM rules
-  ansible.builtin.copy:
-    content: |
-             SUBSYSTEM=="pci", ATTR{power/control}="auto"
-             SUBSYSTEM=="ata_port", KERNEL=="ata*", ATTR{device/power/control}="auto"
-    dest: /etc/udev/rules.d/pci_pm.rules
-    mode: "0644"
 - name: Disable WoL
   ansible.builtin.copy:
     content: |
@@ -167,3 +159,18 @@
              ACTION=="add", SUBSYSTEM=="net", NAME=="wl*", ATTR{device/power/wakeup}="disabled"
     dest: /etc/udev/rules.d/wol.rules
     mode: "0644"
+- name: Enable powertop service
+  ansible.builtin.service:
+    name: powertop.service
+    enabled: true
+- name: Check if USB suspend is set
+  ansible.builtin.command:
+    cmd: grep usbcore /proc/cmdline
+  register: usbcore
+  changed_when: false
+  ignore_errors: true
+- name: Set USB suspend
+  ansible.builtin.command:
+    cmd: grubby --args="usbcore.autosuspend=60" --update-kernel=ALL
+  changed_when: false
+  when: usbcore.rc == 1
