@@ -159,6 +159,13 @@
              ACTION=="add", SUBSYSTEM=="net", NAME=="wl*", ATTR{device/power/wakeup}="disabled"
     dest: /etc/udev/rules.d/wol.rules
     mode: "0644"
+- name: Update powertop service
+  community.general.ini_file:
+    path: /usr/lib/systemd/system/powertop.service
+    section: Service
+    option: ExecStartPost
+    value: "/bin/sh -c 'test -f /sys/module/snd_hda_intel/parameters/power_save && echo 10 > /sys/module/snd_hda_intel/parameters/power_save'"
+    mode: "0644"
 - name: Enable powertop service
   ansible.builtin.service:
     name: powertop.service
