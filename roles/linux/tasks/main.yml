@@ -183,3 +183,19 @@
     cmd: grubby --args="usbcore.autosuspend=60" --update-kernel=ALL
   changed_when: false
   when: usbcore.rc == 1
+- name: Install dnf-automatic
+  ansible.builtin.dnf:
+    name:
+      - dnf-automatic
+    state: present
+- name: Enable auto-update
+  ansible.builtin.copy:
+    content: |
+             [commands]
+             apply_updates = yes
+    dest: /etc/dnf/automatic.conf
+    mode: "0644"
+- name: Enable dnf-automatic timer
+  ansible.builtin.service:
+    name: dnf-automatic.timer
+    enabled: true
