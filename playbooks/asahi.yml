@@ -3,4 +3,8 @@
 - hosts: laptop
   remote_user: root
   roles:
+    - common
+    - { role: linux, become: true }
+    - { role: duperemove, become: true }
+    - git
     - { role: asahi, become: yes }
