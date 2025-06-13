@@ -63,6 +63,7 @@
       - remove-retired-packages
       - rpmconf
       - screenfetch
+      - ShellCheck
       - smartmontools
       - pwgen
       - tldr
