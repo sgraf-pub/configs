@@ -22,6 +22,7 @@
              [Timer]
              OnCalendar=daily
              Persistent=true
+             RandomizedDelaySec=60m
              [Install]
              WantedBy=timers.target
     dest: '~/.config/systemd/user/distrobox-upgrade.timer'
