@@ -119,6 +119,7 @@
   ansible.builtin.copy:
     content: |
              vm.laptop_mode = 5
+             vm.dirty_writeback_centisecs = 1500
     dest: /etc/sysctl.d/dirty.conf
     mode: "0644"
   when: battery_status.rc == 0
