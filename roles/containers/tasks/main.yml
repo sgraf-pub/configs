@@ -9,6 +9,7 @@
     content: |
              [Unit]
              Description=Automatically upgrade all Distrobox containers
+             After=network-online.target
              [Service]
              Type=oneshot
              ExecStart=/usr/bin/distrobox-upgrade --all
@@ -19,6 +20,7 @@
     content: |
              [Unit]
              Description=Run distrobox-upgrade daily
+             Wants=network-online.target
              [Timer]
              OnCalendar=daily
              Persistent=true
