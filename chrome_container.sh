@@ -9,3 +9,6 @@ sudo dnf install -y vim crudini
 sudo dnf install -y fedora-workstation-repositories
 sudo dnf config-manager setopt google-chrome.enabled=1
 sudo dnf install -y google-chrome-stable
+
+# Set vulkan/vaapi
+sudo dnf install -y vulkan-tools libva-utils
