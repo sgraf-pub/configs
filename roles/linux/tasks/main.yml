@@ -4,6 +4,7 @@
     content: |
              export ANV_VIDEO_DECODE=1
              export ANV_VIDEO_ENCODE=1
+             #export ANV_DEBUG=video-decode,video-encode
     dest: /etc/profile.d/vulkan.sh
     mode: "0644"
 - name: Prepare target basics
