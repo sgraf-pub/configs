@@ -162,6 +162,13 @@
              ACTION=="add", SUBSYSTEM=="net", NAME=="wl*", ATTR{device/power/wakeup}="disabled"
     dest: /etc/udev/rules.d/wol.rules
     mode: "0644"
+- name: Enable net powersaving
+  ansible.builtin.copy:
+    content: |
+             ACTION=="add", SUBSYSTEM=="net", NAME=="en*", RUN+="/usr/bin/ethtool --set-eee $name eee on"
+             ACTION=="add", SUBSYSTEM=="net", NAME=="wl*", RUN+="/usr/bin/iw dev $name set power_save on"
+    dest: /etc/udev/rules.d/net_power_save.rules
+    mode: "0644"
 - name: Autosuspend newly added USB devices
   ansible.builtin.copy:
     content: |
