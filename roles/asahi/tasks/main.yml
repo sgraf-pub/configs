@@ -58,4 +58,5 @@
     section: rpmfusion-nonfree-nvidia-driver
     option: enabled
     value: '0'
+    no_extra_spaces: true
     mode: "0644"
