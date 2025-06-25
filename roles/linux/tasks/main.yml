@@ -145,7 +145,7 @@
   ignore_errors: true
 - name: Set ASPM
   ansible.builtin.command:
-    cmd: grubby --args="pcie_aspm.policy=powersave" --update-kernel=ALL
+    cmd: grubby --args="pcie_aspm.policy=powersupersave" --update-kernel=ALL
   changed_when: false
   when: aspm_status.rc == 1
 - name: Use zstd for zram
