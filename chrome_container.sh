@@ -14,4 +14,4 @@ sudo dnf install -y google-chrome-stable
 sudo dnf install -y vulkan-tools libva-utils
 
 # Disable 32bit packages
-crudini --set /etc/dnf/dnf.conf main excludepkgs "*.i?86"
+sudo crudini --set /etc/dnf/dnf.conf main excludepkgs "*.i?86"
