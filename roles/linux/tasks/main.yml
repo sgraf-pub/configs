@@ -136,6 +136,7 @@
     section: scsi_host
     option: alpm
     value: med_power_with_dipm
+    no_extra_spaces: true
     mode: "0644"
 - name: Check if ASPM is set
   ansible.builtin.command:
