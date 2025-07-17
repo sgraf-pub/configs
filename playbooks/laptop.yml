@@ -8,3 +8,4 @@
     - { role: duperemove, become: true }
     - git
     - containers
+    - { role: flatpaks, become: true }
