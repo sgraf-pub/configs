@@ -21,6 +21,7 @@
       - evince  # eventually Papers
       - gnome-weather
     state: absent
+    autoremove: true
 - name: Install flatpaks
   community.general.flatpak:
     name:
@@ -54,6 +55,8 @@
       - libreoffice-impress
       - libreoffice-writer
     state: absent
+    autoremove: true
+    allowerasing: true
 - name: Install libreoffice flatpak
   community.general.flatpak:
     name:
