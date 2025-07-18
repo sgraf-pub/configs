@@ -44,3 +44,19 @@
       - org.gnome.Weather
     state: present
     remote: fedora
+- name: Remove libreoffice rpms
+  ansible.builtin.dnf:
+    name:
+      - libreoffice-core
+      - libreoffice-base
+      - libreoffice-calc
+      - libreoffice-draw
+      - libreoffice-impress
+      - libreoffice-writer
+    state: absent
+- name: Install libreoffice flatpak
+  community.general.flatpak:
+    name:
+      - org.libreoffice.LibreOffice
+    state: present
+    remote: fedora
