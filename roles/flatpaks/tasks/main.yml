@@ -20,6 +20,8 @@
       - sushi
       - evince  # eventually Papers
       - gnome-weather
+      - cheese
+      - simple-scan
     state: absent
     autoremove: true
 - name: Install flatpaks
@@ -43,6 +45,8 @@
       - org.gnome.NautilusPreviewer
       - org.gnome.Papers
       - org.gnome.Weather
+      - org.gnome.Cheese
+      - org.gnome.SimpleScan
     state: present
     remote: fedora
 - name: Remove libreoffice rpms
@@ -63,3 +67,17 @@
       - org.libreoffice.LibreOffice
     state: present
     remote: fedora
+- name: Remove other rpms
+  ansible.builtin.dnf:
+    name:
+      - gnome-boxes
+      - gnome-firmware
+    state: absent
+    autoremove: true
+- name: Install other flatpak
+  community.general.flatpak:
+    name:
+      - org.gnome.Boxes
+      - org.gnome.Firmware
+    state: present
+    remote: flathub

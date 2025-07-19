@@ -31,7 +31,6 @@
       - ansible-lint
       - bat
       - btrfsmaintenance
-      - cheese
       - clamtk
       - compsize
       - cpufetch
@@ -43,7 +42,6 @@
       - firewalld
       - git
       - gnome-backgrounds-extras
-      - gnome-firmware
       - gnome-shell-extension-appindicator
       - gnome-shell-extension-background-logo
       - gnome-tweaks
