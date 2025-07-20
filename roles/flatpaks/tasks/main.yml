@@ -1,5 +1,5 @@
 ---
-- name: Remove selected rpms
+- name: Remove selected Fedora rpms
   ansible.builtin.dnf:
     name:
       - baobab
@@ -22,9 +22,10 @@
       - gnome-weather
       - cheese
       - simple-scan
+      - dconf-editor
     state: absent
     autoremove: true
-- name: Install flatpaks
+- name: Install Fedora flatpaks
   community.general.flatpak:
     name:
       - org.gnome.baobab
@@ -47,6 +48,8 @@
       - org.gnome.Weather
       - org.gnome.Cheese
       - org.gnome.SimpleScan
+      - ca.desrt.dconf-editor
+      - com.github.tchx84.Flatseal
     state: present
     remote: fedora
 - name: Remove libreoffice rpms
@@ -74,10 +77,11 @@
       - gnome-firmware
     state: absent
     autoremove: true
-- name: Install other flatpak
+- name: Install Flathub flatpak
   community.general.flatpak:
     name:
       - org.gnome.Boxes
+      - com.mattjakeman.ExtensionManager
       - org.gnome.Firmware
     state: present
     remote: flathub
