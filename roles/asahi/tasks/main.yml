@@ -6,11 +6,6 @@
       - ansible-collection-community-general
       - ansible-collection-ansible-posix
     state: present
-- name: Install chromium
-  ansible.builtin.dnf:
-    name:
-      - chromium
-    state: present
 - name: Enable firewalld
   ansible.builtin.service:
     name: firewalld.service
