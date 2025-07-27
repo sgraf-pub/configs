@@ -25,6 +25,8 @@
       - dconf-editor
     state: absent
     autoremove: true
+    exclude:
+      - osquery
 - name: Install Fedora flatpaks
   community.general.flatpak:
     name:
