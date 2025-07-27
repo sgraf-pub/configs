@@ -72,6 +72,8 @@
       - vulkan-tools
       - wget
       - xlsclients
+      - zlib-ng
+      - zstd
     state: present
 - name: Enable fstrim timer
   ansible.builtin.service:
