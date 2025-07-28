@@ -242,3 +242,32 @@
   ansible.builtin.service:
     name: dnf-automatic.timer
     enabled: false
+- name: Install RPM Fusion non-free release package
+  ansible.builtin.dnf:
+    name: "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ ansible_distribution_major_version }}.noarch.rpm"
+    state: present
+    disable_gpg_check: true
+  when: ansible_architecture == 'x86_64'
+- name: Disable anything except intel-media-driver in rpmfusion
+  community.general.ini_file:
+    path: /etc/yum.repos.d/rpmfusion-nonfree.repo
+    section: rpmfusion-nonfree
+    option: includepkgs
+    value: intel-media-driver.x86_64,rpmfusion-nonfree-release.noarch
+    no_extra_spaces: true
+    mode: "0644"
+  when: ansible_architecture == 'x86_64'
+- name: Disable anything except intel-media-driver in rpmfusion-updates
+  community.general.ini_file:
+    path: /etc/yum.repos.d/rpmfusion-nonfree-updates.repo
+    section: rpmfusion-nonfree-updates
+    option: includepkgs
+    value: intel-media-driver.x86_64,rpmfusion-nonfree-release.noarch
+    no_extra_spaces: true
+    mode: "0644"
+  when: ansible_architecture == 'x86_64'
+- name: Install intel-media-driver.x86_64
+  ansible.builtin.dnf:
+    name: intel-media-driver.x86_64
+    state: present
+  when: ansible_architecture == 'x86_64'
