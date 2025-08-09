@@ -238,7 +238,7 @@
              apply_updates = yes
     dest: /etc/dnf/automatic.conf
     mode: "0644"
-- name: Enable dnf-automatic timer
+- name: Disable dnf-automatic timer
   ansible.builtin.service:
     name: dnf-automatic.timer
     enabled: false
@@ -269,5 +269,54 @@
 - name: Install intel-media-driver.x86_64
   ansible.builtin.dnf:
     name: intel-media-driver.x86_64
+    state: present
+  when: ansible_architecture == 'x86_64'
+- name: Disable rpmfusion-nonfree-nvidia-driver repo
+  community.general.ini_file:
+    path: /etc/yum.repos.d/rpmfusion-nonfree-nvidia-driver.repo
+    section: rpmfusion-nonfree-nvidia-driver
+    option: enabled
+    value: '0'
+    no_extra_spaces: true
+    mode: "0644"
+- name: Disable rpmfusion-nonfree-steam repo
+  community.general.ini_file:
+    path: /etc/yum.repos.d/rpmfusion-nonfree-steam.repo
+    section: rpmfusion-nonfree-steam
+    option: enabled
+    value: '0'
+    no_extra_spaces: true
+    mode: "0644"
+- name: Disable copr.fedorainfracloud.org:phracek:PyCharm repo
+  community.general.ini_file:
+    path: /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:phracek:PyCharm.repo
+    section: copr:copr.fedorainfracloud.org:phracek:PyCharm
+    option: enabled
+    value: '0'
+    no_extra_spaces: true
+    mode: "0644"
+- name: Disable 32bit packages in fedora repo
+  community.general.ini_file:
+    path: /etc/yum.repos.d/fedora.repo
+    section: fedora
+    option: excludepkgs
+    value: '*.i?86'
+    no_extra_spaces: true
+    mode: "0644"
+  when: ansible_architecture == 'x86_64'
+- name: Disable 32bit packages in updates repo
+  community.general.ini_file:
+    path: /etc/yum.repos.d/fedora-updates.repo
+    section: updates
+    option: excludepkgs
+    value: '*.i?86'
+    no_extra_spaces: true
+    mode: "0644"
+  when: ansible_architecture == 'x86_64'
+- name: Install GPU top pkgs
+  ansible.builtin.dnf:
+    name:
+      - igt-gpu-tools
+      - nvtop
     state: present
   when: ansible_architecture == 'x86_64'
