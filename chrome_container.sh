@@ -5,11 +5,10 @@ sudo dnf remove -y '*.i686'
 sudo dnf install -y crudini
 sudo crudini --ini-options=nospace --set /etc/dnf/dnf.conf main excludepkgs "*.i?86"
 
-# Install Gnome+Multimedia
-sudo dnf group install -y --setopt=group_package_types=mandatory --setopt=install_weak_deps=False \
-  gnome-desktop --exclude=gnome-boxes,gnome-connection,gnome-software
-sudo dnf group install -y multimedia
+# Install Langpacks
 sudo dnf install -y langpacks-cs langpacks-en
+
+# Install vim
 sudo dnf install -y vim
 
 # Google Chrome
