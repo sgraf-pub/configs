@@ -205,7 +205,9 @@
 - name: Autosuspend newly added USB devices
   ansible.builtin.copy:
     content: |
-             ACTION=="add", SUBSYSTEM=="usb", TEST=="power/control", ATTR{power/control}="auto"
+             ACTION=="add", SUBSYSTEM=="usb", ATTR{product}=="*Mouse", TEST=="power/control", ATTR{power/control}="on"
+             ACTION=="add", SUBSYSTEM=="usb", ATTR{product}=="*Keyboard*", TEST=="power/control", ATTR{power/control}="on"
+             ACTION=="add", SUBSYSTEM=="usb", ATTR{product}!="*Mouse", ATTR{product}!="*Keyboard*", TEST=="power/control", ATTR{power/control}="auto"
     dest: /etc/udev/rules.d/usb_power_save.rules
     mode: "0644"
 - name: Autosuspend PCI devices
@@ -215,17 +217,6 @@
              SUBSYSTEM=="ata_port", KERNEL=="ata*", ATTR{device/power/control}="auto"
     dest: /etc/udev/rules.d/pci_pm.rules
     mode: "0644"
-- name: Check if USB suspend is set
-  ansible.builtin.command:
-    cmd: grep usbcore /proc/cmdline
-  register: usbcore
-  changed_when: false
-  ignore_errors: true
-- name: Set USB suspend
-  ansible.builtin.command:
-    cmd: grubby --args="usbcore.autosuspend=60" --update-kernel=ALL
-  changed_when: false
-  when: usbcore.rc == 1
 - name: Install dnf-automatic
   ansible.builtin.dnf:
     name:
