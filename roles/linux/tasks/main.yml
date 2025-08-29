@@ -356,3 +356,11 @@
       - nvtop
     state: present
   when: ansible_architecture == 'x86_64'
+- name: Do not enable BT at boot
+  community.general.ini_file:
+    path: /etc/bluetooth/main.conf
+    section: Policy
+    option: AutoEnable
+    value: "false"
+    no_extra_spaces: true
+    mode: "0644"
