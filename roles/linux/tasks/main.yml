@@ -143,7 +143,7 @@
     path: /usr/lib/tuned/profiles/balanced/tuned.conf
     section: cpu
     option: energy_performance_preference
-    value: balance_power|default
+    value: balance_power
     no_extra_spaces: true
     mode: "0644"
 - name: Configure performance bias (AC)
@@ -151,7 +151,7 @@
     path: /usr/lib/tuned/profiles/balanced/tuned.conf
     section: cpu
     option: energy_perf_bias
-    value: balance-power|normal
+    value: balance-power
     no_extra_spaces: true
     mode: "0644"
 - name: Configure performance preference (battery)
@@ -159,7 +159,7 @@
     path: /usr/lib/tuned/profiles/balanced-battery/tuned.conf
     section: cpu
     option: energy_performance_preference
-    value: power
+    value: balance_power
     no_extra_spaces: true
     mode: "0644"
 - name: Configure performance bias (battery)
@@ -167,7 +167,7 @@
     path: /usr/lib/tuned/profiles/balanced-battery/tuned.conf
     section: cpu
     option: energy_perf_bias
-    value: powersave|power
+    value: balance-power
     no_extra_spaces: true
     mode: "0644"
 - name: Configure acpi platform profile (battery)
@@ -178,17 +178,54 @@
     value: low-power|quiet
     no_extra_spaces: true
     mode: "0644"
-- name: Check if ASPM is set
-  ansible.builtin.command:
-    cmd: grep pcie_aspm /proc/cmdline
-  register: aspm_status
-  changed_when: false
-  ignore_errors: true
-- name: Set ASPM
-  ansible.builtin.command:
-    cmd: grubby --args="pcie_aspm.policy=powersupersave" --update-kernel=ALL
-  changed_when: false
-  when: aspm_status.rc == 1
+- name: Add script (AC)
+  community.general.ini_file:
+    path: /usr/lib/tuned/profiles/balanced/tuned.conf
+    section: script
+    option: script
+    value: '${i:PROFILE_DIR}/script.sh'
+    no_extra_spaces: true
+    mode: "0644"
+- name: Add script (battery)
+  community.general.ini_file:
+    path: /usr/lib/tuned/profiles/balanced-battery/tuned.conf
+    section: script
+    option: script
+    value: '${i:PROFILE_DIR}/script.sh'
+    no_extra_spaces: true
+    mode: "0644"
+- name: Script (AC)
+  ansible.builtin.copy:
+    content: |
+             #!/usr/bin/bash
+             . /usr/lib/tuned/functions
+             start() {
+                 echo "powersave" > /sys/module/pcie_aspm/parameters/policy
+                 return 0
+             }
+             stop() {
+                 echo "default" > /sys/module/pcie_aspm/parameters/policy
+                 return 0
+             }
+             process $@
+    dest: /usr/lib/tuned/profiles/balanced/script.sh
+    mode: "0755"
+- name: Script (battery)
+  ansible.builtin.copy:
+    content: |
+             #!/usr/bin/bash
+             . /usr/lib/tuned/functions
+             start() {
+                 echo "powersupersave" > /sys/module/pcie_aspm/parameters/policy
+                 return 0
+             }
+             stop() {
+                 echo "default" > /sys/module/pcie_aspm/parameters/policy
+                 return 0
+             }
+             process $@
+    dest: /usr/lib/tuned/profiles/balanced-battery/script.sh
+    mode: "0755"
 - name: Use zstd for zram
   community.general.ini_file:
     path: /usr/lib/systemd/zram-generator.conf
