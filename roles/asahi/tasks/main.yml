@@ -47,3 +47,13 @@
     port: 1025-65535/tcp
     permanent: true
     state: disabled
+- name: Check if swap config exist
+  ansible.builtin.stat:
+    path: /etc/tmpfiles.d/asahi-enable-zswap.conf
+  register: asahiswap
+- name: Update swap config
+  ansible.builtin.lineinfile:
+    regexp: 'compressor'
+    line: "w     /sys/module/zswap/parameters/compressor         -    -    -    -    zstd"
+    dest: /etc/tmpfiles.d/asahi-enable-zswap.conf
+  when: asahiswap.stat.exists
