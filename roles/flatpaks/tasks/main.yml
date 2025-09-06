@@ -109,4 +109,6 @@
       # Might get autoremoved
       - zlib-ng
       - zstd
+      - iscsi-initiator-utils
+      - libiscsi
     state: present
