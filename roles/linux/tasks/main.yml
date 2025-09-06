@@ -402,3 +402,11 @@
     value: "false"
     no_extra_spaces: true
     mode: "0644"
+- name: Keep DNF cache for easy undo
+  community.general.ini_file:
+    path: /etc/dnf/dnf.conf
+    section: main
+    option: keepcache
+    value: "True"
+    no_extra_spaces: true
+    mode: "0644"
