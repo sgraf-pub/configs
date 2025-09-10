@@ -87,10 +87,10 @@
     dest: /etc/sysconfig/btrfsmaintenance
     regexp: '^BTRFS_DEFRAG_PATHS='
     line: BTRFS_DEFRAG_PATHS="{{ fstab_mounts.stdout }}"
-- name: Enable defrag timer
+- name: Disable defrag timer
   ansible.builtin.service:
     name: btrfs-defrag.timer
-    enabled: true
+    enabled: false
 - name: Config balance paths
   ansible.builtin.lineinfile:
     dest: /etc/sysconfig/btrfsmaintenance
