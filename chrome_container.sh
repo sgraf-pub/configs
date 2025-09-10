@@ -11,10 +11,11 @@ sudo dnf install -y langpacks-cs langpacks-en
 # Install vim
 sudo dnf install -y vim
 
-# Google Chrome
+# Google Chrome & Firefox
 sudo dnf install -y fedora-workstation-repositories
 sudo dnf config-manager setopt google-chrome.enabled=1
 sudo dnf install -y google-chrome-stable
+sudo dnf install -y firefox
 
 # Set vulkan/vaapi
 sudo dnf install -y vulkan-tools libva-utils
