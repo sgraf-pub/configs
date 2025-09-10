@@ -1,4 +1,48 @@
 ---
+#temporary fix
+- name: FIX Install selected Fedora rpms
+  ansible.builtin.dnf:
+    name:
+      - baobab
+      - gnome-calculator
+      - gnome-calendar
+      - gnome-characters
+      - snapshot
+      - gnome-clocks
+      - gnome-connections
+      - gnome-contacts
+      - gnome-extensions-app
+      - gnome-font-viewer
+      - gnome-text-editor
+      - loupe
+      - gnome-logs
+      - gnome-maps
+      - mediawriter
+      - sushi
+      - evince  # eventually Papers
+      - gnome-weather
+      - cheese
+      - simple-scan
+      - dconf-editor
+    state: present
+- name: FIX Install libreoffice rpms
+  ansible.builtin.dnf:
+    name:
+      - libreoffice-core
+      - libreoffice-base
+      - libreoffice-calc
+      - libreoffice-draw
+      - libreoffice-impress
+      - libreoffice-writer
+    state: present
+- name: FIX Install other rpms
+  ansible.builtin.dnf:
+    name:
+      - gnome-boxes
+      - gnome-firmware
+    state: present
+#end of fix
+
 - name: Remove selected Fedora rpms
   ansible.builtin.dnf:
     name:
@@ -24,9 +68,7 @@
       - simple-scan
       - dconf-editor
     state: absent
-    autoremove: true
-    exclude:
-      - osquery
+    autoremove: false
 - name: Install Fedora flatpaks
   community.general.flatpak:
     name:
@@ -64,7 +106,7 @@
       - libreoffice-impress
       - libreoffice-writer
     state: absent
-    autoremove: true
+    autoremove: false
     allowerasing: true
 - name: Install libreoffice flatpak
   community.general.flatpak:
@@ -78,7 +120,7 @@
       - gnome-boxes
       - gnome-firmware
     state: absent
-    autoremove: true
+    autoremove: false
 - name: Install Flathub flatpak
   community.general.flatpak:
     name:
@@ -106,9 +148,4 @@
       # Include totem-video-thumbnailer for video thumbnailing in Nautilus
       # https://pagure.io/fedora-workstation/issue/168
       - totem-video-thumbnailer
-      # Might get autoremoved
-      - zlib-ng
-      - zstd
-      - iscsi-initiator-utils
-      - libiscsi
     state: present
