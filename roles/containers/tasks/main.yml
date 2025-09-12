@@ -10,9 +10,13 @@
              [Unit]
              Description=Automatically upgrade all Distrobox containers
              After=network-online.target
+             StartLimitIntervalSec=60m
+             StartLimitBurst=3
              [Service]
              Type=oneshot
              ExecStart=/usr/bin/distrobox-upgrade --all
+             Restart=on-failure
+             RestartSec=1m
     dest: '~/.config/systemd/user/distrobox-upgrade.service'
     mode: "0644"
 - name: Create distrobox timer file
