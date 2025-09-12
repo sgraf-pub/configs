@@ -151,7 +151,7 @@
     path: /usr/lib/tuned/profiles/balanced/tuned.conf
     section: cpu
     option: energy_performance_preference
-    value: balanced
+    value: balance_performance
     no_extra_spaces: true
     mode: "0644"
 - name: Configure performance bias (AC)
@@ -159,7 +159,7 @@
     path: /usr/lib/tuned/profiles/balanced/tuned.conf
     section: cpu
     option: energy_perf_bias
-    value: balanced
+    value: balance-performance
     no_extra_spaces: true
     mode: "0644"
 - name: Configure performance preference (battery)
