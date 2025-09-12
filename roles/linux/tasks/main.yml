@@ -208,11 +208,14 @@
              #!/usr/bin/bash
              . /usr/lib/tuned/functions
              start() {
+                 # ASPM
                  echo "powersave" > /sys/module/pcie_aspm/parameters/policy
+                 # Wifi
                  WIFI_DEVICES=$(iw dev | awk '/Interface/ {print $2}')
                  for device in $WIFI_DEVICES; do
                    iw dev "$device" set power_save off
                  done
+                 # Ethernet
                  ETHERNET_DEVICES=$(ls /sys/class/net/ | grep -E '^en|^eth')
                  for device in $ETHERNET_DEVICES; do
                    ethtool --set-eee "$device" eee off
@@ -220,11 +223,14 @@
                  return 0
              }
              stop() {
+                 # ASPM
                  echo "default" > /sys/module/pcie_aspm/parameters/policy
+                 # Wifi
                  WIFI_DEVICES=$(iw dev | awk '/Interface/ {print $2}')
                  for device in $WIFI_DEVICES; do
                    iw dev "$device" set power_save off
                  done
+                 # Ethernet
                  ETHERNET_DEVICES=$(ls /sys/class/net/ | grep -E '^en|^eth')
                  for device in $ETHERNET_DEVICES; do
                    ethtool --set-eee "$device" eee off
@@ -240,11 +246,14 @@
              #!/usr/bin/bash
              . /usr/lib/tuned/functions
              start() {
+                 # ASPM
                  echo "powersupersave" > /sys/module/pcie_aspm/parameters/policy
+                 # Wifi
                  WIFI_DEVICES=$(iw dev | awk '/Interface/ {print $2}')
                  for device in $WIFI_DEVICES; do
                    iw dev "$device" set power_save on
                  done
+                 # Ethernet
                  ETHERNET_DEVICES=$(ls /sys/class/net/ | grep -E '^en|^eth')
                  for device in $ETHERNET_DEVICES; do
                    ethtool --set-eee "$device" eee on
@@ -252,16 +261,19 @@
                  return 0
              }
              stop() {
+                 # ASPM
                  echo "default" > /sys/module/pcie_aspm/parameters/policy
-                 return 0
+                 # Wifi
                  WIFI_DEVICES=$(iw dev | awk '/Interface/ {print $2}')
                  for device in $WIFI_DEVICES; do
                    iw dev "$device" set power_save off
                  done
+                 # Ethernet
                  ETHERNET_DEVICES=$(ls /sys/class/net/ | grep -E '^en|^eth')
                  for device in $ETHERNET_DEVICES; do
                    ethtool --set-eee "$device" eee off
                  done
+                 return 0
              }
              process $@
     dest: /usr/lib/tuned/profiles/balanced-battery/script.sh
