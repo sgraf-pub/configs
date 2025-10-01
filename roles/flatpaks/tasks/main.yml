@@ -105,4 +105,7 @@
       # Include totem-video-thumbnailer for video thumbnailing in Nautilus
       # https://pagure.io/fedora-workstation/issue/168
       - totem-video-thumbnailer
+      # Make sure zstd and zlib-ng are installed
+      - zlib-ng
+      - zstd
     state: present
