@@ -18,13 +18,14 @@
       - gnome-maps
       - mediawriter
       - sushi
-      - evince  # eventually Papers
+      - evince
+      - papers
       - gnome-weather
       - cheese
       - simple-scan
       - dconf-editor
     state: absent
-    autoremove: false
+    autoremove: true
 - name: Install Fedora flatpaks
   community.general.flatpak:
     name:
@@ -62,7 +63,7 @@
       - libreoffice-impress
       - libreoffice-writer
     state: absent
-    autoremove: false
+    autoremove: true
     allowerasing: true
 - name: Install libreoffice flatpak
   community.general.flatpak:
@@ -76,7 +77,7 @@
       - gnome-boxes
       - gnome-firmware
     state: absent
-    autoremove: false
+    autoremove: true
 - name: Install Flathub flatpak
   community.general.flatpak:
     name:
