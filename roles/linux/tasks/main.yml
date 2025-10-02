@@ -399,11 +399,13 @@
     no_extra_spaces: true
     mode: "0644"
   when: ansible_architecture == 'x86_64'
-- name: Install GPU top pkgs
+- name: Install GPU pkgs
   ansible.builtin.dnf:
     name:
       - igt-gpu-tools
       - nvtop
+      - intel-compute-runtime
+      - clinfo
     state: present
   when: ansible_architecture == 'x86_64'
 - name: Do not enable BT at boot
