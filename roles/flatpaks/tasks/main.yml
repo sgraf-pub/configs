@@ -107,5 +107,6 @@
       - totem-video-thumbnailer
       # Make sure zstd and zlib-ng are installed
       - zlib-ng
+      - zlib-ng-compat
       - zstd
     state: present
