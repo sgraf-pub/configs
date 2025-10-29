@@ -296,22 +296,30 @@
   ansible.builtin.file:
     path: /etc/udev/rules.d/net_power_save.rules
     state: absent
-- name: Autosuspend newly added USB devices
-  ansible.builtin.copy:
-    content: |
-             ACTION=="add", SUBSYSTEM=="usb", ATTR{product}=="*Mouse", TEST=="power/control", ATTR{power/control}="on"
-             ACTION=="add", SUBSYSTEM=="usb", ATTR{product}=="*Keyboard*", TEST=="power/control", ATTR{power/control}="on"
-             ACTION=="add", SUBSYSTEM=="usb", ATTR{product}!="*Mouse", ATTR{product}!="*Keyboard*", TEST=="power/control", ATTR{power/control}="auto"
-    dest: /etc/udev/rules.d/usb_power_save.rules
-    mode: "0644"
-- name: Autosuspend PCI devices
-  ansible.builtin.copy:
-    content: |
-             SUBSYSTEM=="pci", ATTR{power/control}="auto"
-             SUBSYSTEM=="ata_port", KERNEL=="ata*", ATTR{device/power/control}="auto"
-    dest: /etc/udev/rules.d/pci_pm.rules
-    mode: "0644"
-  when: ansible_architecture == 'x86_64'
+#- name: Autosuspend newly added USB devices
+#  ansible.builtin.copy:
+#    content: |
+#             ACTION=="add", SUBSYSTEM=="usb", ATTR{product}=="*Mouse", TEST=="power/control", ATTR{power/control}="on"
+#             ACTION=="add", SUBSYSTEM=="usb", ATTR{product}=="*Keyboard*", TEST=="power/control", ATTR{power/control}="on"
+#             ACTION=="add", SUBSYSTEM=="usb", ATTR{product}!="*Mouse", ATTR{product}!="*Keyboard*", TEST=="power/control", ATTR{power/control}="auto"
+#    dest: /etc/udev/rules.d/usb_power_save.rules
+#    mode: "0644"
+- name: Remove legacy usb rule
+  ansible.builtin.file:
+    path: /etc/udev/rules.d/usb_power_save.rules
+    state: absent
+#- name: Autosuspend PCI devices
+#  ansible.builtin.copy:
+#    content: |
+#             SUBSYSTEM=="pci", ATTR{power/control}="auto"
+#             SUBSYSTEM=="ata_port", KERNEL=="ata*", ATTR{device/power/control}="auto"
+#    dest: /etc/udev/rules.d/pci_pm.rules
+#    mode: "0644"
+#  when: ansible_architecture == 'x86_64'
+- name: Remove legacy pci rules
+  ansible.builtin.file:
+    path: /etc/udev/rules.d/pci_pm.rules
+    state: absent
 - name: Install dnf-automatic
   ansible.builtin.dnf:
     name:
