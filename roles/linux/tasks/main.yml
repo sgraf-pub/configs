@@ -285,6 +285,13 @@
     option: compression-algorithm
     value: zstd
     mode: "0644"
+- name: Set zstd size to half of ram
+  community.general.ini_file:
+    path: /usr/lib/systemd/zram-generator.conf
+    section: zram0
+    option: zram-size
+    value: "ram / 2"
+    mode: "0644"
 - name: Disable WoL
   ansible.builtin.copy:
     content: |
