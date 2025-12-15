@@ -423,19 +423,19 @@
     value: "false"
     no_extra_spaces: true
     mode: "0644"
-- name: Keep DNF cache for easy undo
+- name: Setup dnf cache
   community.general.ini_file:
     path: /etc/dnf/dnf.conf
     section: main
     option: keepcache
-    value: "True"
+    value: "False"
     no_extra_spaces: true
     mode: "0644"
-- name: Keep PackageKit cache for easy undo
+- name: Setup PackageKit cache
   community.general.ini_file:
     path: /etc/PackageKit/PackageKit.conf
     section: Daemon
     option: KeepCache
-    value: "true"
+    value: "false"
     no_extra_spaces: true
     mode: "0644"
