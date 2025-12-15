@@ -186,6 +186,14 @@
     value: low-power|quiet
     no_extra_spaces: true
     mode: "0644"
+- name: Configure acpi platform profile (AC)
+  community.general.ini_file:
+    path: /usr/lib/tuned/profiles/balanced/tuned.conf
+    section: acpi
+    option: platform_profile
+    value: balanced
+    no_extra_spaces: true
+    mode: "0644"
 - name: Add script (AC)
   community.general.ini_file:
     path: /usr/lib/tuned/profiles/balanced/tuned.conf
