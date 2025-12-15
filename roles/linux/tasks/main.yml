@@ -82,13 +82,13 @@
 - name: Save list of btrfs mount points
   ansible.builtin.shell:
     cmd: set -o pipefail && /usr/bin/grep btrfs /etc/fstab | /usr/bin/awk '{ print $2 }' | /usr/bin/tr '\n' ':' | /usr/bin/sed 's/.$//'
-  register: fstab_mounts
+  register: linux_fstab_mounts
   changed_when: false
 - name: Config defrag paths
   ansible.builtin.lineinfile:
     dest: /etc/sysconfig/btrfsmaintenance
     regexp: '^BTRFS_DEFRAG_PATHS='
-    line: BTRFS_DEFRAG_PATHS="{{ fstab_mounts.stdout }}"
+    line: BTRFS_DEFRAG_PATHS="{{ linux_fstab_mounts.stdout }}"
 - name: Disable defrag timer
   ansible.builtin.service:
     name: btrfs-defrag.timer
@@ -114,7 +114,7 @@
 - name: Test if system has battery
   ansible.builtin.command:
     cmd: test -d /sys/class/power_supply/BAT0 -o -d /sys/class/power_supply/macsmc-battery
-  register: battery_status
+  register: linux_battery_status
   changed_when: false
   ignore_errors: true
 - name: Update Writeback Time
@@ -124,7 +124,7 @@
              vm.dirty_writeback_centisecs = 1500
     dest: /etc/sysctl.d/dirty.conf
     mode: "0644"
-  when: battery_status.rc == 0
+  when: linux_battery_status.rc == 0
 - name: Disable NMI watchdog
   ansible.builtin.copy:
     content: kernel.nmi_watchdog = 0
