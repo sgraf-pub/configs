@@ -23,7 +23,7 @@
       - gnome-weather
       - cheese
       - simple-scan
-      - dconf-editor
+      #- dconf-editor
     state: absent
     autoremove: true
 - name: Install Fedora flatpaks
@@ -49,7 +49,7 @@
       - org.gnome.Weather
       - org.gnome.Cheese
       - org.gnome.SimpleScan
-      - ca.desrt.dconf-editor
+      #- ca.desrt.dconf-editor
       - com.github.tchx84.Flatseal
     state: present
     remote: fedora
