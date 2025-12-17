@@ -223,11 +223,6 @@
                  for device in $WIFI_DEVICES; do
                    iw dev "$device" set power_save off
                  done
-                 # Ethernet
-                 ETHERNET_DEVICES=$(ls /sys/class/net/ | grep -E '^en|^eth')
-                 for device in $ETHERNET_DEVICES; do
-                   ethtool --set-eee "$device" eee off
-                 done
                  return 0
              }
              stop() {
@@ -237,11 +232,6 @@
                  WIFI_DEVICES=$(iw dev | awk '/Interface/ {print $2}')
                  for device in $WIFI_DEVICES; do
                    iw dev "$device" set power_save off
-                 done
-                 # Ethernet
-                 ETHERNET_DEVICES=$(ls /sys/class/net/ | grep -E '^en|^eth')
-                 for device in $ETHERNET_DEVICES; do
-                   ethtool --set-eee "$device" eee off
                  done
                  return 0
              }
@@ -259,12 +249,7 @@
                  # Wifi
                  WIFI_DEVICES=$(iw dev | awk '/Interface/ {print $2}')
                  for device in $WIFI_DEVICES; do
-                   iw dev "$device" set power_save on
-                 done
-                 # Ethernet
-                 ETHERNET_DEVICES=$(ls /sys/class/net/ | grep -E '^en|^eth')
-                 for device in $ETHERNET_DEVICES; do
-                   ethtool --set-eee "$device" eee on
+                   iw dev "$device" set power_save off
                  done
                  return 0
              }
@@ -275,11 +260,6 @@
                  WIFI_DEVICES=$(iw dev | awk '/Interface/ {print $2}')
                  for device in $WIFI_DEVICES; do
                    iw dev "$device" set power_save off
-                 done
-                 # Ethernet
-                 ETHERNET_DEVICES=$(ls /sys/class/net/ | grep -E '^en|^eth')
-                 for device in $ETHERNET_DEVICES; do
-                   ethtool --set-eee "$device" eee off
                  done
                  return 0
              }
