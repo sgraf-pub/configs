@@ -4,8 +4,7 @@
 sudo dnf install -y --nodocs langpacks-cs langpacks-en
 
 # Google Chrome & Firefox
-sudo dnf install -y --nodocs fedora-workstation-repositories
-sudo sed -i 's/enabled=0/enabled=1/' /etc/yum.repos.d/google-chrome.repo
+sudo cp ~/google-chrome.repo /etc/yum.repos.d/google-chrome.repo
 sudo dnf install -y --nodocs google-chrome-stable
 sudo dnf install -y --nodocs firefox
 
