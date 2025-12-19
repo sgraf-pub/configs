@@ -167,7 +167,7 @@
     path: /usr/lib/tuned/profiles/balanced-battery/tuned.conf
     section: cpu
     option: energy_performance_preference
-    value: balance_power
+    value: power
     no_extra_spaces: true
     mode: "0644"
 - name: Configure performance bias (battery)
@@ -175,7 +175,7 @@
     path: /usr/lib/tuned/profiles/balanced-battery/tuned.conf
     section: cpu
     option: energy_perf_bias
-    value: balance-power
+    value: power
     no_extra_spaces: true
     mode: "0644"
 - name: Configure acpi platform profile (battery)
