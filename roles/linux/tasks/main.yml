@@ -249,7 +249,7 @@
                  # Wifi
                  WIFI_DEVICES=$(iw dev | awk '/Interface/ {print $2}')
                  for device in $WIFI_DEVICES; do
-                   iw dev "$device" set power_save off
+                   iw dev "$device" set power_save on
                  done
                  return 0
              }
