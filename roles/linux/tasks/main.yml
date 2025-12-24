@@ -299,22 +299,6 @@
   ansible.builtin.file:
     path: /etc/udev/rules.d/pci_pm.rules
     state: absent
-- name: Install dnf-automatic
-  ansible.builtin.dnf:
-    name:
-      - dnf-automatic
-    state: present
-- name: Enable auto-update
-  ansible.builtin.copy:
-    content: |
-             [commands]
-             apply_updates = yes
-    dest: /etc/dnf/automatic.conf
-    mode: "0644"
-- name: Disable dnf-automatic timer
-  ansible.builtin.service:
-    name: dnf-automatic.timer
-    enabled: false
 - name: Install RPM Fusion non-free release package
   ansible.builtin.dnf:
     name: "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ ansible_distribution_major_version }}.noarch.rpm"
