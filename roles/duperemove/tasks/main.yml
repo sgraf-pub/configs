@@ -13,18 +13,19 @@
     name: bees
     state: present
 - name: Get UUID for dm-0
-  shell: blkid /dev/dm-0 -s UUID -o value
-  register: UUID
+  ansible.builtin.command: blkid /dev/dm-0 -s UUID -o value
+  register: duperemove_uuid
+  changed_when: false
 - name: Create bees config file
   ansible.builtin.copy:
     content: |
-             UUID={{ UUID.stdout }}
+             UUID={{ duperemove_uuid.stdout }}
              DB_SIZE=$((256*1024*1024))
              OPTIONS="--verbose=5"
     dest: /etc/bees/root.conf
     mode: "0644"
 - name: Enable bees
   ansible.builtin.systemd_service:
-    name: beesd@{{ UUID.stdout }}.service
+    name: beesd@{{ duperemove_uuid.stdout }}.service
     state: started
     enabled: true
