@@ -1,30 +1,30 @@
 ---
-- name: Install duperemove
+- name: Remove duperemove
   ansible.builtin.dnf:
     name: duperemove
-    state: present
-- name: Create HashDir
-  ansible.builtin.file:
-    path: /var/lib/duperemove
-    state: directory
-    mode: '0755'
-- name: Download config file
-  ansible.builtin.get_url:
-    url: "https://gist.githubusercontent.com/Arano-kai/cdacb092f8fe2b0eea2d927960fbb924/raw/d2d7d9218b48be1ef755b00c87220dc0e9f177e7/etc-default-duperemove"
-    dest: /etc/default/duperemove
-    mode: '0644'
-- name: Download service file
-  ansible.builtin.get_url:
-    url: "https://gist.githubusercontent.com/Arano-kai/cdacb092f8fe2b0eea2d927960fbb924/raw/d2d7d9218b48be1ef755b00c87220dc0e9f177e7/duperemove@.service"
-    dest: "/etc/systemd/system/duperemove@.service"
-    mode: '0644'
-- name: Download timer file
-  ansible.builtin.get_url:
-    url: "https://gist.githubusercontent.com/Arano-kai/cdacb092f8fe2b0eea2d927960fbb924/raw/d2d7d9218b48be1ef755b00c87220dc0e9f177e7/duperemove-weekly@.timer"
-    dest: "/etc/systemd/system/duperemove-weekly@.timer"
-    mode: '0644'
-- name: Create timers
+    state: absent
+- name: Remove timers
   ansible.builtin.systemd_service:
     name: duperemove-weekly@-.timer
+    state: stopped
+    enabled: false
+- name: Install bees
+  ansible.builtin.dnf:
+    name: bees
+    state: present
+- name: Get UUID for dm-0
+  shell: blkid /dev/dm-0 -s UUID -o value
+  register: UUID
+- name: Create bees config file
+  ansible.builtin.copy:
+    content: |
+             UUID={{ UUID.stdout }}
+             DB_SIZE=$((256*1024*1024))
+             OPTIONS="--verbose=5"
+    dest: /etc/bees/root.conf
+    mode: "0644"
+- name: Enable bees
+  ansible.builtin.systemd_service:
+    name: beesd@{{ UUID.stdout }}.service
     state: started
     enabled: true
