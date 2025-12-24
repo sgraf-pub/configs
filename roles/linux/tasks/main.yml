@@ -419,3 +419,11 @@
     value: "false"
     no_extra_spaces: true
     mode: "0644"
+- name: Setup PackageKit backend
+  community.general.ini_file:
+    path: /etc/PackageKit/PackageKit.conf
+    section: Daemon
+    option: DefaultBackend
+    value: "dnf"
+    no_extra_spaces: true
+    mode: "0644"
