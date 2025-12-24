@@ -403,3 +403,8 @@
     value: "false"
     no_extra_spaces: true
     mode: "0644"
+- name: Remove dnf5-plugin-automatic
+  ansible.builtin.dnf:
+    name:
+      - dnf5-plugin-automatic
+    state: absent
