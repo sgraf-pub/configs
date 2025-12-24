@@ -273,12 +273,12 @@
     option: compression-algorithm
     value: zstd
     mode: "0644"
-- name: Set zstd size to 3/4 of ram
+- name: Set zram size
   community.general.ini_file:
     path: /usr/lib/systemd/zram-generator.conf
     section: zram0
     option: zram-size
-    value: "3 * ram / 4"
+    value: "min(ram, 12288)"
     mode: "0644"
 - name: Disable WoL
   ansible.builtin.copy:
