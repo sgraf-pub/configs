@@ -24,22 +24,6 @@
              OPTIONS="--verbose=5"
     dest: /etc/bees/root.conf
     mode: "0644"
-- name: Get low power cores
-  ansible.builtin.command: cat /sys/devices/cpu_atom/cpus
-  register: linux_lowpower
-  changed_when: false
-- name: Create override directory
-  ansible.builtin.file:
-    path: "/etc/systemd/system/beesd@.service.d/"
-    state: directory
-    mode: '0755'
-- name: Set affinity for beesd
-  ansible.builtin.copy:
-    content: |
-             [Service]
-             CPUAffinity={{ linux_lowpower.stdout }}
-    dest: "/etc/systemd/system/beesd@.service.d/affinity.conf"
-    mode: "0644"
 - name: Enable bees
   ansible.builtin.systemd_service:
     name: beesd@{{ duperemove_uuid.stdout }}.service

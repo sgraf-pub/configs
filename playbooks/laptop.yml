@@ -9,3 +9,4 @@
     - git
     - containers
     - { role: flatpaks, become: true }
+    - { role: affinity, become: true }

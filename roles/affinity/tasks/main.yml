@@ -1,0 +1,67 @@
+---
+- name: Get low power cores
+  ansible.builtin.command: cat /sys/devices/cpu_atom/cpus
+  register: linux_lowpower
+  changed_when: false
+- name: Create bees override directory
+  ansible.builtin.file:
+    path: "/etc/systemd/system/beesd@.service.d/"
+    state: directory
+    mode: '0755'
+- name: Set affinity for beesd
+  ansible.builtin.copy:
+    content: |
+             [Service]
+             CPUAffinity={{ linux_lowpower.stdout }}
+    dest: "/etc/systemd/system/beesd@.service.d/affinity.conf"
+    mode: "0644"
+- name: Create dnf5 override directory
+  ansible.builtin.file:
+    path: "/etc/systemd/system/dnf5-makecache.service.d/"
+    state: directory
+    mode: '0755'
+- name: Set affinity for dnf5
+  ansible.builtin.copy:
+    content: |
+             [Service]
+             CPUAffinity={{ linux_lowpower.stdout }}
+    dest: "/etc/systemd/system/dnf5-makecache.service.d/affinity.conf"
+    mode: "0644"
+- name: Create dnf override directory
+  ansible.builtin.file:
+    path: "/etc/systemd/system/dnf-makecache.service.d/"
+    state: directory
+    mode: '0755'
+- name: Set affinity for dnf
+  ansible.builtin.copy:
+    content: |
+             [Service]
+             CPUAffinity={{ linux_lowpower.stdout }}
+    dest: "/etc/systemd/system/dnf-makecache.service.d/affinity.conf"
+    mode: "0644"
+- name: Create packagekit override directory
+  ansible.builtin.file:
+    path: "/etc/systemd/system/packagekit.service.d/"
+    state: directory
+    mode: '0755'
+- name: Set affinity for packagekit
+  ansible.builtin.copy:
+    content: |
+             [Service]
+             CPUAffinity={{ linux_lowpower.stdout }}
+    dest: "/etc/systemd/system/packagekit.service.d/affinity.conf"
+    mode: "0644"
+- name: Create gnome-software override directory
+  ansible.builtin.file:
+    path: "{{ var_home }}/.config/systemd/user/gnome-software.service.d/"
+    state: directory
+    mode: '0755'
+  become_user: "{{ var_user }}"
+- name: Set affinity for gnome-software
+  ansible.builtin.copy:
+    content: |
+             [Service]
+             CPUAffinity={{ linux_lowpower.stdout }}
+    dest: "{{ var_home }}/.config/systemd/user/gnome-software.service.d/affinity.conf"
+    mode: "0644"
+  become_user: "{{ var_user }}"
