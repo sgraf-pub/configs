@@ -217,7 +217,7 @@
              . /usr/lib/tuned/functions
              start() {
                  # ASPM
-                 echo "powersave" > /sys/module/pcie_aspm/parameters/policy
+                 echo "default" > /sys/module/pcie_aspm/parameters/policy
                  # Wifi
                  WIFI_DEVICES=$(iw dev | awk '/Interface/ {print $2}')
                  for device in $WIFI_DEVICES; do
@@ -226,13 +226,6 @@
                  return 0
              }
              stop() {
-                 # ASPM
-                 echo "default" > /sys/module/pcie_aspm/parameters/policy
-                 # Wifi
-                 WIFI_DEVICES=$(iw dev | awk '/Interface/ {print $2}')
-                 for device in $WIFI_DEVICES; do
-                   iw dev "$device" set power_save off
-                 done
                  return 0
              }
              process $@
