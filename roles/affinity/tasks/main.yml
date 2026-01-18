@@ -13,7 +13,6 @@
     path: "/etc/systemd/system/beesd@.service.d/"
     state: directory
     mode: '0755'
-  when: affinity_atom.stat.exists
 - name: Set affinity for beesd
   ansible.builtin.copy:
     content: |
@@ -27,7 +26,6 @@
     path: "/etc/systemd/system/dnf5-makecache.service.d/"
     state: directory
     mode: '0755'
-  when: affinity_atom.stat.exists
 - name: Set affinity for dnf5
   ansible.builtin.copy:
     content: |
@@ -41,7 +39,6 @@
     path: "/etc/systemd/system/dnf-makecache.service.d/"
     state: directory
     mode: '0755'
-  when: affinity_atom.stat.exists
 - name: Set affinity for dnf
   ansible.builtin.copy:
     content: |
@@ -55,7 +52,6 @@
     path: "/etc/systemd/system/packagekit.service.d/"
     state: directory
     mode: '0755'
-  when: affinity_atom.stat.exists
 - name: Set affinity for packagekit
   ansible.builtin.copy:
     content: |
@@ -71,7 +67,6 @@
     mode: '0755'
   become_user: "{{ var_user }}"
   become: true
-  when: affinity_atom.stat.exists
 - name: Set affinity for gnome-software
   ansible.builtin.copy:
     content: |
