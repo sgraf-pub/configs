@@ -1,14 +1,8 @@
 ---
-- name: Enable Vulkan video decode
-  ansible.builtin.copy:
-    content: |
-             #export ANV_VIDEO_DECODE=1
-             #export ANV_VIDEO_ENCODE=1
-             export ANV_DEBUG=video-decode,video-encode
-             #fix mesa-intel warning
-             export GSK_RENDERER=vulkan
-    dest: /etc/profile.d/vulkan.sh
-    mode: "0644"
+- name: Disable vulkan tweaks
+  ansible.builtin.file:
+    path: /etc/profile.d/vulkan.sh
+    state: absent
 - name: Prepare target basics
   ansible.builtin.dnf:
     name:
