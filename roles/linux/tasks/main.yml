@@ -151,6 +151,8 @@
              [main]
              summary=Balanced profile biased towards power savings changes for battery
              include=powersave
+             [sysctl]
+             kernel.sched_autogroup_enabled=1
     dest: /etc/tuned/profiles/balanced-powersave/tuned.conf
     mode: "0644"
 - name: Change ppd config (ac)
