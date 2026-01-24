@@ -1,0 +1,32 @@
+---
+- name: Enable fstrim timer
+  ansible.builtin.service:
+    name: fstrim.timer
+    enabled: true
+- name: Config defrag paths
+  ansible.builtin.lineinfile:
+    dest: /etc/sysconfig/btrfsmaintenance
+    regexp: '^BTRFS_DEFRAG_PATHS='
+    line: BTRFS_DEFRAG_PATHS="{{ ansible_mounts | selectattr('fstype', 'equalto', 'btrfs') | map(attribute='mount') | join(':') }}"
+- name: Disable defrag timer
+  ansible.builtin.service:
+    name: btrfs-defrag.timer
+    enabled: false
+- name: Config balance paths
+  ansible.builtin.lineinfile:
+    dest: /etc/sysconfig/btrfsmaintenance
+    regexp: '^BTRFS_BALANCE_MOUNTPOINTS='
+    line: BTRFS_BALANCE_MOUNTPOINTS="auto"
+- name: Enable balance timer
+  ansible.builtin.service:
+    name: btrfs-balance.timer
+    enabled: true
+- name: Config scrub paths
+  ansible.builtin.lineinfile:
+    dest: /etc/sysconfig/btrfsmaintenance
+    regexp: '^BTRFS_SCRUB_MOUNTPOINTS='
+    line: BTRFS_SCRUB_MOUNTPOINTS="auto"
+- name: Enable scrub timer
+  ansible.builtin.service:
+    name: btrfs-scrub.timer
+    enabled: true

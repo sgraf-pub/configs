@@ -1,0 +1,67 @@
+---
+- name: Install RPM Fusion non-free release package
+  ansible.builtin.dnf:
+    name: "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ ansible_distribution_major_version }}.noarch.rpm"
+    state: present
+    disable_gpg_check: true
+  when: ansible_architecture == 'x86_64'
+- name: Disable anything except intel-media-driver in rpmfusion
+  community.general.ini_file:
+    path: /etc/yum.repos.d/rpmfusion-nonfree.repo
+    section: rpmfusion-nonfree
+    option: includepkgs
+    value: intel-media-driver.x86_64,rpmfusion-nonfree-release.noarch
+    no_extra_spaces: true
+    mode: "0644"
+  when: ansible_architecture == 'x86_64'
+- name: Disable anything except intel-media-driver in rpmfusion-updates
+  community.general.ini_file:
+    path: /etc/yum.repos.d/rpmfusion-nonfree-updates.repo
+    section: rpmfusion-nonfree-updates
+    option: includepkgs
+    value: intel-media-driver.x86_64,rpmfusion-nonfree-release.noarch
+    no_extra_spaces: true
+    mode: "0644"
+  when: ansible_architecture == 'x86_64'
+- name: Disable rpmfusion-nonfree-nvidia-driver repo
+  community.general.ini_file:
+    path: /etc/yum.repos.d/rpmfusion-nonfree-nvidia-driver.repo
+    section: rpmfusion-nonfree-nvidia-driver
+    option: enabled
+    value: '0'
+    no_extra_spaces: true
+    mode: "0644"
+- name: Disable rpmfusion-nonfree-steam repo
+  community.general.ini_file:
+    path: /etc/yum.repos.d/rpmfusion-nonfree-steam.repo
+    section: rpmfusion-nonfree-steam
+    option: enabled
+    value: '0'
+    no_extra_spaces: true
+    mode: "0644"
+- name: Disable copr.fedorainfracloud.org:phracek:PyCharm repo
+  community.general.ini_file:
+    path: /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:phracek:PyCharm.repo
+    section: copr:copr.fedorainfracloud.org:phracek:PyCharm
+    option: enabled
+    value: '0'
+    no_extra_spaces: true
+    mode: "0644"
+- name: Disable 32bit packages in fedora repo
+  community.general.ini_file:
+    path: /etc/yum.repos.d/fedora.repo
+    section: fedora
+    option: excludepkgs
+    value: '*.i?86'
+    no_extra_spaces: true
+    mode: "0644"
+  when: ansible_architecture == 'x86_64'
+- name: Disable 32bit packages in updates repo
+  community.general.ini_file:
+    path: /etc/yum.repos.d/fedora-updates.repo
+    section: updates
+    option: excludepkgs
+    value: '*.i?86'
+    no_extra_spaces: true
+    mode: "0644"
+  when: ansible_architecture == 'x86_64'

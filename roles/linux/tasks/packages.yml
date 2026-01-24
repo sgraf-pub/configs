@@ -1,0 +1,72 @@
+---
+- name: Install system packages
+  ansible.builtin.dnf:
+    name:
+      # --- Target Basics ---
+      - ansible-core
+      - ansible-collection-community-general
+      - ansible-collection-ansible-posix
+      
+      # --- Langpacks ---
+      - langpacks-en
+      - langpacks-cs
+      
+      # --- Multimedia ---
+      - "@multimedia"
+      
+      # --- Tools & Utilities ---
+      - ansible-lint
+      - bat
+      - btrfsmaintenance
+      - clamtk
+      - compsize
+      - cpufetch
+      - distrobox
+      - duf
+      - egl-utils
+      - fastfetch
+      - ffmpeg-free
+      - firewalld
+      - git
+      - gnome-backgrounds-extras
+      - gnome-shell-extension-appindicator
+      - gnome-shell-extension-background-logo
+      - gnome-tweaks
+      - htop
+      - inxi
+      - lame
+      - libva-utils
+      - lm_sensors
+      - lshw
+      - mc
+      - mmv
+      - mozilla-openh264
+      - ncdu
+      - nvme-cli
+      - powertop
+      - pwgen
+      - ramalama
+      - remove-retired-packages
+      - rpmconf
+      - screenfetch
+      - ShellCheck
+      - smartmontools
+      - pwgen
+      - tldr
+      - tmux
+      - tuned-utils
+      - vim
+      - vulkan-tools
+      - wget
+      - xlsclients
+    state: present
+- name: Install GPU pkgs
+  ansible.builtin.dnf:
+    name:
+      - intel-media-driver.x86_64
+      - igt-gpu-tools
+      - nvtop
+      - intel-compute-runtime
+      - clinfo
+    state: present
+  when: ansible_architecture == 'x86_64'

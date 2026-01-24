@@ -1,0 +1,49 @@
+---
+- name: Disable vulkan tweaks
+  ansible.builtin.file:
+    path: /etc/profile.d/vulkan.sh
+    state: absent
+- name: Set timezone
+  community.general.timezone:
+    name: "Europe/Prague"
+- name: Disable NMI watchdog
+  ansible.builtin.copy:
+    content: kernel.nmi_watchdog = 0
+    dest: /etc/sysctl.d/disable_watchdog.conf
+    mode: "0644"
+- name: Use zstd for zram
+  community.general.ini_file:
+    path: /usr/lib/systemd/zram-generator.conf
+    section: zram0
+    option: compression-algorithm
+    value: zstd
+    mode: "0644"
+- name: Do not enable BT at boot
+  community.general.ini_file:
+    path: /etc/bluetooth/main.conf
+    section: Policy
+    option: AutoEnable
+    value: "false"
+    no_extra_spaces: true
+    mode: "0644"
+- name: Setup dnf cache
+  community.general.ini_file:
+    path: /etc/dnf/dnf.conf
+    section: main
+    option: keepcache
+    value: "False"
+    no_extra_spaces: true
+    mode: "0644"
+- name: Setup PackageKit cache
+  community.general.ini_file:
+    path: /etc/PackageKit/PackageKit.conf
+    section: Daemon
+    option: KeepCache
+    value: "false"
+    no_extra_spaces: true
+    mode: "0644"
+- name: Remove dnf5-plugin-automatic
+  ansible.builtin.dnf:
+    name:
+      - dnf5-plugin-automatic
+    state: absent
