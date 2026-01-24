@@ -1,3 +1,15 @@
+# Ansible
 ansible.log
 *.retry
+.ansible/
+ansible_collections/
+
+# Python
+*.pyc
+__pycache__/
+
+# Editor/OS
 .vscode
+.idea/
+*.swp
+.DS_Store
