@@ -1,52 +1,42 @@
 ---
-- name: Prepare target basics
+- name: Install required packages
   ansible.builtin.dnf:
     name:
+      # Prepare target basics
       - ansible-core
       - ansible-collection-community-general
       - ansible-collection-ansible-posix
+      # Install Fontconfig
+      - curl
+      - cabextract
+      - xorg-x11-font-utils
+      - fontconfig
+      # Install Microsoft Fonts
+      - "https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm"
     state: present
+    disable_gpg_check: true
 - name: Enable firewalld
   ansible.builtin.service:
     name: firewalld.service
     enabled: true
     state: started
-- name: Disable ssh on firewall
+- name: Configure firewall services
   ansible.posix.firewalld:
-    service: ssh
+    service: "{{ item.service }}"
     permanent: true
     immediate: true
-    state: disabled
-- name: Enable mdns on firewall
+    state: "{{ item.state }}"
+  loop:
+    - { service: ssh, state: disabled }
+    - { service: mdns, state: enabled }
+- name: Disable wide port ranges
   ansible.posix.firewalld:
-    service: mdns
-    permanent: true
-    immediate: true
-    state: enabled
-- name: Install Fontconig
-  ansible.builtin.dnf:
-    name:
-      - curl
-      - cabextract
-      - xorg-x11-font-utils
-      - fontconfig
-    state: present
-- name: Install Microsoft Fonts
-  ansible.builtin.dnf:
-    name:
-      - "https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm"
-    state: present
-    disable_gpg_check: true
-- name: Disable UDP ports
-  ansible.posix.firewalld:
-    port: 1025-65535/udp
+    port: "{{ item }}"
     permanent: true
     state: disabled
-- name: Disable TCP ports
-  ansible.posix.firewalld:
-    port: 1025-65535/tcp
-    permanent: true
-    state: disabled
+  loop:
+    - 1025-65535/udp
+    - 1025-65535/tcp
 - name: Check if swap config exist
   ansible.builtin.stat:
     path: /etc/tmpfiles.d/asahi-enable-zswap.conf
