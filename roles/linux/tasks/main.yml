@@ -153,7 +153,15 @@
              include=powersave
     dest: /etc/tuned/profiles/balanced-powersave/tuned.conf
     mode: "0644"
-- name: Change ppd config
+- name: Change ppd config (ac)
+  community.general.ini_file:
+    path: /etc/tuned/ppd.conf
+    section: profiles
+    option: balanced
+    value: desktop
+    no_extra_spaces: true
+    mode: "0644"
+- name: Change ppd config (battery)
   community.general.ini_file:
     path: /etc/tuned/ppd.conf
     section: battery
