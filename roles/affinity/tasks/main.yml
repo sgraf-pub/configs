@@ -1,65 +1,90 @@
----
 - name: Check that the /sys/devices/cpu_atom/cpus exists
   ansible.builtin.stat:
     path: /sys/devices/cpu_atom/cpus
   register: affinity_atom
-- name: Get low power cores
+
+- name: Get low power cores (Intel)
   ansible.builtin.command: cat /sys/devices/cpu_atom/cpus
-  register: affinity_lowpower
+  register: affinity_lowpower_intel
   changed_when: false
   when: affinity_atom.stat.exists
+
+- name: Get low power cores (Asahi/ARM64)
+  ansible.builtin.shell: |
+    grep -H . /sys/devices/system/cpu/cpu*/cpu_capacity 2>/dev/null | grep -v ":1024$" | cut -d/ -f6 | sed 's/cpu//' | sort -n | paste -sd,
+  register: affinity_lowpower_asahi
+  changed_when: false
+  failed_when: false
+  when: not affinity_atom.stat.exists
+
+- name: Set affinity cores variable
+  ansible.builtin.set_fact:
+    affinity_cores: "{{ affinity_lowpower_intel.stdout if affinity_atom.stat.exists else affinity_lowpower_asahi.stdout }}"
+
 - name: Create bees override directory
   ansible.builtin.file:
     path: "/etc/systemd/system/beesd@.service.d/"
     state: directory
     mode: '0755'
+  when: affinity_cores | length > 0
+
 - name: Set affinity for beesd
   ansible.builtin.copy:
     content: |
              [Service]
-             CPUAffinity={{ affinity_lowpower.stdout }}
+             CPUAffinity={{ affinity_cores }}
     dest: "/etc/systemd/system/beesd@.service.d/affinity.conf"
     mode: "0644"
-  when: affinity_atom.stat.exists
+  when: affinity_cores | length > 0
+
 - name: Create dnf5 override directory
   ansible.builtin.file:
     path: "/etc/systemd/system/dnf5-makecache.service.d/"
     state: directory
     mode: '0755'
+  when: affinity_cores | length > 0
+
 - name: Set affinity for dnf5
   ansible.builtin.copy:
     content: |
              [Service]
-             CPUAffinity={{ affinity_lowpower.stdout }}
+             CPUAffinity={{ affinity_cores }}
     dest: "/etc/systemd/system/dnf5-makecache.service.d/affinity.conf"
     mode: "0644"
-  when: affinity_atom.stat.exists
+  when: affinity_cores | length > 0
+
 - name: Create dnf override directory
   ansible.builtin.file:
     path: "/etc/systemd/system/dnf-makecache.service.d/"
     state: directory
     mode: '0755'
+  when: affinity_cores | length > 0
+
 - name: Set affinity for dnf
   ansible.builtin.copy:
     content: |
              [Service]
-             CPUAffinity={{ affinity_lowpower.stdout }}
+             CPUAffinity={{ affinity_cores }}
     dest: "/etc/systemd/system/dnf-makecache.service.d/affinity.conf"
     mode: "0644"
-  when: affinity_atom.stat.exists
+  when: affinity_cores | length > 0
+
 - name: Create packagekit override directory
   ansible.builtin.file:
     path: "/etc/systemd/system/packagekit.service.d/"
     state: directory
     mode: '0755'
+  when: affinity_cores | length > 0
+
 - name: Set affinity for packagekit
   ansible.builtin.copy:
     content: |
              [Service]
-             CPUAffinity={{ affinity_lowpower.stdout }}
+             CPUAffinity={{ affinity_cores }}
     dest: "/etc/systemd/system/packagekit.service.d/affinity.conf"
     mode: "0644"
-  when: affinity_atom.stat.exists
+  when: affinity_cores | length > 0
+
 - name: Create gnome-software override directory
   ansible.builtin.file:
     path: "{{ var_home }}/.config/systemd/user/gnome-software.service.d/"
@@ -67,13 +92,15 @@
     mode: '0755'
   become_user: "{{ var_user }}"
   become: true
+  when: affinity_cores | length > 0
+
 - name: Set affinity for gnome-software
   ansible.builtin.copy:
     content: |
              [Service]
-             CPUAffinity={{ affinity_lowpower.stdout }}
+             CPUAffinity={{ affinity_cores }}
     dest: "{{ var_home }}/.config/systemd/user/gnome-software.service.d/affinity.conf"
     mode: "0644"
   become_user: "{{ var_user }}"
   become: true
-  when: affinity_atom.stat.exists
+  when: affinity_cores | length > 0
