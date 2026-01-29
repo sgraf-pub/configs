@@ -31,6 +31,8 @@
       - gnome-backgrounds-extras
       - gnome-shell-extension-appindicator
       - gnome-shell-extension-background-logo
+      - gnome-shell-extension-caffeine
+      - gnome-shell-extension-freon
       - gnome-tweaks
       - htop
       - inxi
