@@ -24,6 +24,7 @@
              OPTIONS="--verbose=3"
     dest: /etc/bees/root.conf
     mode: "0644"
+    force: false
 - name: Enable bees
   ansible.builtin.systemd_service:
     name: beesd@{{ duperemove_uuid.stdout }}.service
