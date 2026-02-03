@@ -15,12 +15,12 @@
     dest: /etc/sysctl.d/dirty.conf
     mode: "0644"
   when: linux_battery_check.matched > 0
-- name: Configure performance preference (AC)
+- name: Configure performance bias (battery)
   community.general.ini_file:
-    path: /usr/lib/tuned/profiles/balanced/tuned.conf
+    path: /usr/lib/tuned/profiles/balanced-battery/tuned.conf
     section: cpu
-    option: energy_performance_preference
-    value: balance_performance
+    option: energy_perf_bias
+    value: balance-power
     no_extra_spaces: true
     mode: "0644"
 - name: Configure performance bias (AC)
@@ -31,35 +31,20 @@
     value: balance-performance
     no_extra_spaces: true
     mode: "0644"
-- name: Creates directory
-  ansible.builtin.file:
-    path: /etc/tuned/profiles/balanced-powersave
-    state: directory
-    mode: "0755"
-- name: Battery profile
-  ansible.builtin.copy:
-    content: |
-      [main]
-      summary=Balanced profile biased towards power savings changes for battery
-      include=powersave
-      [sysctl]
-      kernel.sched_autogroup_enabled=1
-    dest: /etc/tuned/profiles/balanced-powersave/tuned.conf
-    mode: "0644"
-- name: Change ppd config (ac)
+- name: Configure autogroup (AC)
   community.general.ini_file:
-    path: /etc/tuned/ppd.conf
-    section: profiles
-    option: balanced
-    value: desktop
+    path: /usr/lib/tuned/profiles/balanced/tuned.conf
+    section: sysctl
+    option: kernel.sched_autogroup_enabled
+    value: 1
     no_extra_spaces: true
     mode: "0644"
-- name: Change ppd config (battery)
+- name: Configure autogroup (battery)
   community.general.ini_file:
-    path: /etc/tuned/ppd.conf
-    section: battery
-    option: balanced
-    value: balanced-powersave
+    path: /usr/lib/tuned/profiles/balanced-battery/tuned.conf
+    section: sysctl
+    option: kernel.sched_autogroup_enabled
+    value: 1
     no_extra_spaces: true
     mode: "0644"
 - name: Disable WoL
