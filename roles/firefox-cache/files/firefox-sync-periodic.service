@@ -1,0 +1,6 @@
+[Unit]
+Description=Run Periodic Sync for Firefox Cache
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/firefox-sync.sh sync

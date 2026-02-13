@@ -1,0 +1,12 @@
+[Unit]
+Description=Sync Firefox Cache to/from RAM
+After=default.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=%h/.local/bin/firefox-sync.sh start
+ExecStop=%h/.local/bin/firefox-sync.sh stop
+
+[Install]
+WantedBy=default.target

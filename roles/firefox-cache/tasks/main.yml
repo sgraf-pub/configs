@@ -1,0 +1,29 @@
+- name: Copy firefox-sync.sh
+  ansible.builtin.copy:
+    src: firefox-sync.sh
+    dest: "{{ var_home }}/.local/bin/firefox-sync.sh"
+    mode: "0755"
+  become: true
+  become_user: "{{ var_user }}"
+- name: Copy firefox-sync.service
+  ansible.builtin.copy:
+    src: firefox-sync.service
+    dest: "{{ var_home }}/.config/systemd/user/firefox-sync.service"
+    mode: "0644"
+  become: true
+  become_user: "{{ var_user }}"
+- name: Copy firefox-sync-periodic.service
+  ansible.builtin.copy:
+    src: firefox-sync-periodic.service
+    dest: "{{ var_home }}/.config/systemd/user/firefox-sync-periodic.service"
+    mode: "0644"
+  become: true
+  become_user: "{{ var_user }}"
+- name: Copy firefox-sync.timer
+  ansible.builtin.copy:
+    src: firefox-sync.timer
+    dest: "{{ var_home }}/.config/systemd/user/firefox-sync.timer"
+    mode: "0644"
+  become: true
+  become_user: "{{ var_user }}"
+
