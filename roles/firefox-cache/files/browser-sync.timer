@@ -1,10 +1,10 @@
 [Unit]
-Description=Periodic Sync for Firefox Cache
+Description=Periodic Sync for Browser Caches
 
 [Timer]
 OnActiveSec=15min
 OnUnitActiveSec=1h
-Unit=firefox-sync-periodic.service
+Unit=browser-sync-periodic.service
 
 [Install]
 WantedBy=timers.target

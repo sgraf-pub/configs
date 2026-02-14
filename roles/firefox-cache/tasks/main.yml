@@ -1,36 +1,55 @@
-- name: Copy firefox-sync.sh
+- name: Stop and disable old firefox-sync services
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: stopped
+    enabled: false
+    scope: user
+  loop:
+    - firefox-sync.timer
+    - firefox-sync.service
+  ignore_errors: true
+
+- name: Remove old firefox-sync files
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ var_home }}/.local/bin/firefox-sync.sh"
+    - "{{ var_home }}/.config/systemd/user/firefox-sync.service"
+    - "{{ var_home }}/.config/systemd/user/firefox-sync-periodic.service"
+    - "{{ var_home }}/.config/systemd/user/firefox-sync.timer"
+
+- name: Copy browser-sync.sh script
   ansible.builtin.copy:
-    src: firefox-sync.sh
-    dest: "{{ var_home }}/.local/bin/firefox-sync.sh"
+    src: browser-sync.sh
+    dest: "{{ var_home }}/.local/bin/browser-sync.sh"
     mode: "0755"
-- name: Copy firefox-sync.service
+
+- name: Copy browser-sync systemd units
   ansible.builtin.copy:
-    src: firefox-sync.service
-    dest: "{{ var_home }}/.config/systemd/user/firefox-sync.service"
+    src: "{{ item }}"
+    dest: "{{ var_home }}/.config/systemd/user/{{ item }}"
     mode: "0644"
-- name: Copy firefox-sync-periodic.service
-  ansible.builtin.copy:
-    src: firefox-sync-periodic.service
-    dest: "{{ var_home }}/.config/systemd/user/firefox-sync-periodic.service"
-    mode: "0644"
-- name: Copy firefox-sync.timer
-  ansible.builtin.copy:
-    src: firefox-sync.timer
-    dest: "{{ var_home }}/.config/systemd/user/firefox-sync.timer"
-    mode: "0644"
+  loop:
+    - browser-sync.service
+    - browser-sync-periodic.service
+    - browser-sync.timer
+
 - name: Reload systemd daemon
   ansible.builtin.systemd:
     daemon_reload: true
-  become: true
-- name: Enable and start firefox-sync.service
+    scope: user
+
+- name: Enable and start browser-sync.service
   ansible.builtin.systemd:
-    name: firefox-sync.service
+    name: browser-sync.service
     enabled: true
     state: started
     scope: user
-- name: Enable and start firefox-sync.timer
+
+- name: Enable and start browser-sync.timer
   ansible.builtin.systemd:
-    name: firefox-sync.timer
+    name: browser-sync.timer
     enabled: true
     state: started
     scope: user

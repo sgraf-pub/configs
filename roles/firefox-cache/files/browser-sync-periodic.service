@@ -1,0 +1,6 @@
+[Unit]
+Description=Run Periodic Sync for Browser Caches
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/browser-sync.sh sync
