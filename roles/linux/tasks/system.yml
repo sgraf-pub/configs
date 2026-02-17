@@ -18,6 +18,18 @@
     option: compression-algorithm
     value: zstd
     mode: "0644"
+- name: Set zram size
+  community.general.ini_file:
+    path: /usr/lib/systemd/zram-generator.conf
+    section: zram0
+    option: zram-size
+    value: ram
+    mode: "0644"
+- name: Set swappiness
+  ansible.builtin.copy:
+    content: vm.swappiness = 150
+    dest: /etc/sysctl.d/swappiness.conf
+    mode: "0644"
 - name: Do not enable BT at boot
   community.general.ini_file:
     path: /etc/bluetooth/main.conf
