@@ -25,8 +25,41 @@
     dest: /etc/bees/root.conf
     mode: "0644"
     force: false
-- name: Enable bees
+- name: Create bees service override directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/beesd@.service.d
+    state: directory
+    mode: "0755"
+- name: Create bees service override
+  ansible.builtin.copy:
+    content: |
+      [Service]
+      RuntimeMaxSec=1h
+    dest: /etc/systemd/system/beesd@.service.d/override.conf
+    mode: "0644"
+- name: Create bees weekly timer
+  ansible.builtin.copy:
+    content: |
+      [Unit]
+      Description=Run bees weekly for %i
+
+      [Timer]
+      OnCalendar=weekly
+      Persistent=true
+      Unit=beesd@%i.service
+
+      [Install]
+      WantedBy=timers.target
+    dest: /etc/systemd/system/bees-weekly@.timer
+    mode: "0644"
+- name: Disable continuous bees service
   ansible.builtin.systemd_service:
     name: beesd@{{ duperemove_uuid.stdout }}.service
+    state: stopped
+    enabled: false
+    daemon_reload: true
+- name: Enable bees weekly timer
+  ansible.builtin.systemd_service:
+    name: bees-weekly@{{ duperemove_uuid.stdout }}.timer
     state: started
     enabled: true
