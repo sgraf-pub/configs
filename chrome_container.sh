@@ -1,14 +1,10 @@
 #!/usr/bin/bash -ex
 
 # Install Langpacks
-sudo dnf install -y --nodocs langpacks-cs langpacks-en
+sudo dnf install -y langpacks-cs langpacks-en
+sudo dnf group install -y multimedia
 
 # Google Chrome & Firefox
 sudo cp ~/google-chrome.repo /etc/yum.repos.d/google-chrome.repo
-sudo dnf install -y --nodocs google-chrome-stable
-sudo dnf install -y --nodocs firefox
-
-# Set vulkan/vaapi
-rpm -q rpmfusion-nonfree-release || \
-  sudo dnf install -y --nodocs https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
-sudo dnf install -y --nodocs intel-media-driver.x86_64
+sudo dnf install -y google-chrome-stable
+sudo dnf install -y firefox
