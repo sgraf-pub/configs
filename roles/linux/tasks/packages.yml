@@ -65,7 +65,6 @@
 - name: Install GPU pkgs
   ansible.builtin.dnf:
     name:
-      - intel-media-driver.x86_64
       - igt-gpu-tools
       - nvtop
       - intel-compute-runtime
