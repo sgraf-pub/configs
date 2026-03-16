@@ -11,6 +11,11 @@
     content: kernel.nmi_watchdog = 0
     dest: /etc/sysctl.d/disable_watchdog.conf
     mode: "0644"
+- name: TCP congestion control algorithm
+  ansible.builtin.copy:
+    content: net.ipv4.tcp_congestion_control = bbr
+    dest: /etc/sysctl.d/tcp_congestion_control.conf
+    mode: "0644"
 - name: Use lz4 for zram
   community.general.ini_file:
     path: /usr/lib/systemd/zram-generator.conf
