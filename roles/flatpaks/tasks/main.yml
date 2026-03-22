@@ -75,12 +75,12 @@
   ansible.builtin.dnf:
     name:
       - gnome-firmware
+      - gnome-boxes
     state: absent
     autoremove: true
 - name: Install Flathub flatpak
   community.general.flatpak:
     name:
-      - org.gnome.Boxes
       - com.mattjakeman.ExtensionManager
       - org.gnome.Firmware
     state: present
