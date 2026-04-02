@@ -31,6 +31,22 @@
     value: balance-performance
     no_extra_spaces: true
     mode: "0644"
+- name: Configure governor (AC)
+  community.general.ini_file:
+    path: /usr/lib/tuned/profiles/balanced/tuned.conf
+    section: cpu
+    option: governor
+    value: schedutil|ondemand|performance
+    no_extra_spaces: true
+    mode: "0644"
+- name: Configure governor (battery)
+  community.general.ini_file:
+    path: /usr/lib/tuned/profiles/balanced-battery/tuned.conf
+    section: cpu
+    option: governor
+    value: schedutil|ondemand|powersave
+    no_extra_spaces: true
+    mode: "0644"
 - name: Configure autogroup (AC)
   community.general.ini_file:
     path: /usr/lib/tuned/profiles/balanced/tuned.conf
