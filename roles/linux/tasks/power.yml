@@ -15,22 +15,6 @@
     dest: /etc/sysctl.d/dirty.conf
     mode: "0644"
   when: linux_battery_check.matched > 0
-- name: Configure performance bias (battery)
-  community.general.ini_file:
-    path: /usr/lib/tuned/profiles/balanced-battery/tuned.conf
-    section: cpu
-    option: energy_perf_bias
-    value: balance-power
-    no_extra_spaces: true
-    mode: "0644"
-- name: Configure performance bias (AC)
-  community.general.ini_file:
-    path: /usr/lib/tuned/profiles/balanced/tuned.conf
-    section: cpu
-    option: energy_perf_bias
-    value: balance-performance
-    no_extra_spaces: true
-    mode: "0644"
 - name: Configure governor (AC)
   community.general.ini_file:
     path: /usr/lib/tuned/profiles/balanced/tuned.conf
@@ -45,22 +29,6 @@
     section: cpu
     option: governor
     value: schedutil|ondemand|powersave
-    no_extra_spaces: true
-    mode: "0644"
-- name: Configure autogroup (AC)
-  community.general.ini_file:
-    path: /usr/lib/tuned/profiles/balanced/tuned.conf
-    section: sysctl
-    option: kernel.sched_autogroup_enabled
-    value: 1
-    no_extra_spaces: true
-    mode: "0644"
-- name: Configure autogroup (battery)
-  community.general.ini_file:
-    path: /usr/lib/tuned/profiles/balanced-battery/tuned.conf
-    section: sysctl
-    option: kernel.sched_autogroup_enabled
-    value: 1
     no_extra_spaces: true
     mode: "0644"
 - name: Disable WoL
