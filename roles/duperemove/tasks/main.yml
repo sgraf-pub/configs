@@ -12,7 +12,6 @@
   ansible.builtin.copy:
     content: |
              UUID={{ duperemove_uuid.stdout }}
-             DB_SIZE=$((128*1024*1024))
              OPTIONS="--verbose=3"
     dest: /etc/bees/root.conf
     mode: "0644"
