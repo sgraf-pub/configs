@@ -15,7 +15,6 @@
              OPTIONS="--verbose=3"
     dest: /etc/bees/root.conf
     mode: "0644"
-    force: false
 - name: Create bees service override directory
   ansible.builtin.file:
     path: /etc/systemd/system/beesd@.service.d
