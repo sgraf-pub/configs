@@ -65,9 +65,9 @@
 - name: Install GPU pkgs
   ansible.builtin.dnf:
     name:
-      - igt-gpu-tools
       - nvtop
       - intel-compute-runtime
+      - intel-npu-driver
       - clinfo
     state: present
   when: ansible_architecture == 'x86_64'
