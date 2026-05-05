@@ -72,10 +72,7 @@
       ACTION=="add|change", KERNEL=="sd[a-z]", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="bfq"
     dest: /etc/udev/rules.d/60-iosched.rules
     mode: "0644"
-- name: Configure sysctl disk dirty ratios
-  ansible.builtin.copy:
-    content: |
-      vm.dirty_background_ratio = 5
-      vm.dirty_ratio = 10
-    dest: /etc/sysctl.d/99-disk-performance.conf
-    mode: "0644"
+- name: Remove sysctl disk dirty ratios config
+  ansible.builtin.file:
+    path: /etc/sysctl.d/99-disk-performance.conf
+    state: absent
