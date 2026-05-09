@@ -76,3 +76,15 @@
   ansible.builtin.file:
     path: /etc/sysctl.d/99-disk-performance.conf
     state: absent
+- name: Create dnf5daemon-server service override directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/dnf5daemon-server.service.d
+    state: directory
+    mode: "0755"
+- name: Set dnf5daemon-server stop timeout
+  ansible.builtin.copy:
+    content: |
+      [Service]
+      TimeoutStopSec=30
+    dest: /etc/systemd/system/dnf5daemon-server.service.d/override.conf
+    mode: "0644"
