@@ -5,11 +5,11 @@
 - name: Check if username is valid
   ansible.builtin.stat:
     path: "{{ var_home }}"
-  register: st
+  register: common_st
 - name: Error if username is invalid
   ansible.builtin.fail:
     msg: "Invalid username"
-  when: not st.stat.exists
+  when: not common_st.stat.exists
 
 #
 # Setup vim

@@ -1,6 +1,8 @@
 ---
-  - name: Add latest dns excludes
-    script: parse_hosts_file
-  - name: Download parse_hosts_file
-    copy: src=parse_hosts_file dest=/etc/cron.weekly/parse_hosts_file mode=0755
-
+- name: Add latest dns excludes
+  ansible.builtin.script: parse_hosts_file
+- name: Download parse_hosts_file
+  ansible.builtin.copy:
+    src: parse_hosts_file
+    dest: /etc/cron.weekly/parse_hosts_file
+    mode: "0755"

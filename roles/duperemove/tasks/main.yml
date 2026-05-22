@@ -1,5 +1,4 @@
 ---
-
 - name: Install bees
   ansible.builtin.dnf:
     name: bees
@@ -11,8 +10,8 @@
 - name: Create bees config file
   ansible.builtin.copy:
     content: |
-             UUID={{ duperemove_uuid.stdout }}
-             OPTIONS="--verbose=3"
+      UUID={{ duperemove_uuid.stdout }}
+      OPTIONS="--verbose=3"
     dest: /etc/bees/root.conf
     mode: "0644"
 - name: Create bees service override directory

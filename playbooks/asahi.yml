@@ -1,6 +1,7 @@
 ---
 # file: asahi.yml
-- hosts: laptop
+- name: Configure Asahi laptop
+  hosts: laptop
   remote_user: root
   roles:
     - common
@@ -10,5 +11,5 @@
     - containers
     - { role: flatpaks, become: true }
     - { role: affinity, become: true }
-    - firefox-cache
-    - { role: asahi, become: yes }
+    - firefox_cache
+    - { role: asahi, become: true }

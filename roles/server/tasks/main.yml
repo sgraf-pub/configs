@@ -1,61 +1,95 @@
 ---
 #
-  #
-  # Setup server
-  #
-  - name: Lock instead of suspend for LidSwitch
-    ini_file: dest=/etc/systemd/logind.conf section=Login option=HandleLidSwitch value=lock
-    become: true
-    become_user: root
-  - name: Check selinux boolean for Samba
-    shell: getsebool samba_export_all_rw | grep on
-    register: result
-    ignore_errors: True
-    changed_when: "result.rc != 0"
-    become: true
-    become_user: root
-  - name: Set selinux boolean for Samba
-    command: setsebool -P samba_export_all_rw=1
-    when: result is failed
-    become: true
-    become_user: root
-  - name: Copy samba config
-    copy: src=smb.conf dest=/etc/samba/smb.conf mode=0644 owner=root group=root
-    become: true
-    become_user: root
-  - name: Check samba user
-    shell: pdbedit -L | grep {{ var_cifsname }}
-    register: result
-    ignore_errors: True
-    changed_when: "result.rc != 0"
-    become: true
-    become_user: root
-  - name: Create a user
-    shell: useradd {{ var_cifsname }}
-    when: result is failed
-    become: true
-    become_user: root
-  - name: Create samba user
-    shell: echo -e "{{ var_cifspass }}\n{{ var_cifspass }}" | smbpasswd -s -a {{ var_cifsname }}
-    when: result is failed
-    become: true
-    become_user: root
-  - firewalld: service=samba permanent=true state=enabled
-    become: true
-    become_user: root
-  - name: Configure btrbk
-    copy: src=btrbk.conf dest=/etc/btrbk/btrbk.conf mode=0644 owner=root group=root
-    become: true
-    become_user: root
-  - name: Configure zram
-    copy: src=zram-generator.conf dest=/etc/systemd/zram-generator.conf mode=0644 owner=root group=root
-    become: true
-    become_user: root
-  - name: Configure minidlna
-    copy: src=minidlna.conf dest=/etc/minidlna.conf mode=0644 owner=root group=root
-    become: true
-    become_user: root
-  - name: Configure fstrim
-    copy: src=fstrim.sh dest=/etc/cron.daily/fstrim.sh mode=0755 owner=root group=root
-    become: true
-    become_user: root
+#
+# Setup server
+#
+- name: Lock instead of suspend for LidSwitch
+  community.general.ini_file:
+    dest: /etc/systemd/logind.conf
+    section: Login
+    option: HandleLidSwitch
+    value: lock
+    mode: "0644"
+  become: true
+  become_user: root
+- name: Check selinux boolean for Samba
+  ansible.builtin.shell: getsebool samba_export_all_rw | grep on # noqa: risky-shell-pipe
+  register: server_result
+  failed_when: false
+  changed_when: "server_result.rc != 0"
+  become: true
+  become_user: root
+- name: Set selinux boolean for Samba
+  ansible.builtin.command: setsebool -P samba_export_all_rw=1 # noqa: no-changed-when
+  when: server_result is failed
+  become: true
+  become_user: root
+- name: Copy samba config
+  ansible.builtin.copy:
+    src: smb.conf
+    dest: /etc/samba/smb.conf
+    mode: "0644"
+    owner: root
+    group: root
+  become: true
+  become_user: root
+- name: Check samba user
+  ansible.builtin.shell: pdbedit -L | grep {{ var_cifsname }} # noqa: risky-shell-pipe
+  register: server_result2
+  failed_when: false
+  changed_when: "server_result2.rc != 0"
+  become: true
+  become_user: root
+- name: Create a user
+  ansible.builtin.command: useradd {{ var_cifsname }} # noqa: no-changed-when
+  when: server_result2 is failed
+  become: true
+  become_user: root
+- name: Create samba user
+  ansible.builtin.shell: echo -e "{{ var_cifspass }}\n{{ var_cifspass }}" | smbpasswd -s -a {{ var_cifsname }} # noqa: no-changed-when risky-shell-pipe
+  when: server_result2 is failed
+  become: true
+  become_user: root
+- name: Configure firewalld samba service
+  ansible.posix.firewalld:
+    service: samba
+    permanent: true
+    state: enabled
+  become: true
+  become_user: root
+- name: Configure btrbk
+  ansible.builtin.copy:
+    src: btrbk.conf
+    dest: /etc/btrbk/btrbk.conf
+    mode: "0644"
+    owner: root
+    group: root
+  become: true
+  become_user: root
+- name: Configure zram
+  ansible.builtin.copy:
+    src: zram-generator.conf
+    dest: /etc/systemd/zram-generator.conf
+    mode: "0644"
+    owner: root
+    group: root
+  become: true
+  become_user: root
+- name: Configure minidlna
+  ansible.builtin.copy:
+    src: minidlna.conf
+    dest: /etc/minidlna.conf
+    mode: "0644"
+    owner: root
+    group: root
+  become: true
+  become_user: root
+- name: Configure fstrim
+  ansible.builtin.copy:
+    src: fstrim.sh
+    dest: /etc/cron.daily/fstrim.sh
+    mode: "0755"
+    owner: root
+    group: root
+  become: true
+  become_user: root

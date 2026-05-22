@@ -3,8 +3,8 @@
   ansible.builtin.find:
     paths: /sys/class/power_supply
     patterns:
-      - 'BAT*'
-      - 'macsmc-battery'
+      - "BAT*"
+      - "macsmc-battery"
     file_type: any
   register: linux_battery_check
 - name: Update Writeback Time

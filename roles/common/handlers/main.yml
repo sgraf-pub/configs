@@ -1,2 +1,3 @@
-- name: rebuild initramfs
-  command: dracut --force -I /etc/crypttab
+---
+- name: Rebuild initramfs
+  ansible.builtin.command: dracut --force -I /etc/crypttab # noqa: no-changed-when

@@ -1,3 +1,4 @@
+---
 - name: Remove affinity for beesd
   ansible.builtin.file:
     path: "/etc/systemd/system/beesd@.service.d/affinity.conf"

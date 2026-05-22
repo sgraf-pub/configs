@@ -1,3 +1,4 @@
+---
 - name: Stop and disable browser-sync services
   ansible.builtin.systemd:
     name: "{{ item }}"
@@ -10,7 +11,7 @@
     - browser-sync-periodic.service
     - firefox-sync.timer
     - firefox-sync.service
-  ignore_errors: true
+  failed_when: false
 
 - name: Restore persistent cache directories
   ansible.builtin.shell: |
@@ -24,6 +25,7 @@
     - mozilla/firefox
     - google-chrome
     - chromium
+  changed_when: false
 
 - name: Remove browser-sync files
   ansible.builtin.file:

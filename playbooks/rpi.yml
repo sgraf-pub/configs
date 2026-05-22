@@ -1,6 +1,7 @@
 ---
 # file: rpi.yml
-- hosts: laptop
+- name: Configure rpi
+  hosts: laptop
   remote_user: root
   roles:
     - common

@@ -1,6 +1,7 @@
 ---
 # file: laptop.yml
-- hosts: laptop
+- name: Configure laptop
+  hosts: laptop
   remote_user: root
   roles:
     - common
@@ -10,4 +11,4 @@
     - containers
     - { role: flatpaks, become: true }
     - { role: affinity, become: true }
-    - firefox-cache
+    - firefox_cache

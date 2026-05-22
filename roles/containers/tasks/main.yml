@@ -1,37 +1,37 @@
 ---
 - name: Create a user systemd directory if it does not exist
   ansible.builtin.file:
-    path: '~/.config/systemd/user/'
+    path: "~/.config/systemd/user/"
     state: directory
-    mode: '0755'
+    mode: "0755"
 - name: Create distrobox service file
   ansible.builtin.copy:
     content: |
-             [Unit]
-             Description=Automatically upgrade all Distrobox containers
-             After=network-online.target
-             StartLimitIntervalSec=60m
-             StartLimitBurst=3
-             [Service]
-             Type=oneshot
-             ExecStart=/usr/bin/distrobox-upgrade --all
-             Restart=on-failure
-             RestartSec=1m
-    dest: '~/.config/systemd/user/distrobox-upgrade.service'
+      [Unit]
+      Description=Automatically upgrade all Distrobox containers
+      After=network-online.target
+      StartLimitIntervalSec=60m
+      StartLimitBurst=3
+      [Service]
+      Type=oneshot
+      ExecStart=/usr/bin/distrobox-upgrade --all
+      Restart=on-failure
+      RestartSec=1m
+    dest: "~/.config/systemd/user/distrobox-upgrade.service"
     mode: "0644"
 - name: Create distrobox timer file
   ansible.builtin.copy:
     content: |
-             [Unit]
-             Description=Run distrobox-upgrade daily
-             Wants=network-online.target
-             [Timer]
-             OnCalendar=daily
-             Persistent=true
-             RandomizedDelaySec=60m
-             [Install]
-             WantedBy=timers.target
-    dest: '~/.config/systemd/user/distrobox-upgrade.timer'
+      [Unit]
+      Description=Run distrobox-upgrade daily
+      Wants=network-online.target
+      [Timer]
+      OnCalendar=daily
+      Persistent=true
+      RandomizedDelaySec=60m
+      [Install]
+      WantedBy=timers.target
+    dest: "~/.config/systemd/user/distrobox-upgrade.timer"
     mode: "0644"
 - name: Enable dristrobox timer
   ansible.builtin.systemd_service:

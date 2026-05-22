@@ -1,18 +1,36 @@
+---
 - name: Make sure anchors directory exists
-  file: path=/etc/pki/ca-trust/source/anchors state=directory
+  ansible.builtin.file:
+    path: /etc/pki/ca-trust/source/anchors
+    state: directory
+    mode: "0755"
 - name: Copy postsignum_qca2_root.pem into anchors dir
-  get_url: url=http://www.postsignum.cz/files/ca/postsignum_qca2_root.pem dest=/etc/pki/ca-trust/source/anchors/postsignum_qca2_root.pem
+  ansible.builtin.get_url:
+    url: http://www.postsignum.cz/files/ca/postsignum_qca2_root.pem
+    dest: /etc/pki/ca-trust/source/anchors/postsignum_qca2_root.pem
+    mode: "0644"
   notify: update-ca-trust
 - name: Copy postsignum_qca2_sub.pem into anchors dir
-  get_url: url=http://www.postsignum.cz/files/ca/postsignum_qca2_sub.pem dest=/etc/pki/ca-trust/source/anchors/postsignum_qca2_sub.pem
+  ansible.builtin.get_url:
+    url: http://www.postsignum.cz/files/ca/postsignum_qca2_sub.pem
+    dest: /etc/pki/ca-trust/source/anchors/postsignum_qca2_sub.pem
+    mode: "0644"
   notify: update-ca-trust
 - name: Copy postsignum_qca3_sub.pem into anchors dir
-  get_url: url=http://www.postsignum.cz/files/ca/postsignum_qca3_sub.pem dest=/etc/pki/ca-trust/source/anchors/postsignum_qca3_sub.pem
+  ansible.builtin.get_url:
+    url: http://www.postsignum.cz/files/ca/postsignum_qca3_sub.pem
+    dest: /etc/pki/ca-trust/source/anchors/postsignum_qca3_sub.pem
+    mode: "0644"
   notify: update-ca-trust
 - name: Copy postsignum_vca2_sub.pem into anchors dir
-  get_url: url=http://www.postsignum.cz/files/ca/postsignum_vca2_sub.pem dest=/etc/pki/ca-trust/source/anchors/postsignum_vca2_sub.pem
+  ansible.builtin.get_url:
+    url: http://www.postsignum.cz/files/ca/postsignum_vca2_sub.pem
+    dest: /etc/pki/ca-trust/source/anchors/postsignum_vca2_sub.pem
+    mode: "0644"
   notify: update-ca-trust
 - name: Copy postsignum_vca3_sub.pem into anchors dir
-  get_url: url=http://www.postsignum.cz/files/ca/postsignum_vca3_sub.pem dest=/etc/pki/ca-trust/source/anchors/postsignum_vca3_sub.pem
+  ansible.builtin.get_url:
+    url: http://www.postsignum.cz/files/ca/postsignum_vca3_sub.pem
+    dest: /etc/pki/ca-trust/source/anchors/postsignum_vca3_sub.pem
+    mode: "0644"
   notify: update-ca-trust
-

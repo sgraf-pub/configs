@@ -1,8 +1,8 @@
 ---
 # file: server.yml
-- hosts: server
+- name: Configure server
+  hosts: server
   remote_user: root
   roles:
     - common
     - server
-
