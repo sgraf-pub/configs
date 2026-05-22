@@ -11,10 +11,26 @@
       - cabextract
       - xorg-x11-font-utils
       - fontconfig
-      # Install Microsoft Fonts
-      - "https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm"
     state: present
-    disable_gpg_check: true
+
+- name: Check if Microsoft Fonts are already installed
+  ansible.builtin.command: rpm -q msttcore-fonts-installer
+  register: msttcore_installed
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Download Microsoft Fonts installer
+  ansible.builtin.get_url:
+    url: "https://downloads.sourceforge.net/project/mscorefonts2/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm"
+    dest: "/tmp/msttcore-fonts-installer-2.6-1.noarch.rpm"
+    checksum: "sha256:55d7f3a86533225634ff3ea2384b4356d9665a29cc7eeacff16602a1714afbb4"
+    mode: '0644'
+  when: msttcore_installed.rc != 0
+
+- name: Install Microsoft Fonts
+  ansible.builtin.command: rpm -i --nodigest --nosignature /tmp/msttcore-fonts-installer-2.6-1.noarch.rpm
+  when: msttcore_installed.rc != 0
 - name: Enable firewalld
   ansible.builtin.service:
     name: firewalld.service
