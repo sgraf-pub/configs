@@ -90,7 +90,7 @@
     mode: "0755"
   become: true
   become_user: "{{ var_user }}"
-  when: ansible_distribution != 'MacOSX'
+  when: ansible_facts.distribution != 'MacOSX'
 # - name: Add update script
 #   ansible.builtin.copy: src=up dest={{ var_home }}/.local/bin/up mode=0755
 #   become: true

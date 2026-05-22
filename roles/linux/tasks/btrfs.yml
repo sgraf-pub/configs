@@ -7,7 +7,7 @@
   ansible.builtin.lineinfile:
     dest: /etc/sysconfig/btrfsmaintenance
     regexp: "^BTRFS_DEFRAG_PATHS="
-    line: BTRFS_DEFRAG_PATHS="{{ ansible_mounts | selectattr('fstype', 'equalto', 'btrfs') | map(attribute='mount') | join(':') }}"
+    line: BTRFS_DEFRAG_PATHS="{{ ansible_facts.mounts | selectattr('fstype', 'equalto', 'btrfs') | map(attribute='mount') | join(':') }}"
 - name: Disable defrag timer
   ansible.builtin.service:
     name: btrfs-defrag.timer

@@ -70,4 +70,4 @@
       - intel-npu-driver
       - clinfo
     state: present
-  when: ansible_architecture == 'x86_64'
+  when: ansible_facts.architecture == 'x86_64'
