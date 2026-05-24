@@ -43,6 +43,45 @@
     value: "false"
     no_extra_spaces: true
     mode: "0644"
+- name: Enable bluetooth experimental features
+  community.general.ini_file:
+    path: /etc/bluetooth/main.conf
+    section: General
+    option: Experimental
+    value: "true"
+    no_extra_spaces: true
+    mode: "0644"
+- name: Enable bluetooth kernel experimental features
+  community.general.ini_file:
+    path: /etc/bluetooth/main.conf
+    section: General
+    option: KernelExperimental
+    value: 6fbaf188-05e0-496a-9885-d6ddfdb4e03e
+    no_extra_spaces: true
+    mode: "0644"
+- name: Set bluetooth controller mode to LE only
+  community.general.ini_file:
+    path: /etc/bluetooth/main.conf
+    section: General
+    option: ControllerMode
+    value: le
+    no_extra_spaces: true
+    mode: "0644"
+- name: Create wireplumber config directory for bluez LE audio
+  ansible.builtin.file:
+    path: "{{ var_home }}/.config/wireplumber/wireplumber.conf.d"
+    state: directory
+    mode: "0755"
+  become: false
+- name: Configure wireplumber bluez LE audio
+  ansible.builtin.copy:
+    content: |
+      monitor.bluez.properties = {
+        bluez5.enable-bap = true
+      }
+    dest: "{{ var_home }}/.config/wireplumber/wireplumber.conf.d/51-bluez-leaudio.conf"
+    mode: "0644"
+  become: false
 - name: Setup dnf cache
   community.general.ini_file:
     path: /etc/dnf/dnf.conf
