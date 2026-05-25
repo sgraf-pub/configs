@@ -1,20 +1,8 @@
 ---
-- name: Check for battery
-  ansible.builtin.find:
-    paths: /sys/class/power_supply
-    patterns:
-      - "BAT*"
-      - "macsmc-battery"
-    file_type: any
-  register: linux_battery_check
-- name: Update Writeback Time
-  ansible.builtin.copy:
-    content: |
-      vm.laptop_mode = 5
-      vm.dirty_writeback_centisecs = 1500
-    dest: /etc/sysctl.d/dirty.conf
-    mode: "0644"
-  when: linux_battery_check.matched > 0
+- name: Remove writeback setting
+  ansible.builtin.file:
+    path: /etc/sysctl.d/dirty.conf
+    state: absent
 - name: Remove WoL setting
   ansible.builtin.file:
     path: /etc/udev/rules.d/wol.rules
@@ -31,3 +19,24 @@
   ansible.builtin.file:
     path: /etc/udev/rules.d/pci_pm.rules
     state: absent
+- name: Install powertop service
+  ansible.builtin.copy:
+    content: |
+      [Unit]
+      Description=Powertop tunings
+
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+      ExecStart=/usr/bin/powertop --auto-tune
+      ExecStartPost=/bin/sh -c 'find /sys/bus/usb/drivers/usbhid -regex ".*/[0-9:.-]+" | sed "s|.*/||;s|:.*||" | sort -u | xargs -rI{} sh -c "echo on > /sys/bus/usb/devices/{}/power/control"'
+
+      [Install]
+      WantedBy=multi-user.target sleep.target
+    dest: /etc/systemd/system/powertop.service
+    mode: "0644"
+- name: Enable powertop service
+  ansible.builtin.systemd_service:
+    name: powertop.service
+    enabled: true
+    daemon_reload: true

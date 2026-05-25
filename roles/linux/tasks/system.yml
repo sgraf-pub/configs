@@ -6,11 +6,10 @@
 - name: Set timezone
   community.general.timezone:
     name: "Europe/Prague"
-- name: Disable NMI watchdog
-  ansible.builtin.copy:
-    content: kernel.nmi_watchdog = 0
-    dest: /etc/sysctl.d/disable_watchdog.conf
-    mode: "0644"
+- name: Disable NMI tweaks
+  ansible.builtin.file:
+    path: /etc/sysctl.d/disable_watchdog.conf
+    state: absent
 - name: TCP congestion control algorithm
   ansible.builtin.copy:
     content: net.ipv4.tcp_congestion_control = bbr
