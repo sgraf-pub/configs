@@ -67,6 +67,7 @@
     name:
       - nvtop
       - intel-compute-runtime
+      - igt-gpu-tools
       - intel-npu-driver
       - clinfo
     state: present
