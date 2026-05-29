@@ -40,3 +40,20 @@
     name: powertop.service
     enabled: true
     daemon_reload: true
+- name: Install i915 power settings
+  ansible.builtin.copy:
+    content: "options i915 enable_dc=4 disable_power_well=1\n"
+    dest: /etc/modprobe.d/i915.conf
+    mode: "0644"
+  when: ansible_facts.architecture == 'x86_64'
+- name: Install iwlwifi power settings
+  ansible.builtin.copy:
+    content: "options iwlwifi power_save=1 power_level=3\n"
+    dest: /etc/modprobe.d/iwlwifi.conf
+    mode: "0644"
+  when: ansible_facts.architecture == 'x86_64'
+- name: Install PCIe ASPM powersave policy
+  ansible.builtin.copy:
+    content: "w /sys/module/pcie_aspm/parameters/policy - - - - powersave\n"
+    dest: /etc/tmpfiles.d/aspm-powersave.conf
+    mode: "0644"
