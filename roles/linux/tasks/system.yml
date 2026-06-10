@@ -1,8 +1,10 @@
 ---
-- name: Disable vulkan tweaks
-  ansible.builtin.file:
-    path: /etc/profile.d/vulkan.sh
-    state: absent
+- name: Configure vulkan tweaks
+  ansible.builtin.copy:
+    content: |
+      export ANV_DEBUG=video-decode,video-encode
+    dest: /etc/profile.d/vulkan.sh
+    mode: "0644"
 - name: Set timezone
   community.general.timezone:
     name: "Europe/Prague"
