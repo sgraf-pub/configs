@@ -3,7 +3,6 @@
   ansible.builtin.copy:
     content: |
       export ANV_DEBUG=video-decode,video-encode
-      export VK_DRIVER_FILES=$(ls /usr/share/vulkan/icd.d/*.json | grep -v dzn | tr '\n' ':')
     dest: /etc/profile.d/vulkan.sh
     mode: "0644"
 - name: Set timezone
