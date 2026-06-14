@@ -1,0 +1,68 @@
+---
+- name: Install required packages on host
+  ansible.builtin.dnf:
+    name:
+      - libdnf5-plugin-local
+      - createrepo_c
+      - acl
+    state: present
+  become: yes
+
+- name: Create local repository directory
+  ansible.builtin.file:
+    path: /var/lib/dnf/plugins/local
+    state: directory
+    mode: '0775'
+  become: yes
+
+- name: Determine the real user
+  ansible.builtin.set_fact:
+    real_user: "{{ lookup('env', 'SUDO_USER') | default(lookup('env', 'USER'), true) }}"
+
+- name: Set ACL for real user on local repository directory
+  ansible.posix.acl:
+    path: /var/lib/dnf/plugins/local
+    entity: "{{ real_user }}"
+    etype: user
+    permissions: rwx
+    default: "{{ item }}"
+    state: present
+  loop:
+    - yes
+    - no
+  become: yes
+
+- name: Initialize repository if empty
+  ansible.builtin.command: createrepo_c /var/lib/dnf/plugins/local
+  args:
+    creates: /var/lib/dnf/plugins/local/repodata
+  become: yes
+
+- name: Configure dnf-plugin-local on host
+  community.general.ini_file:
+    path: /etc/dnf/libdnf5-plugins/local.conf
+    section: main
+    option: "{{ item.key }}"
+    value: "{{ item.value }}"
+    create: yes
+  loop:
+    - { key: 'enabled', value: '1' }
+    - { key: 'repodir', value: '/var/lib/dnf/plugins/local' }
+  become: yes
+
+- name: Get list of distrobox containers
+  ansible.builtin.shell: distrobox list --no-color | awk -F '|' 'NR>1 {gsub(/^[ \t]+|[ \t]+$/, "", $2); if($2!="") print $2}'
+  register: distrobox_list_raw
+  changed_when: false
+  become: no
+
+- name: Extract container names
+  ansible.builtin.set_fact:
+    distrobox_containers: "{{ distrobox_list_raw.stdout_lines }}"
+  when: distrobox_list_raw.stdout_lines | length > 0
+
+- name: Configure distrobox containers
+  include_tasks: configure_distrobox.yml
+  loop: "{{ distrobox_containers | default([]) }}"
+  loop_control:
+    loop_var: container_name

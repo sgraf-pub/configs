@@ -1,0 +1,15 @@
+---
+- name: "Install dnf-plugin-local in {{ container_name }}"
+  ansible.builtin.command:
+    cmd: "distrobox enter {{ container_name }} -- sudo dnf install -y libdnf5-plugin-local createrepo_c"
+  become: no
+  register: distrobox_install
+  changed_when: "'Nothing to do' not in distrobox_install.stdout"
+  ignore_errors: yes
+
+- name: "Configure dnf-plugin-local in {{ container_name }}"
+  ansible.builtin.command:
+    cmd: "distrobox enter {{ container_name }} -- sudo bash -c 'mkdir -p /etc/dnf/libdnf5-plugins && echo -e \"[main]\\nenabled = true\\nrepodir = /run/host/var/lib/dnf/plugins/local\" > /etc/dnf/libdnf5-plugins/local.conf'"
+  become: no
+  when: distrobox_install.rc == 0
+  changed_when: true
