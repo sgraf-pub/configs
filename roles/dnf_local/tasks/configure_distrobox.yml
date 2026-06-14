@@ -9,7 +9,7 @@
 
 - name: "Configure dnf-plugin-local in {{ container_name }}"
   ansible.builtin.command:
-    cmd: "distrobox enter {{ container_name }} -- sudo bash -c 'mkdir -p /etc/dnf/libdnf5-plugins && echo -e \"[main]\\nenabled = true\\nrepodir = /run/host/var/lib/dnf/plugins/local\" > /etc/dnf/libdnf5-plugins/local.conf'"
+    cmd: "distrobox enter {{ container_name }} -- sudo bash -c 'mkdir -p /etc/dnf/libdnf5-plugins && echo -e \"[main]\\nenabled = 1\\nrepodir = /run/host/var/lib/dnf/plugins/local\\n\\n[createrepo]\\nenabled = true\" > /etc/dnf/libdnf5-plugins/local.conf && rm -f /etc/yum.repos.d/_dnf_local.repo && echo -e \"[my_local_cache]\\nname=Local Cache Override\\nbaseurl=file:///run/host/var/lib/dnf/plugins/local\\nenabled=1\\ngpgcheck=0\\npkg_gpgcheck=0\\ncost=5\" > /etc/yum.repos.d/my_local_cache.repo'"
   become: no
   when: distrobox_install.rc == 0
   changed_when: true

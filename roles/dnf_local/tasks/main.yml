@@ -8,16 +8,18 @@
     state: present
   become: yes
 
+- name: Determine the real user
+  ansible.builtin.set_fact:
+    real_user: "{{ lookup('env', 'SUDO_USER') | default(lookup('env', 'USER'), true) }}"
+
 - name: Create local repository directory
   ansible.builtin.file:
     path: /var/lib/dnf/plugins/local
     state: directory
     mode: '0775'
+    owner: "{{ real_user }}"
+    group: "{{ real_user }}"
   become: yes
-
-- name: Determine the real user
-  ansible.builtin.set_fact:
-    real_user: "{{ lookup('env', 'SUDO_USER') | default(lookup('env', 'USER'), true) }}"
 
 - name: Set ACL for real user on local repository directory
   ansible.posix.acl:
@@ -48,6 +50,22 @@
   loop:
     - { key: 'enabled', value: '1' }
     - { key: 'repodir', value: '/var/lib/dnf/plugins/local' }
+  become: yes
+
+- name: Override local repository configuration to disable GPG checks
+  community.general.ini_file:
+    path: /etc/yum.repos.d/my_local_cache.repo
+    section: my_local_cache
+    option: "{{ item.key }}"
+    value: "{{ item.value }}"
+    create: yes
+  loop:
+    - { key: 'name', value: 'Local Cache Override' }
+    - { key: 'baseurl', value: 'file:///var/lib/dnf/plugins/local' }
+    - { key: 'enabled', value: '1' }
+    - { key: 'gpgcheck', value: '0' }
+    - { key: 'pkg_gpgcheck', value: '0' }
+    - { key: 'cost', value: '5' }
   become: yes
 
 - name: Get list of distrobox containers
