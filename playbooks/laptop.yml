@@ -12,3 +12,4 @@
     - { role: flatpaks, become: true }
     - { role: affinity, become: true }
     - firefox_cache
+    - dnf_local

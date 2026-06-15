@@ -12,5 +12,5 @@
     - { role: flatpaks, become: true }
     - { role: affinity, become: true }
     - firefox_cache
-    - { role: asahi, become: true }
     - dnf_local
+    - { role: asahi, become: true }
