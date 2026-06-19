@@ -21,6 +21,27 @@
     group: "{{ real_user }}"
   become: yes
 
+- name: Check if local-nogpgcheck directory exists (not as symlink)
+  ansible.builtin.stat:
+    path: /var/lib/dnf/plugins/local-nogpgcheck
+  register: nogpgcheck_stat
+  become: yes
+
+- name: Remove spurious local-nogpgcheck directory
+  ansible.builtin.file:
+    path: /var/lib/dnf/plugins/local-nogpgcheck
+    state: absent
+  become: yes
+  when: nogpgcheck_stat.stat.exists and not nogpgcheck_stat.stat.islnk
+
+- name: Create local-nogpgcheck symlink to local
+  ansible.builtin.file:
+    src: /var/lib/dnf/plugins/local
+    dest: /var/lib/dnf/plugins/local-nogpgcheck
+    state: link
+  become: yes
+  when: nogpgcheck_stat.stat.exists and not nogpgcheck_stat.stat.islnk
+
 - name: Set ACL for real user on local repository directory
   ansible.posix.acl:
     path: /var/lib/dnf/plugins/local
