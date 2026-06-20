@@ -50,43 +50,24 @@
   ansible.builtin.file:
     path: /etc/systemd/system/beesd@.service.d/override.conf
     state: absent
-- name: Create bees weekly wrapper service
-  ansible.builtin.copy:
-    content: |
-      [Unit]
-      Description=Run bees weekly for %i (wrapper)
-      After=local-fs.target
-
-      [Service]
-      Type=oneshot
-      ExecStart=/usr/bin/systemctl start beesd@%i.service
-      ExecStart=/usr/bin/sleep 1h
-      ExecStart=/usr/bin/systemctl stop beesd@%i.service
-    dest: /etc/systemd/system/bees-weekly@.service
-    mode: "0644"
-- name: Create bees weekly timer
-  ansible.builtin.copy:
-    content: |
-      [Unit]
-      Description=Run bees weekly for %i
-
-      [Timer]
-      OnCalendar=weekly
-      Persistent=true
-      Unit=bees-weekly@%i.service
-
-      [Install]
-      WantedBy=timers.target
-    dest: /etc/systemd/system/bees-weekly@.timer
-    mode: "0644"
-- name: Disable continuous bees service
+- name: Remove bees weekly wrapper service
+  ansible.builtin.file:
+    path: /etc/systemd/system/bees-weekly@.service
+    state: absent
+- name: Remove bees weekly timer
+  ansible.builtin.file:
+    path: /etc/systemd/system/bees-weekly@.timer
+    state: absent
+- name: Disable bees weekly timer
   ansible.builtin.systemd_service:
-    name: beesd@{{ duperemove_uuid.stdout }}.service
+    name: bees-weekly@{{ duperemove_uuid.stdout }}.timer
     state: stopped
     enabled: false
     daemon_reload: true
-- name: Enable bees weekly timer
+  failed_when: false
+- name: Enable continuous bees service
   ansible.builtin.systemd_service:
-    name: bees-weekly@{{ duperemove_uuid.stdout }}.timer
+    name: beesd@{{ duperemove_uuid.stdout }}.service
     state: started
     enabled: true
+    daemon_reload: true
