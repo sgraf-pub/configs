@@ -63,4 +63,3 @@
     line: "w     /sys/module/zswap/parameters/compressor         -    -    -    -    zstd"
     dest: /etc/tmpfiles.d/asahi-enable-zswap.conf
   when: asahi_swap.stat.exists
-

@@ -29,7 +29,10 @@
       Type=oneshot
       RemainAfterExit=yes
       ExecStart=/usr/bin/powertop --auto-tune
-      ExecStartPost=/bin/sh -c 'find /sys/bus/usb/drivers/usbhid -regex ".*/[0-9:.-]+" | sed "s|.*/||;s|:.*||" | sort -u | xargs -rI{} sh -c "echo on > /sys/bus/usb/devices/{}/power/control"'
+      ExecStartPost=/bin/sh -c \
+        'find /sys/bus/usb/drivers/usbhid -regex ".*/[0-9:.-]+" \
+        | sed "s|.*/||;s|:.*||" | sort -u \
+        | xargs -rI{} sh -c "echo on > /sys/bus/usb/devices/{}/power/control"'
 
       [Install]
       WantedBy=multi-user.target sleep.target
@@ -75,17 +78,17 @@
           # Save current profile
           tuned-adm active | awk '{print $NF}' > /var/run/previous_power_profile
           logger -t "$LOG_TAG" "Saved power profile: $(cat /var/run/previous_power_profile)"
-          
+
           # Save Wi-Fi and Bluetooth state
           rfkill -no SOFT list wifi | head -n1 > /var/run/previous_wifi_state
           rfkill -no SOFT list bluetooth | head -n1 > /var/run/previous_bluetooth_state
           logger -t "$LOG_TAG" "Saved states - wifi: $(cat /var/run/previous_wifi_state), bluetooth: $(cat /var/run/previous_bluetooth_state)"
-          
+
           # Disable Wi-Fi and Bluetooth
           rfkill block wifi
           rfkill block bluetooth
           logger -t "$LOG_TAG" "Blocked wifi and bluetooth"
-          
+
           # Set powersave profile
           tuned-adm profile powersave
           logger -t "$LOG_TAG" "Switched to powersave profile. Pre-sleep complete."
@@ -102,7 +105,7 @@
             tuned-adm profile balanced
             logger -t "$LOG_TAG" "No saved profile found, defaulted to balanced"
           fi
-          
+
           # Restore Wi-Fi and Bluetooth state
           if [ "$(cat /var/run/previous_wifi_state 2>/dev/null)" = "unblocked" ]; then
             rfkill unblock wifi

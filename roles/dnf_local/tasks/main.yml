@@ -6,60 +6,60 @@
       - createrepo_c
       - acl
     state: present
-  become: yes
+  become: true
 
 - name: Determine the real user
   ansible.builtin.set_fact:
-    real_user: "{{ lookup('env', 'SUDO_USER') | default(lookup('env', 'USER'), true) }}"
+    dnf_local_real_user: "{{ lookup('env', 'SUDO_USER') | default(lookup('env', 'USER'), true) }}"
 
 - name: Create local repository directory
   ansible.builtin.file:
     path: /var/lib/dnf/plugins/local
     state: directory
     mode: '0775'
-    owner: "{{ real_user }}"
-    group: "{{ real_user }}"
-  become: yes
+    owner: "{{ dnf_local_real_user }}"
+    group: "{{ dnf_local_real_user }}"
+  become: true
 
 - name: Check if local-nogpgcheck directory exists (not as symlink)
   ansible.builtin.stat:
     path: /var/lib/dnf/plugins/local-nogpgcheck
-  register: nogpgcheck_stat
-  become: yes
+  register: dnf_local_nogpgcheck_stat
+  become: true
 
 - name: Remove spurious local-nogpgcheck directory
   ansible.builtin.file:
     path: /var/lib/dnf/plugins/local-nogpgcheck
     state: absent
-  become: yes
-  when: nogpgcheck_stat.stat.exists and not nogpgcheck_stat.stat.islnk
+  become: true
+  when: dnf_local_nogpgcheck_stat.stat.exists and not dnf_local_nogpgcheck_stat.stat.islnk
 
 - name: Create local-nogpgcheck symlink to local
   ansible.builtin.file:
     src: /var/lib/dnf/plugins/local
     dest: /var/lib/dnf/plugins/local-nogpgcheck
     state: link
-  become: yes
-  when: nogpgcheck_stat.stat.exists and not nogpgcheck_stat.stat.islnk
+  become: true
+  when: dnf_local_nogpgcheck_stat.stat.exists and not dnf_local_nogpgcheck_stat.stat.islnk
 
 - name: Set ACL for real user on local repository directory
   ansible.posix.acl:
     path: /var/lib/dnf/plugins/local
-    entity: "{{ real_user }}"
+    entity: "{{ dnf_local_real_user }}"
     etype: user
     permissions: rwx
     default: "{{ item }}"
     state: present
   loop:
-    - yes
-    - no
-  become: yes
+    - true
+    - false
+  become: true
 
 - name: Initialize repository if empty
   ansible.builtin.command: createrepo_c /var/lib/dnf/plugins/local
   args:
     creates: /var/lib/dnf/plugins/local/repodata
-  become: yes
+  become: true
 
 - name: Configure dnf-plugin-local on host
   community.general.ini_file:
@@ -67,11 +67,12 @@
     section: main
     option: "{{ item.key }}"
     value: "{{ item.value }}"
-    create: yes
+    create: true
+    mode: "0644"
   loop:
     - { key: 'enabled', value: '1' }
     - { key: 'repodir', value: '/var/lib/dnf/plugins/local' }
-  become: yes
+  become: true
 
 - name: Override local repository configuration to disable GPG checks
   community.general.ini_file:
@@ -79,7 +80,8 @@
     section: my_local_cache
     option: "{{ item.key }}"
     value: "{{ item.value }}"
-    create: yes
+    create: true
+    mode: "0644"
   loop:
     - { key: 'name', value: 'Local Cache Override' }
     - { key: 'baseurl', value: 'file:///var/lib/dnf/plugins/local' }
@@ -87,21 +89,23 @@
     - { key: 'gpgcheck', value: '0' }
     - { key: 'pkg_gpgcheck', value: '0' }
     - { key: 'cost', value: '5' }
-  become: yes
+  become: true
 
 - name: Get list of distrobox containers
-  ansible.builtin.shell: distrobox list --no-color | awk -F '|' 'NR>1 {gsub(/^[ \t]+|[ \t]+$/, "", $2); if($2!="") print $2}'
-  register: distrobox_list_raw
+  ansible.builtin.shell:
+    cmd: set -o pipefail && distrobox list --no-color | awk -F '|' 'NR>1 {gsub(/^[ \t]+|[ \t]+$/, "", $2); if($2!="") print $2}'
+    executable: /bin/bash
+  register: dnf_local_distrobox_list_raw
   changed_when: false
-  become: no
+  become: false
 
 - name: Extract container names
   ansible.builtin.set_fact:
-    distrobox_containers: "{{ distrobox_list_raw.stdout_lines }}"
-  when: distrobox_list_raw.stdout_lines | length > 0
+    dnf_local_distrobox_containers: "{{ dnf_local_distrobox_list_raw.stdout_lines }}"
+  when: dnf_local_distrobox_list_raw.stdout_lines | length > 0
 
 - name: Configure distrobox containers
-  include_tasks: configure_distrobox.yml
-  loop: "{{ distrobox_containers | default([]) }}"
+  ansible.builtin.include_tasks: configure_distrobox.yml
+  loop: "{{ dnf_local_distrobox_containers | default([]) }}"
   loop_control:
     loop_var: container_name

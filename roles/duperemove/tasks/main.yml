@@ -23,9 +23,9 @@
       OPTIONS="--verbose=3"
     dest: /etc/bees/root.conf
     mode: "0644"
-  register: bees_config
+  register: duperemove_bees_config
 - name: Remove stale beeshome directory
-  when: bees_config.changed
+  when: duperemove_bees_config.changed # noqa: no-handler
   block:
     - name: Mount UUID volume for beeshome cleanup
       ansible.posix.mount:
