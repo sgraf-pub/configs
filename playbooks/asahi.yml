@@ -8,7 +8,5 @@
     - { role: linux, become: true }
     - { role: duperemove, become: true }
     - git
-    - containers
     - { role: flatpaks, become: true }
-    - dnf_local
     - { role: asahi, become: true }

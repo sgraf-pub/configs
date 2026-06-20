@@ -1,0 +1,7 @@
+---
+# file: containers.yml
+- name: Configure containers
+  hosts: laptop
+  remote_user: root
+  roles:
+    - containers

@@ -1,0 +1,7 @@
+---
+# file: dnf_local.yml
+- name: Configure dnf local repository
+  hosts: laptop
+  remote_user: root
+  roles:
+    - dnf_local
