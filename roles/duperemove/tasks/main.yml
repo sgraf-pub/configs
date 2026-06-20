@@ -14,6 +14,24 @@
       OPTIONS="--verbose=3"
     dest: /etc/bees/root.conf
     mode: "0644"
+  register: bees_config
+- name: Remove stale beeshome directory
+  when: bees_config.changed
+  block:
+    - name: Mount UUID volume for beeshome cleanup
+      ansible.posix.mount:
+        path: /mnt
+        src: "UUID={{ duperemove_uuid.stdout }}"
+        fstype: btrfs
+        state: ephemeral
+    - name: Remove .beeshome directory
+      ansible.builtin.file:
+        path: /mnt/.beeshome
+        state: absent
+    - name: Unmount UUID volume after beeshome cleanup
+      ansible.posix.mount:
+        path: /mnt
+        state: unmounted
 - name: Create bees service override directory
   ansible.builtin.file:
     path: /etc/systemd/system/beesd@.service.d
