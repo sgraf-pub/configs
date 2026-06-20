@@ -53,6 +53,7 @@
       - com.github.tchx84.Flatseal
     state: present
     remote: fedora
+  become: false
 - name: Remove libreoffice rpms
   ansible.builtin.dnf:
     name:
@@ -71,6 +72,7 @@
       - org.libreoffice.LibreOffice
     state: present
     remote: fedora
+  become: false
 - name: Remove other rpms
   ansible.builtin.dnf:
     name:
@@ -85,6 +87,7 @@
       - org.gnome.Firmware
     state: present
     remote: flathub
+  become: false
 # https://pagure.io/workstation-ostree-config/blob/main/f/silverblue-common.yaml
 - name: Install Silverblue common pkgs
   ansible.builtin.dnf:
