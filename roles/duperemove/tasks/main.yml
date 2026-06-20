@@ -7,10 +7,19 @@
   ansible.builtin.command: blkid /dev/dm-0 -s UUID -o value
   register: duperemove_uuid
   changed_when: false
+- name: Get device size in bytes
+  ansible.builtin.command: lsblk -b -n -d -o SIZE /dev/dm-0
+  register: duperemove_device_size
+  changed_when: false
+- name: Compute ideal bees hash table size
+  ansible.builtin.set_fact:
+    duperemove_db_size: >-
+      {{ ((duperemove_device_size.stdout | trim | int) // 4096 // 131072) * 131072 }}
 - name: Create bees config file
   ansible.builtin.copy:
     content: |
       UUID={{ duperemove_uuid.stdout }}
+      DB_SIZE={{ duperemove_db_size }}
       OPTIONS="--verbose=3"
     dest: /etc/bees/root.conf
     mode: "0644"
