@@ -1,0 +1,17 @@
+---
+- name: "Remove dnf-plugin-local configuration from {{ container_name }}"
+  ansible.builtin.command:
+    cmd: >-
+      distrobox enter {{ container_name }} -- sudo bash -c
+      'rm -f /etc/dnf/libdnf5-plugins/local.conf /etc/yum.repos.d/my_local_cache.repo'
+  become: false
+  changed_when: true
+  ignore_errors: true
+
+- name: "Remove dnf-plugin-local packages from {{ container_name }}"
+  ansible.builtin.command:
+    cmd: "distrobox enter {{ container_name }} -- sudo dnf remove -y libdnf5-plugin-local createrepo_c"
+  become: false
+  register: dnf_local_undo_distrobox_remove
+  changed_when: "'Nothing to do' not in dnf_local_undo_distrobox_remove.stdout"
+  ignore_errors: true

@@ -1,0 +1,51 @@
+---
+- name: Remove local cache repo override
+  ansible.builtin.file:
+    path: /etc/yum.repos.d/my_local_cache.repo
+    state: absent
+  become: true
+
+- name: Remove dnf-plugin-local configuration
+  ansible.builtin.file:
+    path: /etc/dnf/libdnf5-plugins/local.conf
+    state: absent
+  become: true
+
+- name: Remove local-nogpgcheck symlink
+  ansible.builtin.file:
+    path: /var/lib/dnf/plugins/local-nogpgcheck
+    state: absent
+  become: true
+
+- name: Remove local repository directory
+  ansible.builtin.file:
+    path: /var/lib/dnf/plugins/local
+    state: absent
+  become: true
+
+- name: Remove required packages from host
+  ansible.builtin.dnf:
+    name:
+      - libdnf5-plugin-local
+      - createrepo_c
+    state: absent
+  become: true
+
+- name: Get list of distrobox containers
+  ansible.builtin.shell:
+    cmd: set -o pipefail && distrobox list --no-color | awk -F '|' 'NR>1 {gsub(/^[ \t]+|[ \t]+$/, "", $2); if($2!="") print $2}'
+    executable: /bin/bash
+  register: dnf_local_undo_distrobox_list_raw
+  changed_when: false
+  become: false
+
+- name: Extract container names
+  ansible.builtin.set_fact:
+    dnf_local_undo_distrobox_containers: "{{ dnf_local_undo_distrobox_list_raw.stdout_lines }}"
+  when: dnf_local_undo_distrobox_list_raw.stdout_lines | length > 0
+
+- name: Undo distrobox container configuration
+  ansible.builtin.include_tasks: undo_distrobox.yml
+  loop: "{{ dnf_local_undo_distrobox_containers | default([]) }}"
+  loop_control:
+    loop_var: container_name

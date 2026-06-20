@@ -1,0 +1,8 @@
+---
+# file: dnf_local_undo.yml
+- name: Undo dnf local repository configuration
+  hosts: laptop
+  remote_user: root
+  tasks:
+    - name: Include dnf_local undo tasks
+      ansible.builtin.include_tasks: ../roles/dnf_local/tasks/undo.yml

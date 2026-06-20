@@ -1,0 +1,8 @@
+---
+# file: containers_undo.yml
+- name: Undo container configuration
+  hosts: laptop
+  remote_user: root
+  tasks:
+    - name: Include containers undo tasks
+      ansible.builtin.include_tasks: ../roles/containers/tasks/undo.yml

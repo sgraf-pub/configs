@@ -1,0 +1,23 @@
+---
+- name: Disable and stop distrobox timer
+  ansible.builtin.systemd_service:
+    name: distrobox-upgrade.timer
+    state: stopped
+    enabled: false
+    scope: "user"
+  ignore_errors: true
+
+- name: Remove distrobox timer file
+  ansible.builtin.file:
+    path: "~/.config/systemd/user/distrobox-upgrade.timer"
+    state: absent
+
+- name: Remove distrobox service file
+  ansible.builtin.file:
+    path: "~/.config/systemd/user/distrobox-upgrade.service"
+    state: absent
+
+- name: Reload user systemd daemon
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+    scope: "user"
