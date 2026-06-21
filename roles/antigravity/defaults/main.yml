@@ -1,0 +1,15 @@
+---
+# Path to the downloaded tarball
+antigravity_tarball: "{{ var_home }}/Downloads/Antigravity.tar.gz"
+
+# Installation directory
+antigravity_install_dir: /opt/antigravity
+
+# Symlink target
+antigravity_bin: /usr/local/bin/antigravity
+
+# Name of the directory inside the tarball
+antigravity_tarball_dir: Antigravity-arm64
+
+# Icon URL
+antigravity_icon_url: "https://aur.archlinux.org/cgit/aur.git/plain/antigravity.png?h=antigravity"

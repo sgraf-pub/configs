@@ -1,0 +1,7 @@
+---
+# file: antigravity.yml
+- name: Install / update Antigravity
+  hosts: laptop
+  remote_user: root
+  roles:
+    - { role: antigravity, become: true }

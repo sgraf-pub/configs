@@ -1,0 +1,71 @@
+---
+#
+# Install / update Antigravity from a pre-downloaded tarball
+#
+
+- name: Check that tarball exists
+  ansible.builtin.stat:
+    path: "{{ antigravity_tarball }}"
+  register: antigravity_tarball_stat
+
+- name: Fail if tarball is missing
+  ansible.builtin.fail:
+    msg: >-
+      Tarball not found at {{ antigravity_tarball }}.
+      Download it first, e.g. into ~/Downloads/Antigravity.tar.gz
+  when: not antigravity_tarball_stat.stat.exists
+
+- name: Remove existing installation directory
+  ansible.builtin.file:
+    path: "{{ antigravity_install_dir }}"
+    state: absent
+
+- name: Create installation directory
+  ansible.builtin.file:
+    path: "{{ antigravity_install_dir }}"
+    state: directory
+    owner: "{{ var_user }}"
+    group: "{{ var_user }}"
+    mode: "0755"
+
+- name: Extract tarball into install directory
+  ansible.builtin.unarchive:
+    src: "{{ antigravity_tarball }}"
+    dest: "{{ antigravity_install_dir }}"
+    remote_src: true
+    extra_opts:
+      - --strip-components=1
+    owner: "{{ var_user }}"
+    group: "{{ var_user }}"
+
+- name: Download icon
+  ansible.builtin.get_url:
+    url: "{{ antigravity_icon_url }}"
+    dest: "{{ antigravity_install_dir }}/antigravity.png"
+    mode: "0644"
+
+- name: Create symlink in /usr/local/bin
+  ansible.builtin.file:
+    src: "{{ antigravity_install_dir }}/antigravity"
+    dest: "{{ antigravity_bin }}"
+    state: link
+
+- name: Install desktop entry
+  ansible.builtin.copy:
+    content: |
+      [Desktop Entry]
+      Version=1.0
+      Name=Google Antigravity
+      Comment=Agent-first AI development platform
+      Exec={{ antigravity_bin }} %U
+      Icon={{ antigravity_install_dir }}/antigravity.png
+      Terminal=false
+      Type=Application
+      Categories=Development;IDE;
+      StartupWMClass=antigravity
+      MimeType=x-scheme-handler/antigravity;
+    dest: "{{ var_home }}/.local/share/applications/antigravity.desktop"
+    mode: "0644"
+  become: true
+  become_user: "{{ var_user }}"
+  notify: Update desktop database

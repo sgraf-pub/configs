@@ -1,0 +1,6 @@
+---
+- name: Update desktop database
+  ansible.builtin.command:
+    cmd: update-desktop-database {{ var_home }}/.local/share/applications
+  become: true
+  become_user: "{{ var_user }}"
