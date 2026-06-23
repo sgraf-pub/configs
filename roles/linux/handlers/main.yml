@@ -1,0 +1,5 @@
+---
+- name: Restart tuned
+  ansible.builtin.systemd_service:
+    name: tuned.service
+    state: restarted

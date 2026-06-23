@@ -58,6 +58,29 @@
     dest: /etc/tmpfiles.d/aspm-powersave.conf
     mode: "0644"
 
+- name: Create custom battery-powersave tuned profile directory
+  ansible.builtin.file:
+    path: /etc/tuned/profiles/battery-powersave
+    state: directory
+    mode: "0755"
+- name: Create custom battery-powersave tuned profile
+  ansible.builtin.copy:
+    content: |
+      [main]
+      include=powersave
+    dest: /etc/tuned/profiles/battery-powersave/tuned.conf
+    mode: "0644"
+  notify: Restart tuned
+- name: Configure tuned-ppd battery profile mapping
+  community.general.ini_file:
+    path: /etc/tuned/ppd.conf
+    section: battery
+    option: balanced
+    value: battery-powersave
+    no_extra_spaces: true
+    mode: "0644"
+  notify: Restart tuned
+
 - name: Ensure system-sleep directory exists
   ansible.builtin.file:
     path: /usr/lib/systemd/system-sleep
