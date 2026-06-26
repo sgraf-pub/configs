@@ -23,10 +23,10 @@
   ansible.builtin.copy:
     content: |
       [Unit]
-      Description=Run distrobox-upgrade daily
+      Description=Run distrobox-upgrade weekly
       Wants=network-online.target
       [Timer]
-      OnCalendar=daily
+      OnCalendar=weekly
       Persistent=true
       RandomizedDelaySec=60m
       [Install]
