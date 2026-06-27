@@ -98,10 +98,6 @@
         pre)
           logger -t "$LOG_TAG" "Sleep hook triggered: pre-sleep"
 
-          # Save current profile
-          tuned-adm active | awk '{print $NF}' > /var/run/previous_power_profile
-          logger -t "$LOG_TAG" "Saved power profile: $(cat /var/run/previous_power_profile)"
-
           # Save Wi-Fi and Bluetooth state
           rfkill -no SOFT list wifi | head -n1 > /var/run/previous_wifi_state
           rfkill -no SOFT list bluetooth | head -n1 > /var/run/previous_bluetooth_state
@@ -111,23 +107,10 @@
           rfkill block wifi
           rfkill block bluetooth
           logger -t "$LOG_TAG" "Blocked wifi and bluetooth"
-
-          # Set powersave profile
-          tuned-adm profile powersave
-          logger -t "$LOG_TAG" "Switched to powersave profile. Pre-sleep complete."
+          logger -t "$LOG_TAG" "Pre-sleep complete."
           ;;
         post)
           logger -t "$LOG_TAG" "Sleep hook triggered: post-wake"
-
-          # Restore profile
-          if [ -f /var/run/previous_power_profile ]; then
-            tuned-adm profile $(cat /var/run/previous_power_profile)
-            logger -t "$LOG_TAG" "Restored power profile: $(cat /var/run/previous_power_profile)"
-            rm -f /var/run/previous_power_profile
-          else
-            tuned-adm profile balanced
-            logger -t "$LOG_TAG" "No saved profile found, defaulted to balanced"
-          fi
 
           # Restore Wi-Fi and Bluetooth state
           if [ "$(cat /var/run/previous_wifi_state 2>/dev/null)" = "unblocked" ]; then
