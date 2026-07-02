@@ -122,6 +122,9 @@
             logger -t "$LOG_TAG" "Restored bluetooth: unblocked"
           fi
           rm -f /var/run/previous_wifi_state /var/run/previous_bluetooth_state
+
+          systemctl restart powertop.service
+          logger -t "$LOG_TAG" "Restarted powertop.service"
           logger -t "$LOG_TAG" "Post-wake complete."
           ;;
       esac
