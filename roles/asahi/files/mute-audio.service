@@ -1,0 +1,11 @@
+[Unit]
+Description=Mute audio on boot
+After=pipewire.service wireplumber.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'for i in 1 2 3 4 5; do /usr/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ 1 && exit 0; sleep 1; done; exit 1'
+RemainAfterExit=yes
+
+[Install]
+WantedBy=default.target

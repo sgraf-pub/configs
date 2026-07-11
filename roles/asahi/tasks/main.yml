@@ -63,3 +63,15 @@
     line: "w     /sys/module/zswap/parameters/compressor         -    -    -    -    zstd"
     dest: /etc/tmpfiles.d/asahi-enable-zswap.conf
   when: asahi_swap.stat.exists
+
+- name: Copy mute-audio.service
+  ansible.builtin.copy:
+    src: mute-audio.service
+    dest: /etc/systemd/user/mute-audio.service
+    mode: '0644'
+
+- name: Enable mute-audio.service globally
+  ansible.builtin.systemd:
+    name: mute-audio.service
+    enabled: true
+    scope: global
