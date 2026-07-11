@@ -15,6 +15,14 @@
   ansible.builtin.file:
     path: /etc/udev/rules.d/usb_power_save.rules
     state: absent
+- name: Enable auto power management for USB monitor network card
+  ansible.builtin.copy:
+    content: |
+      # Enable auto power management for the monitor's USB network card
+      ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0bda", ATTR{idProduct}=="8153", TEST=="power/control", ATTR{power/control}="auto"
+    dest: /etc/udev/rules.d/99-monitor-network-power.rules
+    mode: "0644"
+  notify: Reload udev
 - name: Remove legacy pci rules
   ansible.builtin.file:
     path: /etc/udev/rules.d/pci_pm.rules
@@ -115,8 +123,6 @@
           fi
           rm -f /var/run/previous_wifi_state /var/run/previous_bluetooth_state
 
-          systemctl restart powertop.service
-          logger -t "$LOG_TAG" "Restarted powertop.service"
           logger -t "$LOG_TAG" "Post-wake complete."
           ;;
       esac

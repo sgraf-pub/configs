@@ -3,3 +3,6 @@
   ansible.builtin.systemd_service:
     name: tuned.service
     state: restarted
+
+- name: Reload udev
+  ansible.builtin.shell: udevadm control --reload-rules && udevadm trigger
