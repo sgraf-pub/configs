@@ -13,10 +13,12 @@ LIGHT_GRAY='\[\e[0;37m\]';  WHITE='\[\e[1;37m\]'
 RESET_COLOR='\[\e[00m\]'
 
 # git-prompt.sh (from git contrib) — shows branch, dirty state, upstream diff, stash
-GIT_PS1_SHOWDIRTYSTATE=1       # * unstaged, + staged
-GIT_PS1_SHOWSTASHSTATE=1       # $ stash exists
-GIT_PS1_SHOWUPSTREAM="verbose" # +N/-N ahead/behind
-GIT_PS1_SHOWCOLORHINTS=1       # colorise via PROMPT_COMMAND form
+GIT_PS1_SHOWDIRTYSTATE=1        # * unstaged, + staged
+GIT_PS1_SHOWSTASHSTATE=1        # $ stash exists
+GIT_PS1_SHOWUNTRACKEDFILES=1    # % untracked exists
+GIT_PS1_SHOWUPSTREAM="verbose"  # +N/-N ahead/behind
+GIT_PS1_SHOWCONFLICTSTATE="yes" # include "|CONFLICT"
+GIT_PS1_SHOWCOLORHINTS=1        # colorise via PROMPT_COMMAND form
 for _gp in \
     /usr/share/git-core/contrib/completion/git-prompt.sh \
     /usr/share/git/git-prompt.sh \
