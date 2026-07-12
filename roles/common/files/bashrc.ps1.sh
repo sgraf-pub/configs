@@ -12,6 +12,19 @@ BROWN='\[\e[0;33m\]';       YELLOW='\[\e[1;33m\]'
 LIGHT_GRAY='\[\e[0;37m\]';  WHITE='\[\e[1;37m\]'
 RESET_COLOR='\[\e[00m\]'
 
+# git-prompt.sh (from git contrib) — shows branch, dirty state, upstream diff, stash
+GIT_PS1_SHOWDIRTYSTATE=1       # * unstaged, + staged
+GIT_PS1_SHOWSTASHSTATE=1       # $ stash exists
+GIT_PS1_SHOWUPSTREAM="verbose" # +N/-N ahead/behind
+GIT_PS1_SHOWCOLORHINTS=1       # colorise via PROMPT_COMMAND form
+for _gp in \
+    /usr/share/git-core/contrib/completion/git-prompt.sh \
+    /usr/share/git/git-prompt.sh \
+    /etc/bash_completion.d/git-prompt; do
+    [ -f "$_gp" ] && { source "$_gp"; break; }
+done
+unset _gp
+
 unset EXIT_CODES
 # Exit codes definitions, see bash(1),
 EXIT_CODES[1]='Catchall for general errors / Operation not permitted'
@@ -75,56 +88,24 @@ parse_exit_code () {
     done
 }
 
-parse_git () {
-    local branchname=
-    local gitstatus=
-    local workt=
-    local stage=
-    local ahead=
-    local behind=
-    branchname=$(git branch 2>/dev/null | grep '\*')
-    if [[ -n ${branchname} ]]; then
-        PS1+="(${LIGHT_BLUE}${branchname:2}${RESET_COLOR}"
-        gitstatus=$(git status --short 2> /dev/null)
-        if [[ -n "${gitstatus}" ]] ; then
-            workt=$(echo -e "${gitstatus}" | cut -c2 | sort | uniq | \
-                tr -d '\n ')
-            stage=$(echo -e "${gitstatus}" | cut -c1 | sort | uniq | \
-                grep -vE -e '\?' -e '\!' | tr -d '\n ')
-        fi
-        if [[ -n ${stage} || -n ${workt} ]]; then
-            PS1+=" ${YELLOW}${stage}${LIGHT_RED}${workt}"
-        fi
-        ahead=$(git rev-list --count @{upstream}..HEAD 2>/dev/null)
-        behind=$(git rev-list --count HEAD..@{upstream} 2>/dev/null)
-        if [[ -n ${ahead} ]]; then
-            if [ "${ahead}" -ne 0 ]; then
-                PS1+=" ${YELLOW}+${ahead}"
-            fi
-            if [ "${behind}" -ne 0 ]; then
-                PS1+=" ${YELLOW}-${behind}"
-            fi
-        fi
-        if git stash show &>/dev/null; then
-            PS1+=" ${LIGHT_PURPLE}S"
-        fi
-        PS1+="${RESET_COLOR}"
-        PS1+=")"
-    fi
-}
-
 generate_ps () {
     local ecode="${?} ${PIPESTATUS[@]}"
     PS1=
     parse_exit_code "${ecode}"
     PS1+="[\u@\h"
     PS1+=" ${LIGHT_BLUE}\w${RESET_COLOR}]"
-    parse_git
-    [[ -n ${VIRTUAL_ENV} ]] && PS1+="(${VIRTUAL_ENV##*/})"
+    local pre="$PS1"
+    [[ -n ${VIRTUAL_ENV} ]] && pre+="(${VIRTUAL_ENV##*/})"
+    local post=
     if [ \u == "root" ]; then
-        PS1+="# "
+        post="# "
     else
-        PS1+="\$ "
+        post="\$ "
+    fi
+    if type __git_ps1 &>/dev/null; then
+        __git_ps1 "$pre" "$post" "(%s)"
+    else
+        PS1="${pre}${post}"
     fi
 }
 
