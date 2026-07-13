@@ -84,6 +84,18 @@ EXIT_CODES[157]='SIGPOLL (29): pollable event — I/O now possible'
 EXIT_CODES[158]='SIGPWR (30): power failure'
 EXIT_CODES[159]='SIGSYS (31): bad syscall argument [core dump]'
 
+# SHELL BUILTIN COMMANDS, see bash(1)
+SHELL_BUILTINS=" : . [ alias bg bind break builtin caller cd command compgen \
+complete compopt continue declare dirs disown echo enable eval exec exit \
+export false fc fg getopts hash help history jobs kill let local logout \
+mapfile popd printf pushd pwd read readarray readonly return set shift \
+shopt source suspend test times trap true type typeset ulimit umask \
+unalias unset wait "
+
+is_shell_builtin () {
+    [[ "$SHELL_BUILTINS" == *" $1 "* ]]
+}
+
 parse_exit_code () {
     local temp_ecode=( $1 )
     local last_cmd="$2"
@@ -96,7 +108,24 @@ parse_exit_code () {
     for i in ${final_ecode[*]}; do
         if [ "${i}" != "0" ] ; then
             local msg="${EXIT_CODES[$i]}"
-            [[ "$i" -eq 255 && "$last_cmd" == "ssh" ]] && msg="SSH error occurred"
+            if [[ "$msg" == *" / "* ]]; then
+                case "$i" in
+                    1|2)
+                        if is_shell_builtin "$last_cmd"; then
+                            msg="${msg%% / *}"
+                        else
+                            msg="${msg#* / }"
+                        fi
+                        ;;
+                    255)
+                        if [[ "$last_cmd" == "ssh" ]]; then
+                            msg="${msg#* / }"
+                        else
+                            msg="${msg%% / *}"
+                        fi
+                        ;;
+                esac
+            fi
             PS1+="${LIGHT_RED} ${msg} (exit code ${i})\n"
         else
             PS1+="${LIGHT_GREEN} OK (exit code 0)\n"
