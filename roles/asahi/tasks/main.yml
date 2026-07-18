@@ -11,6 +11,9 @@
       - cabextract
       - xorg-x11-font-utils
       - fontconfig
+      # Install asahi pkgs
+      - asahi-bless
+      - chromium
     state: present
 
 - name: Check if Microsoft Fonts are already installed
