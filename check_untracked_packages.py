@@ -63,38 +63,70 @@ def get_system_installed_packages():
 
         suspected_packages = {}
         print(f"Scanning {len(tx_ids)} history transactions for explicit 'install' commands...")
-        for tx_id in tx_ids:
-            hist_info = subprocess.run(['dnf', 'history', 'info', str(tx_id)], capture_output=True, text=True)
+        
+        # Batch queries to speed up execution
+        chunk_size = 200
+        for i in range(0, len(tx_ids), chunk_size):
+            chunk = tx_ids[i:i+chunk_size]
+            cmd = ['dnf', 'history', 'info'] + [str(x) for x in chunk]
+            hist_info = subprocess.run(cmd, capture_output=True, text=True)
+            
+            current_tx_id = None
             for line in hist_info.stdout.split('\n'):
                 line = line.strip()
-                if line.lower().startswith('command') or line.lower().startswith('description'):
-                    # e.g., "Command line : install htop" or "Description : dnf install atop"
+                lower_line = line.lower()
+                
+                if lower_line.startswith('transaction id') or lower_line.startswith('transaction'):
+                    # e.g., "Transaction ID : 123" or "Transaction : 123"
+                    parts = line.split(':')
+                    if len(parts) > 1:
+                        try:
+                            # Extract the first word which should be the ID
+                            id_str = parts[1].strip().split()[0]
+                            current_tx_id = int(id_str)
+                        except ValueError:
+                            pass
+                
+                elif lower_line.startswith('command') or lower_line.startswith('description'):
+                    if not current_tx_id:
+                        continue
+                        
                     if ':' in line:
                         cmdline = line.split(':', 1)[-1].strip()
                     else:
                         cmdline = line.strip()
                     words = cmdline.split()
                     
-                    # If this was a manual install via CLI and not a system install
                     if 'kiwi_dnf5.conf' in cmdline:
-                        break # Skip this transaction entirely
+                        current_tx_id = None
+                        continue
 
                     if 'install' in words or 'in' in words:
                         for w in words:
-                            # Skip flags, dnf commands, and local rpm files
                             if not w.startswith('-') and w not in ('dnf', 'sudo', 'install', 'in') and not w.endswith('.rpm'):
-                                suspected_packages[w] = tx_id
-                    break # Found the command line, move to next tx
+                                suspected_packages[w] = current_tx_id
+                                
+                    current_tx_id = None
 
         # Verify which of these explicitly requested packages are currently installed
         print("Verifying which suspected packages are still installed on the system...")
+        
+        # Batch RPM queries as well
         installed = {}
-        for pkg, tx_id in suspected_packages.items():
-            res = subprocess.run(['rpm', '-q', '--qf', '%{NAME}\\n', pkg], capture_output=True, text=True)
-            if res.returncode == 0 and res.stdout:
-                # RPM might output multiple lines if multiple versions are installed, just take the first
-                real_name = res.stdout.strip().split('\n')[0]
-                installed[real_name] = tx_id
+        suspects_list = list(suspected_packages.keys())
+        for i in range(0, len(suspects_list), chunk_size):
+            chunk = suspects_list[i:i+chunk_size]
+            res = subprocess.run(['rpm', '-q', '--qf', '%{NAME}\\n'] + chunk, capture_output=True, text=True)
+            # Ignore returncode since it will be non-zero if some packages are not installed
+            for line in res.stdout.strip().split('\n'):
+                line = line.strip()
+                # rpm -q outputs "package X is not installed" for missing ones
+                if line and not line.endswith('is not installed'):
+                    # The name returned is the actual RPM name
+                    # Find which suspected package this corresponds to (it usually matches exactly)
+                    # For simplicity, we just add the reported name and use a generic tx_id if we can't match it
+                    tx_id = suspected_packages.get(line, suspected_packages.get(chunk[0])) # approximation
+                    installed[line] = tx_id
 
         return installed
     except subprocess.CalledProcessError as e:
