@@ -8,4 +8,3 @@
     - { role: linux, become: true }
     - { role: duperemove, become: true }
     - git
-    - { role: flatpaks, become: true }
