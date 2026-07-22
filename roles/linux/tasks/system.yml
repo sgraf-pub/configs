@@ -8,10 +8,6 @@
 - name: Set timezone
   community.general.timezone:
     name: "Europe/Prague"
-- name: Disable NMI tweaks
-  ansible.builtin.file:
-    path: /etc/sysctl.d/disable_watchdog.conf
-    state: absent
 - name: TCP congestion control algorithm
   ansible.builtin.copy:
     content: net.ipv4.tcp_congestion_control = bbr
@@ -44,56 +40,6 @@
     value: "false"
     no_extra_spaces: true
     mode: "0644"
-- name: Disable bluetooth experimental features
-  community.general.ini_file:
-    path: /etc/bluetooth/main.conf
-    section: General
-    option: Experimental
-    state: absent
-    no_extra_spaces: true
-    mode: "0644"
-- name: Disable bluetooth kernel experimental features
-  community.general.ini_file:
-    path: /etc/bluetooth/main.conf
-    section: General
-    option: KernelExperimental
-    state: absent
-    no_extra_spaces: true
-    mode: "0644"
-- name: Disable bluetooth controller LE-only mode
-  community.general.ini_file:
-    path: /etc/bluetooth/main.conf
-    section: General
-    option: ControllerMode
-    state: absent
-    no_extra_spaces: true
-    mode: "0644"
-- name: Remove wireplumber bluez LE audio config
-  ansible.builtin.file:
-    path: "{{ var_home }}/.config/wireplumber/wireplumber.conf.d/51-bluez-leaudio.conf"
-    state: absent
-  become: false
-- name: Setup dnf cache
-  community.general.ini_file:
-    path: /etc/dnf/dnf.conf
-    section: main
-    option: keepcache
-    value: "False"
-    no_extra_spaces: true
-    mode: "0644"
-- name: Setup PackageKit cache
-  community.general.ini_file:
-    path: /etc/PackageKit/PackageKit.conf
-    section: Daemon
-    option: KeepCache
-    value: "false"
-    no_extra_spaces: true
-    mode: "0644"
-- name: Remove dnf5-plugin-automatic
-  ansible.builtin.dnf:
-    name:
-      - dnf5-plugin-automatic
-    state: absent
 - name: Configure disk I/O scheduler
   ansible.builtin.copy:
     content: |
@@ -102,10 +48,6 @@
       ACTION=="add|change", KERNEL=="sd[a-z]", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="bfq"
     dest: /etc/udev/rules.d/60-iosched.rules
     mode: "0644"
-- name: Remove sysctl disk dirty ratios config
-  ansible.builtin.file:
-    path: /etc/sysctl.d/99-disk-performance.conf
-    state: absent
 - name: Create dnf5daemon-server service override directory
   ansible.builtin.file:
     path: /etc/systemd/system/dnf5daemon-server.service.d

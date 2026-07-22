@@ -1,20 +1,4 @@
 ---
-- name: Remove writeback setting
-  ansible.builtin.file:
-    path: /etc/sysctl.d/dirty.conf
-    state: absent
-- name: Remove WoL setting
-  ansible.builtin.file:
-    path: /etc/udev/rules.d/wol.rules
-    state: absent
-- name: Remove legacy net powersaving
-  ansible.builtin.file:
-    path: /etc/udev/rules.d/net_power_save.rules
-    state: absent
-- name: Remove legacy usb rule
-  ansible.builtin.file:
-    path: /etc/udev/rules.d/usb_power_save.rules
-    state: absent
 - name: Enable auto power management for USB monitor network card
   ansible.builtin.copy:
     content: |
@@ -23,10 +7,6 @@
     dest: /etc/udev/rules.d/99-monitor-network-power.rules
     mode: "0644"
   notify: Reload udev
-- name: Remove legacy pci rules
-  ansible.builtin.file:
-    path: /etc/udev/rules.d/pci_pm.rules
-    state: absent
 - name: Install powertop service
   ansible.builtin.copy:
     content: |
@@ -51,42 +31,16 @@
     name: powertop.service
     enabled: true
     daemon_reload: true
-- name: Remove i915 power settings
-  ansible.builtin.file:
-    path: /etc/modprobe.d/i915.conf
-    state: absent
-- name: Remove iwlwifi power settings
-  ansible.builtin.file:
-    path: /etc/modprobe.d/iwlwifi.conf
-    state: absent
-  when: ansible_facts.architecture == 'x86_64'
 - name: Install PCIe ASPM powersave policy
   ansible.builtin.copy:
     content: "w /sys/module/pcie_aspm/parameters/policy - - - - powersave\n"
     dest: /etc/tmpfiles.d/aspm-powersave.conf
     mode: "0644"
-
-- name: Remove custom battery-powersave tuned profile directory
-  ansible.builtin.file:
-    path: /etc/tuned/profiles/battery-powersave
-    state: absent
-  notify: Restart tuned
-- name: Configure tuned-ppd battery profile mapping
-  community.general.ini_file:
-    path: /etc/tuned/ppd.conf
-    section: battery
-    option: balanced
-    value: balanced-battery
-    no_extra_spaces: true
-    mode: "0644"
-  notify: Restart tuned
-
 - name: Ensure system-sleep directory exists
   ansible.builtin.file:
     path: /usr/lib/systemd/system-sleep
     state: directory
     mode: "0755"
-
 - name: Create sleep hook for power management
   ansible.builtin.copy:
     content: |
