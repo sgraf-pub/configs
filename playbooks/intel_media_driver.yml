@@ -1,0 +1,7 @@
+---
+# file: intel_media_driver.yml
+- name: Install Intel media driver
+  hosts: laptop
+  remote_user: root
+  roles:
+    - { role: intel_media_driver, become: true }
