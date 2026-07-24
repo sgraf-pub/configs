@@ -11,7 +11,7 @@
     path: /etc/yum.repos.d/rpmfusion-nonfree.repo
     section: rpmfusion-nonfree
     option: includepkgs
-    value: intel-media-driver
+    value: intel-media-driver,rpmfusion-nonfree-release
     no_extra_spaces: true
     mode: "0644"
   become: true
@@ -21,7 +21,7 @@
     path: /etc/yum.repos.d/rpmfusion-nonfree-updates.repo
     section: rpmfusion-nonfree-updates
     option: includepkgs
-    value: intel-media-driver
+    value: intel-media-driver,rpmfusion-nonfree-release
     no_extra_spaces: true
     mode: "0644"
   become: true
