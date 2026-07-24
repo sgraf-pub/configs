@@ -1,4 +1,12 @@
 ---
+# Architecture mapping for Antigravity tarball naming
+antigravity_arch_map:
+  x86_64: "x64"
+  aarch64: "arm64"
+  arm64: "arm64"
+
+antigravity_arch: "{{ antigravity_arch_map[ansible_facts.architecture | default(ansible_architecture | default('x86_64'))] | default('x64') }}"
+
 # Path to the downloaded tarball
 antigravity_tarball: "{{ var_home }}/Downloads/Antigravity.tar.gz"
 
@@ -9,7 +17,8 @@ antigravity_install_dir: /opt/antigravity
 antigravity_bin: /usr/local/bin/antigravity
 
 # Name of the directory inside the tarball
-antigravity_tarball_dir: Antigravity-arm64
+antigravity_tarball_dir: "Antigravity-{{ antigravity_arch }}"
 
 # Icon URL
 antigravity_icon_url: "https://aur.archlinux.org/cgit/aur.git/plain/antigravity.png?h=antigravity"
+

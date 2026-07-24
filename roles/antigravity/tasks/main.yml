@@ -3,17 +3,36 @@
 # Install / update Antigravity from a pre-downloaded tarball
 #
 
-- name: Check that tarball exists
+- name: Check primary tarball path
   ansible.builtin.stat:
     path: "{{ antigravity_tarball }}"
   register: antigravity_tarball_stat
 
+- name: Check architecture-specific tarball path
+  ansible.builtin.stat:
+    path: "{{ var_home }}/Downloads/Antigravity-{{ antigravity_arch }}.tar.gz"
+  register: antigravity_arch_tarball_stat
+  when: not antigravity_tarball_stat.stat.exists
+
+- name: Set resolved tarball path
+  ansible.builtin.set_fact:
+    antigravity_resolved_tarball: >-
+      {{
+        antigravity_tarball if antigravity_tarball_stat.stat.exists
+        else (var_home ~ '/Downloads/Antigravity-' ~ antigravity_arch ~ '.tar.gz')
+      }}
+
+- name: Check if resolved tarball exists
+  ansible.builtin.stat:
+    path: "{{ antigravity_resolved_tarball }}"
+  register: antigravity_resolved_tarball_stat
+
 - name: Fail if tarball is missing
   ansible.builtin.fail:
     msg: >-
-      Tarball not found at {{ antigravity_tarball }}.
-      Download it first, e.g. into ~/Downloads/Antigravity.tar.gz
-  when: not antigravity_tarball_stat.stat.exists
+      Tarball not found at {{ antigravity_tarball }} or {{ var_home }}/Downloads/Antigravity-{{ antigravity_arch }}.tar.gz.
+      Download it first into ~/Downloads/
+  when: not antigravity_resolved_tarball_stat.stat.exists
 
 - name: Remove existing installation directory
   ansible.builtin.file:
@@ -30,7 +49,7 @@
 
 - name: Extract tarball into install directory
   ansible.builtin.unarchive:
-    src: "{{ antigravity_tarball }}"
+    src: "{{ antigravity_resolved_tarball }}"
     dest: "{{ antigravity_install_dir }}"
     remote_src: true
     extra_opts:
