@@ -13,6 +13,13 @@
     content: net.ipv4.tcp_congestion_control = bbr
     dest: /etc/sysctl.d/tcp_congestion_control.conf
     mode: "0644"
+- name: Enable IPv6 ndisc notify
+  ansible.builtin.copy:
+    content: |
+      net.ipv6.conf.all.ndisc_notify = 1
+      net.ipv6.conf.default.ndisc_notify = 1
+    dest: /etc/sysctl.d/ndisc_notify.conf
+    mode: "0644"
 - name: Use lz4 for zram
   community.general.ini_file:
     path: /usr/lib/systemd/zram-generator.conf
