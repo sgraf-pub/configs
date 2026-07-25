@@ -52,31 +52,15 @@
         pre)
           logger -t "$LOG_TAG" "Sleep hook triggered: pre-sleep"
 
-          # Save Wi-Fi and Bluetooth state
-          rfkill -no SOFT list wifi | head -n1 > /var/run/previous_wifi_state
-          rfkill -no SOFT list bluetooth | head -n1 > /var/run/previous_bluetooth_state
-          logger -t "$LOG_TAG" "Saved states - wifi: $(cat /var/run/previous_wifi_state), bluetooth: $(cat /var/run/previous_bluetooth_state)"
-
-          # Disable Wi-Fi and Bluetooth
-          rfkill block wifi
-          rfkill block bluetooth
-          logger -t "$LOG_TAG" "Blocked wifi and bluetooth"
+          echo powersupersave > /sys/module/pcie_aspm/parameters/policy
+          logger -t "$LOG_TAG" "Set PCIe ASPM policy to powersupersave"
           logger -t "$LOG_TAG" "Pre-sleep complete."
           ;;
         post)
           logger -t "$LOG_TAG" "Sleep hook triggered: post-wake"
 
-          # Restore Wi-Fi and Bluetooth state
-          if [ "$(cat /var/run/previous_wifi_state 2>/dev/null)" = "unblocked" ]; then
-            rfkill unblock wifi
-            logger -t "$LOG_TAG" "Restored wifi: unblocked"
-          fi
-          if [ "$(cat /var/run/previous_bluetooth_state 2>/dev/null)" = "unblocked" ]; then
-            rfkill unblock bluetooth
-            logger -t "$LOG_TAG" "Restored bluetooth: unblocked"
-          fi
-          rm -f /var/run/previous_wifi_state /var/run/previous_bluetooth_state
-
+          echo powersave > /sys/module/pcie_aspm/parameters/policy
+          logger -t "$LOG_TAG" "Restored PCIe ASPM policy to powersave"
           logger -t "$LOG_TAG" "Post-wake complete."
           ;;
       esac
