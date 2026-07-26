@@ -66,6 +66,22 @@
             fi
           done
 
+          for dev in /sys/class/net/*; do
+            if [ -d "$dev/device" ]; then
+              if [ -d "$dev/wireless" ] || [ -d "$dev/phy80211" ]; then
+                dev_type="wifi"
+              else
+                dev_type="ethernet"
+              fi
+              for wakeup_file in "$dev/device/power/wakeup" "$dev/power/wakeup"; do
+                if [ -w "$wakeup_file" ]; then
+                  echo disabled > "$wakeup_file"
+                  logger -t "$LOG_TAG" "Disabled wakeup for $dev_type device ${dev##*/} ($wakeup_file)"
+                fi
+              done
+            fi
+          done
+
           logger -t "$LOG_TAG" "Pre-sleep complete."
           ;;
         post)
