@@ -27,6 +27,10 @@
 - name: Remove stale beeshome directory
   when: duperemove_bees_config.changed # noqa: no-handler
   block:
+    - name: Stop beesd service
+      ansible.builtin.systemd_service:
+        name: beesd@{{ duperemove_uuid.stdout }}.service
+        state: stopped
     - name: Mount UUID volume for beeshome cleanup
       ansible.posix.mount:
         path: /mnt
@@ -64,8 +68,9 @@
   ansible.builtin.file:
     path: /etc/systemd/system/bees-weekly@.timer
     state: absent
-- name: Enable continuous bees service
+- name: Enable and start continuous bees service
   ansible.builtin.systemd_service:
     name: beesd@{{ duperemove_uuid.stdout }}.service
+    state: started
     enabled: true
     daemon_reload: true
