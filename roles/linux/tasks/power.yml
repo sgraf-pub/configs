@@ -48,9 +48,21 @@
 
       LOG_TAG="power-management"
 
+      log_battery_status() {
+        for dev in /sys/class/power_supply/*; do
+          if [ -f "$dev/capacity" ]; then
+            bat_name="${dev##*/}"
+            capacity=$(cat "$dev/capacity" 2>/dev/null)
+            status=$(cat "$dev/status" 2>/dev/null)
+            logger -t "$LOG_TAG" "Battery $bat_name: ${capacity}% (${status:-Unknown})"
+          fi
+        done
+      }
+
       case $1 in
         pre)
           logger -t "$LOG_TAG" "Sleep hook triggered: pre-sleep"
+          log_battery_status
 
           echo powersupersave > /sys/module/pcie_aspm/parameters/policy
           logger -t "$LOG_TAG" "Set PCIe ASPM policy to powersupersave"
@@ -86,6 +98,7 @@
           ;;
         post)
           logger -t "$LOG_TAG" "Sleep hook triggered: post-wake"
+          log_battery_status
 
           echo powersave > /sys/module/pcie_aspm/parameters/policy
           logger -t "$LOG_TAG" "Restored PCIe ASPM policy to powersave"
