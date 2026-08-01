@@ -11,10 +11,15 @@
       - cabextract
       - xorg-x11-font-utils
       - fontconfig
-      # Install asahi pkgs
+    state: present
+
+- name: Install asahi packages
+  ansible.builtin.dnf:
+    name:
       - asahi-bless
       - chromium
     state: present
+  when: ansible_facts.architecture == 'aarch64'
 
 - name: Check if Microsoft Fonts are already installed
   ansible.builtin.command: rpm -q msttcore-fonts-installer # noqa: command-instead-of-module
@@ -60,21 +65,27 @@
   ansible.builtin.stat:
     path: /etc/tmpfiles.d/asahi-enable-zswap.conf
   register: asahi_swap
+  when: ansible_facts.architecture == 'aarch64'
+
 - name: Update swap config
   ansible.builtin.lineinfile:
     regexp: "compressor"
     line: "w     /sys/module/zswap/parameters/compressor         -    -    -    -    zstd"
     dest: /etc/tmpfiles.d/asahi-enable-zswap.conf
-  when: asahi_swap.stat.exists
+  when:
+    - ansible_facts.architecture == 'aarch64'
+    - asahi_swap.stat.exists | default(false)
 
 - name: Copy mute-audio.service
   ansible.builtin.copy:
     src: mute-audio.service
     dest: /etc/systemd/user/mute-audio.service
     mode: '0644'
+  when: ansible_facts.architecture == 'aarch64'
 
 - name: Enable mute-audio.service globally
   ansible.builtin.systemd:
     name: mute-audio.service
     enabled: true
     scope: global
+  when: ansible_facts.architecture == 'aarch64'
