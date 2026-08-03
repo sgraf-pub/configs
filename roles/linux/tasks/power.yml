@@ -67,17 +67,6 @@
           echo powersupersave > /sys/module/pcie_aspm/parameters/policy
           logger -t "$LOG_TAG" "Set PCIe ASPM policy to powersupersave"
 
-          for dev in $(find /sys/bus/usb/drivers/usbhid -regex ".*/[0-9:.-]+" 2>/dev/null | sed "s|.*/||;s|:.*||" | sort -u); do
-            if [ -w "/sys/bus/usb/devices/$dev/power/control" ]; then
-              echo auto > "/sys/bus/usb/devices/$dev/power/control"
-              logger -t "$LOG_TAG" "Set power control to auto for $dev"
-            fi
-            if [ -w "/sys/bus/usb/devices/$dev/power/wakeup" ]; then
-              echo disabled > "/sys/bus/usb/devices/$dev/power/wakeup"
-              logger -t "$LOG_TAG" "Disabled wakeup for $dev"
-            fi
-          done
-
           for dev in /sys/class/net/*; do
             if [ -d "$dev/device" ]; then
               if [ -d "$dev/wireless" ] || [ -d "$dev/phy80211" ]; then
@@ -102,17 +91,6 @@
 
           echo powersave > /sys/module/pcie_aspm/parameters/policy
           logger -t "$LOG_TAG" "Restored PCIe ASPM policy to powersave"
-
-          for dev in $(find /sys/bus/usb/drivers/usbhid -regex ".*/[0-9:.-]+" 2>/dev/null | sed "s|.*/||;s|:.*||" | sort -u); do
-            if [ -w "/sys/bus/usb/devices/$dev/power/wakeup" ]; then
-              echo enabled > "/sys/bus/usb/devices/$dev/power/wakeup"
-              logger -t "$LOG_TAG" "Enabled wakeup for $dev"
-            fi
-            if [ -w "/sys/bus/usb/devices/$dev/power/control" ]; then
-              echo on > "/sys/bus/usb/devices/$dev/power/control"
-              logger -t "$LOG_TAG" "Set power control to on for $dev"
-            fi
-          done
 
           logger -t "$LOG_TAG" "Post-wake complete."
           ;;
