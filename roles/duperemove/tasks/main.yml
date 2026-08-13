@@ -1,76 +1,69 @@
 ---
-- name: Install bees
-  ansible.builtin.dnf:
-    name: bees
-    state: present
 - name: Get UUID for dm-0
   ansible.builtin.command: blkid /dev/dm-0 -s UUID -o value
   register: duperemove_uuid
   changed_when: false
-- name: Get filesystem used data in bytes
-  ansible.builtin.command: lsblk -b -n -d -o FSUSED /dev/dm-0
-  register: duperemove_data_used
-  changed_when: false
-- name: Compute ideal bees hash table size (power of 2, min 16MB)
-  ansible.builtin.set_fact:
-    duperemove_db_size: >-
-      {{ [2 ** (((duperemove_data_used.stdout | trim | int) // 4096) | log(2) | round(0, 'ceil') | int), 33554432] | max }}
-- name: Create bees config file
-  ansible.builtin.copy:
-    content: |
-      UUID={{ duperemove_uuid.stdout }}
-      DB_SIZE={{ duperemove_db_size }}
-      OPTIONS="--verbose=3 --loadavg-target 2.0"
-    dest: /etc/bees/root.conf
-    mode: "0644"
-  register: duperemove_bees_config
-- name: Remove stale beeshome directory
-  when: duperemove_bees_config.changed # noqa: no-handler
+  failed_when: false
+
+- name: Stop and disable beesd service
+  ansible.builtin.systemd_service:
+    name: "beesd@{{ duperemove_uuid.stdout }}.service"
+    state: stopped
+    enabled: false
+  when: duperemove_uuid.rc == 0 and (duperemove_uuid.stdout | trim | length > 0)
+  failed_when: false
+
+- name: Stop and disable bees weekly timer
+  ansible.builtin.systemd_service:
+    name: "bees-weekly@{{ duperemove_uuid.stdout }}.timer"
+    state: stopped
+    enabled: false
+  when: duperemove_uuid.rc == 0 and (duperemove_uuid.stdout | trim | length > 0)
+  failed_when: false
+
+- name: Clean up beeshome directory
+  when: duperemove_uuid.rc == 0 and (duperemove_uuid.stdout | trim | length > 0)
   block:
-    - name: Stop beesd service
-      ansible.builtin.systemd_service:
-        name: beesd@{{ duperemove_uuid.stdout }}.service
-        state: stopped
     - name: Mount UUID volume for beeshome cleanup
       ansible.posix.mount:
         path: /mnt
         src: "UUID={{ duperemove_uuid.stdout }}"
         fstype: btrfs
         state: ephemeral
+      failed_when: false
+
     - name: Remove .beeshome directory
       ansible.builtin.file:
         path: /mnt/.beeshome
         state: absent
+
     - name: Unmount UUID volume after beeshome cleanup
       ansible.posix.mount:
         path: /mnt
         state: unmounted
-- name: Create bees service override directory
+      failed_when: false
+
+- name: Remove bees service override directory
   ansible.builtin.file:
     path: /etc/systemd/system/beesd@.service.d
-    state: directory
-    mode: "0755"
-- name: Remove bees service override
-  ansible.builtin.file:
-    path: /etc/systemd/system/beesd@.service.d/override.conf
     state: absent
-- name: Disable bees weekly timer
-  ansible.builtin.systemd_service:
-    name: bees-weekly@{{ duperemove_uuid.stdout }}.timer
-    state: stopped
-    enabled: false
-  failed_when: false
+
 - name: Remove bees weekly wrapper service
   ansible.builtin.file:
     path: /etc/systemd/system/bees-weekly@.service
     state: absent
+
 - name: Remove bees weekly timer
   ansible.builtin.file:
     path: /etc/systemd/system/bees-weekly@.timer
     state: absent
-- name: Enable and start continuous bees service
-  ansible.builtin.systemd_service:
-    name: beesd@{{ duperemove_uuid.stdout }}.service
-    state: started
-    enabled: true
-    daemon_reload: true
+
+- name: Remove bees config directory
+  ansible.builtin.file:
+    path: /etc/bees
+    state: absent
+
+- name: Remove bees package
+  ansible.builtin.dnf:
+    name: bees
+    state: absent
