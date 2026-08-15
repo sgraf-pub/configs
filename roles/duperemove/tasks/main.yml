@@ -1,69 +1,40 @@
 ---
-- name: Get UUID for dm-0
-  ansible.builtin.command: blkid /dev/dm-0 -s UUID -o value
-  register: duperemove_uuid
-  changed_when: false
-  failed_when: false
-
-- name: Stop and disable beesd service
-  ansible.builtin.systemd_service:
-    name: "beesd@{{ duperemove_uuid.stdout }}.service"
-    state: stopped
-    enabled: false
-  when: duperemove_uuid.rc == 0 and (duperemove_uuid.stdout | trim | length > 0)
-  failed_when: false
-
-- name: Stop and disable bees weekly timer
-  ansible.builtin.systemd_service:
-    name: "bees-weekly@{{ duperemove_uuid.stdout }}.timer"
-    state: stopped
-    enabled: false
-  when: duperemove_uuid.rc == 0 and (duperemove_uuid.stdout | trim | length > 0)
-  failed_when: false
-
-- name: Clean up beeshome directory
-  when: duperemove_uuid.rc == 0 and (duperemove_uuid.stdout | trim | length > 0)
-  block:
-    - name: Mount UUID volume for beeshome cleanup
-      ansible.posix.mount:
-        path: /mnt
-        src: "UUID={{ duperemove_uuid.stdout }}"
-        fstype: btrfs
-        state: ephemeral
-      failed_when: false
-
-    - name: Remove .beeshome directory
-      ansible.builtin.file:
-        path: /mnt/.beeshome
-        state: absent
-
-    - name: Unmount UUID volume after beeshome cleanup
-      ansible.posix.mount:
-        path: /mnt
-        state: unmounted
-      failed_when: false
-
-- name: Remove bees service override directory
-  ansible.builtin.file:
-    path: /etc/systemd/system/beesd@.service.d
-    state: absent
-
-- name: Remove bees weekly wrapper service
-  ansible.builtin.file:
-    path: /etc/systemd/system/bees-weekly@.service
-    state: absent
-
-- name: Remove bees weekly timer
-  ansible.builtin.file:
-    path: /etc/systemd/system/bees-weekly@.timer
-    state: absent
-
-- name: Remove bees config directory
-  ansible.builtin.file:
-    path: /etc/bees
-    state: absent
-
-- name: Remove bees package
+- name: Install jdupes package
   ansible.builtin.dnf:
-    name: bees
-    state: absent
+    name: jdupes
+    state: present
+
+- name: Create jdupes service file
+  ansible.builtin.copy:
+    content: |
+      [Unit]
+      Description=jdupes deduplication service
+      After=local-fs.target
+
+      [Service]
+      Type=oneshot
+      ExecStart=/usr/bin/jdupes --recurse --one-file-system --dedupe /home
+    dest: /etc/systemd/system/jdupes.service
+    mode: "0644"
+
+- name: Create jdupes timer file
+  ansible.builtin.copy:
+    content: |
+      [Unit]
+      Description=Run jdupes deduplication monthly
+
+      [Timer]
+      OnCalendar=monthly
+      Persistent=true
+
+      [Install]
+      WantedBy=timers.target
+    dest: /etc/systemd/system/jdupes.timer
+    mode: "0644"
+
+- name: Enable and start jdupes timer
+  ansible.builtin.systemd_service:
+    name: jdupes.timer
+    state: started
+    enabled: true
+    daemon_reload: true
