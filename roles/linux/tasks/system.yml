@@ -20,13 +20,6 @@
       net.ipv6.conf.default.ndisc_notify = 1
     dest: /etc/sysctl.d/ndisc_notify.conf
     mode: "0644"
-- name: Use lz4 for zram
-  community.general.ini_file:
-    path: /usr/lib/systemd/zram-generator.conf
-    section: zram0
-    option: compression-algorithm
-    value: lz4
-    mode: "0644"
 - name: Set zram size
   community.general.ini_file:
     path: /usr/lib/systemd/zram-generator.conf
