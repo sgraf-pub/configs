@@ -64,9 +64,6 @@
           logger -t "$LOG_TAG" "Sleep hook triggered: pre-sleep"
           log_battery_status
 
-          echo powersupersave > /sys/module/pcie_aspm/parameters/policy
-          logger -t "$LOG_TAG" "Set PCIe ASPM policy to powersupersave"
-
           for dev in /sys/class/net/*; do
             if [ -d "$dev/device" ]; then
               if [ -d "$dev/wireless" ] || [ -d "$dev/phy80211" ]; then
@@ -88,9 +85,6 @@
         post)
           logger -t "$LOG_TAG" "Sleep hook triggered: post-wake"
           log_battery_status
-
-          echo powersave > /sys/module/pcie_aspm/parameters/policy
-          logger -t "$LOG_TAG" "Restored PCIe ASPM policy to powersave"
 
           logger -t "$LOG_TAG" "Post-wake complete."
           ;;
