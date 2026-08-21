@@ -1,0 +1,4 @@
+---
+- name: Update dconf database
+  ansible.builtin.command:
+    cmd: dconf update

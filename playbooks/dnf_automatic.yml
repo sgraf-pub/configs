@@ -1,0 +1,7 @@
+---
+# file: dnf_automatic.yml
+- name: Configure dnf-automatic and GNOME Software update settings
+  hosts: all
+  remote_user: root
+  roles:
+    - { role: dnf_automatic, become: true }
