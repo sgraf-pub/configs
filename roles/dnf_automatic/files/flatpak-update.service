@@ -1,0 +1,10 @@
+[Unit]
+Description=Update Flatpak Packages Automatically
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/flatpak update -y --noninteractive
+# Optional: cleans up unused runtimes and dependencies
+ExecStartPost=/usr/bin/flatpak uninstall --unused -y --noninteractive

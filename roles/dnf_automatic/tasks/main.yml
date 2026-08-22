@@ -37,3 +37,21 @@
     dest: /etc/dconf/db/local.d/00-gnome-software
     mode: "0644"
   notify: Update dconf database
+
+- name: Copy flatpak-update.service
+  ansible.builtin.copy:
+    src: flatpak-update.service
+    dest: /etc/systemd/system/flatpak-update.service
+    mode: "0644"
+
+- name: Copy flatpak-update.timer
+  ansible.builtin.copy:
+    src: flatpak-update.timer
+    dest: /etc/systemd/system/flatpak-update.timer
+    mode: "0644"
+
+- name: Enable and start flatpak-update.timer
+  ansible.builtin.systemd_service:
+    name: flatpak-update.timer
+    state: started
+    enabled: true
