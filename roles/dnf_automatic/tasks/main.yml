@@ -61,14 +61,6 @@
     name: fwupd
     state: present
 
-- name: Configure AutomaticUpdates in /etc/fwupd/fwupd.conf
-  community.general.ini_file:
-    path: /etc/fwupd/fwupd.conf
-    section: fwupd
-    option: AutomaticUpdates
-    value: "true"
-    mode: "0644"
-
 - name: Enable and start fwupd-refresh.timer
   ansible.builtin.systemd_service:
     name: fwupd-refresh.timer
