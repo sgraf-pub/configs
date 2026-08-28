@@ -8,3 +8,4 @@
     - { role: linux, become: true }
     - { role: duperemove, become: true }
     - git
+    - { role: dnf_automatic, become: true }

@@ -9,3 +9,4 @@
     - { role: duperemove, become: true }
     - git
     - { role: asahi, become: true }
+    - { role: dnf_automatic, become: true }
