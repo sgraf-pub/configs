@@ -15,6 +15,7 @@
     - { option: download_updates, value: "yes" }
     - { option: apply_updates, value: "yes" }
     - { option: reboot, value: "never" }
+    - { option: network_online_timeout, value: "300" }
 
 - name: Enable and start dnf-automatic.timer
   ansible.builtin.systemd_service:
