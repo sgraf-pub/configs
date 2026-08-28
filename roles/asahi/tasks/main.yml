@@ -17,7 +17,6 @@
   ansible.builtin.dnf:
     name:
       - asahi-bless
-      - chromium
     state: present
   when: ansible_facts.architecture == 'aarch64'
 
