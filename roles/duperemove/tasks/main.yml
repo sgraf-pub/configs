@@ -13,7 +13,7 @@
 
       [Service]
       Type=oneshot
-      ExecStart=/usr/bin/jdupes --recurse --one-file-system --dedupe /home
+      ExecStart=/usr/bin/jdupes --recurse --one-file-system --dedupe -X nostr:/.local/share/containers/ /home
     dest: /etc/systemd/system/jdupes.service
     mode: "0644"
 
