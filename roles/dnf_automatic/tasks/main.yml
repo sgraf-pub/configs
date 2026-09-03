@@ -1,7 +1,9 @@
 ---
-- name: Install dnf-automatic package
+- name: Install dnf-automatic and dbus-x11 packages
   ansible.builtin.dnf:
-    name: dnf-automatic
+    name:
+      - dnf-automatic
+      - dbus-x11
     state: present
 
 - name: Configure /etc/dnf/automatic.conf commands

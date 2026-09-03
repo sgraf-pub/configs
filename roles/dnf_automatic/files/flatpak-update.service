@@ -6,6 +6,6 @@ Wants=network-online.target
 [Service]
 Type=oneshot
 ExecStartPre=/usr/bin/nm-online -q --timeout=300
-ExecStart=/usr/bin/flatpak update -y --noninteractive
+ExecStart=/usr/bin/dbus-run-session -- /usr/bin/flatpak update --system -y --noninteractive
 # Optional: cleans up unused runtimes and dependencies
-ExecStartPost=/usr/bin/flatpak uninstall --unused -y --noninteractive
+ExecStartPost=/usr/bin/dbus-run-session -- /usr/bin/flatpak uninstall --system --unused -y --noninteractive
