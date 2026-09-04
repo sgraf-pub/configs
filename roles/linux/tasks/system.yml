@@ -27,10 +27,17 @@
     option: zram-size
     value: ram
     mode: "0644"
-- name: Set swappiness
+- name: Set VM memory sysctl
   ansible.builtin.copy:
-    content: vm.swappiness = 150
+    content: |
+      vm.swappiness = 150
+      vm.page-cluster = 0
     dest: /etc/sysctl.d/swappiness.conf
+    mode: "0644"
+- name: Set transparent hugepage shmem policy to advise
+  ansible.builtin.copy:
+    content: "w /sys/kernel/mm/transparent_hugepage/shmem_enabled - - - - advise\n"
+    dest: /etc/tmpfiles.d/thp-shmem-advise.conf
     mode: "0644"
 - name: Do not enable BT at boot
   community.general.ini_file:
