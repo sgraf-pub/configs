@@ -1,0 +1,7 @@
+---
+# file: google_chrome.yml
+- name: Configure Google Chrome
+  hosts: laptop
+  remote_user: root
+  roles:
+    - { role: google_chrome, become: true }

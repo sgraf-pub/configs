@@ -10,3 +10,4 @@
     - git
     - { role: dnf_automatic, become: true }
     - containers
+    - { role: google_chrome, become: true }

@@ -1,0 +1,38 @@
+---
+- name: Ensure user applications directory exists
+  ansible.builtin.file:
+    path: "{{ var_home }}/.local/share/applications"
+    state: directory
+    mode: "0755"
+  become: true
+  become_user: "{{ var_user }}"
+
+- name: Check if system Google Chrome desktop entry exists
+  ansible.builtin.stat:
+    path: /usr/share/applications/google-chrome.desktop
+  register: google_chrome_system_desktop
+
+- name: Check if user Google Chrome desktop entry exists
+  ansible.builtin.stat:
+    path: "{{ var_home }}/.local/share/applications/google-chrome.desktop"
+  register: google_chrome_user_desktop
+
+- name: Copy system Google Chrome desktop entry to user directory
+  ansible.builtin.copy:
+    src: /usr/share/applications/google-chrome.desktop
+    dest: "{{ var_home }}/.local/share/applications/google-chrome.desktop"
+    remote_src: true
+    force: false
+    mode: "0644"
+  become: true
+  become_user: "{{ var_user }}"
+  when: google_chrome_system_desktop.stat.exists
+
+- name: Modify Exec lines in Google Chrome desktop entry
+  ansible.builtin.replace:
+    path: "{{ var_home }}/.local/share/applications/google-chrome.desktop"
+    regexp: '^(Exec=/usr/bin/google-chrome-stable)(?!.*--enable-features=AcceleratedVideoEncoder)(.*)$'
+    replace: '\1 --enable-features=AcceleratedVideoEncoder\2'
+  become: true
+  become_user: "{{ var_user }}"
+  when: google_chrome_system_desktop.stat.exists or google_chrome_user_desktop.stat.exists

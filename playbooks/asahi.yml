@@ -11,3 +11,4 @@
     - { role: asahi, become: true }
     - { role: dnf_automatic, become: true }
     - containers
+    - { role: google_chrome, become: true }
