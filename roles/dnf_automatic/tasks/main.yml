@@ -37,6 +37,7 @@
       [org/gnome/software]
       download-updates=false
       download-updates-notify=false
+      allow-updates=false
     dest: /etc/dconf/db/local.d/00-gnome-software
     mode: "0644"
   notify: Update dconf database
