@@ -55,6 +55,12 @@
       ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="sd[a-z]", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="bfq"
     dest: /etc/udev/rules.d/60-iosched.rules
     mode: "0644"
+- name: Set dracut image compression
+  ansible.builtin.copy:
+    content: |
+      compress="zstd -1 -T0 -q"
+    dest: /etc/dracut.conf.d/compress.conf
+    mode: "0644"
 - name: Remove dnf5daemon-server service override directory
   ansible.builtin.file:
     path: /etc/systemd/system/dnf5daemon-server.service.d
