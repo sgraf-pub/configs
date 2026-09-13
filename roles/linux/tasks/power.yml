@@ -36,6 +36,12 @@
     content: "w /sys/module/pcie_aspm/parameters/policy - - - - powersave\n"
     dest: /etc/tmpfiles.d/aspm-powersave.conf
     mode: "0644"
+- name: Configure Intel RAPL PL1 power limit
+  ansible.builtin.copy:
+    content: "w /sys/class/powercap/intel-rapl/intel-rapl:0/constraint_0_power_limit_uw - - - - 10000000\n"
+    dest: /etc/tmpfiles.d/rapl-pl1.conf
+    mode: "0644"
+  when: ansible_facts['product_name'] | default('') == 'StarLite'
 - name: Ensure system-sleep directory exists
   ansible.builtin.file:
     path: /usr/lib/systemd/system-sleep
@@ -91,3 +97,43 @@
       esac
     dest: /usr/lib/systemd/system-sleep/power-management.sh
     mode: "0755"
+- name: Create sleep hook for Realtek card reader suspend fix
+  ansible.builtin.copy:
+    content: |
+      #!/bin/sh
+
+      LOG_TAG="power-management"
+
+      log() {
+        logger -t "$LOG_TAG" "$1"
+      }
+
+      case $1/$2 in
+        pre/*)
+          log "Pre-suspend: Unloading Realtek MMC/SD card reader modules..."
+          OUT=$(modprobe -r rtsx_usb_sdmmc rtsx_usb_ms rtsx_usb 2>&1)
+          STATUS=$?
+          [ -n "$OUT" ] && log "$OUT"
+
+          if [ $STATUS -eq 0 ]; then
+            log "Pre-suspend: Realtek MMC modules successfully unloaded."
+          else
+            log "Pre-suspend: Warning - Failed to unload some MMC modules."
+          fi
+          ;;
+        post/*)
+          log "Post-suspend: Reloading Realtek MMC/SD card reader modules..."
+          OUT=$(modprobe rtsx_usb_sdmmc 2>&1)
+          STATUS=$?
+          [ -n "$OUT" ] && log "$OUT"
+
+          if [ $STATUS -eq 0 ]; then
+            log "Post-suspend: Realtek MMC modules successfully restored."
+          else
+            log "Post-suspend: Warning - Failed to reload rtsx_usb_sdmmc."
+          fi
+          ;;
+      esac
+    dest: /usr/lib/systemd/system-sleep/rtsx-suspend-fix.sh
+    mode: "0755"
+  when: ansible_facts['product_name'] | default('') == 'StarLite'
