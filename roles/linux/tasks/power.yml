@@ -31,11 +31,10 @@
     name: powertop.service
     enabled: true
     daemon_reload: true
-- name: Install PCIe ASPM powersave policy
-  ansible.builtin.copy:
-    content: "w /sys/module/pcie_aspm/parameters/policy - - - - powersave\n"
-    dest: /etc/tmpfiles.d/aspm-powersave.conf
-    mode: "0644"
+- name: Remove PCIe ASPM powersave policy override
+  ansible.builtin.file:
+    path: /etc/tmpfiles.d/aspm-powersave.conf
+    state: absent
 - name: Configure Intel RAPL PL1 power limit
   ansible.builtin.copy:
     content: "w /sys/class/powercap/intel-rapl/intel-rapl:0/constraint_0_power_limit_uw - - - - 10000000\n"
