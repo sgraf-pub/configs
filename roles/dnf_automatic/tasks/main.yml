@@ -25,6 +25,19 @@
     state: started
     enabled: true
 
+- name: Ensure dnf-makecache service override directory exists
+  ansible.builtin.file:
+    path: /etc/systemd/system/dnf-makecache.service.d
+    state: directory
+    mode: "0755"
+
+- name: Wait for network before dnf-makecache
+  ansible.builtin.copy:
+    src: dnf-makecache-wait-network.conf
+    dest: /etc/systemd/system/dnf-makecache.service.d/wait-network.conf
+    mode: "0644"
+  notify: Reload systemd
+
 - name: Ensure /etc/dconf/db/local.d directory exists
   ansible.builtin.file:
     path: /etc/dconf/db/local.d
