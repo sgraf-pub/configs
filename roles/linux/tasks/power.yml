@@ -7,6 +7,23 @@
     dest: /etc/udev/rules.d/99-monitor-network-power.rules
     mode: "0644"
   notify: Reload udev
+- name: Ignore onboard Intel 2.5G NIC in NetworkManager
+  ansible.builtin.copy:
+    content: |
+      [keyfile]
+      unmanaged-devices+=driver:igc
+    dest: /etc/NetworkManager/conf.d/99-unmanaged-igc.conf
+    mode: "0644"
+  notify: Reload NetworkManager
+  when: ansible_facts['product_name'] | default('') == 'NUC15CRSU9'
+- name: Keep onboard Intel 2.5G NIC administratively down
+  ansible.builtin.copy:
+    content: |
+      ACTION=="add", SUBSYSTEM=="net", DRIVERS=="igc", RUN+="/usr/sbin/ip link set %k down"
+    dest: /etc/udev/rules.d/80-down-igc.rules
+    mode: "0644"
+  notify: Reload udev
+  when: ansible_facts['product_name'] | default('') == 'NUC15CRSU9'
 - name: Install powertop service
   ansible.builtin.copy:
     content: |
