@@ -24,6 +24,16 @@
     mode: "0644"
   notify: Reload udev
   when: ansible_facts['product_name'] | default('') == 'NUC15CRSU9'
+- name: Ignore UCSI USB-C PD change floods
+  ansible.builtin.copy:
+    content: |
+      # ucsi_acpi on this NUC spams power_supply CHANGE events when a USB-C PD
+      # dock/monitor is attached, which pegs systemd-udevd. Kernel PD/USB still work.
+      ACTION=="change", SUBSYSTEM=="power_supply", KERNEL=="ucsi-source-psy-*", OPTIONS+="ignore_device"
+    dest: /etc/udev/rules.d/99-ignore-ucsi-psy.rules
+    mode: "0644"
+  notify: Reload udev
+  when: ansible_facts['product_name'] | default('') == 'NUC15CRSU9'
 - name: Install powertop service
   ansible.builtin.copy:
     content: |
