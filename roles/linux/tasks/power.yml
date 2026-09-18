@@ -89,6 +89,13 @@
     mode: "0644"
   notify: Restart intel_lpmd
   when: ansible_facts['product_name'] | default('') == 'NUC15CRSU9'
+- name: Overlay intel_lpmd Meteor Lake-U config to unpark P-cores under load
+  ansible.builtin.copy:
+    src: intel_lpmd_config_F6_M170_T15.xml
+    dest: /etc/intel_lpmd/intel_lpmd_config_F6_M170_T15.xml
+    mode: "0644"
+  notify: Restart intel_lpmd
+  when: ansible_facts['product_name'] | default('') == '21KDS27P0G'
 - name: Remove PCIe ASPM powersave policy override
   ansible.builtin.file:
     path: /etc/tmpfiles.d/aspm-powersave.conf

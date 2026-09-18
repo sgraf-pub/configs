@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+
+<!--
+Intel Energy Optimizer (LPMD) overlay for Meteor Lake-U at 15W TDP
+(family 6, model 0xAA / 170). intel_lpmd loads
+intel_lpmd_config_F6_M170_T15.xml before the distro F6_M170.xml.
+
+ThinkPad X1 Carbon Gen 12 (Core Ultra 7 165U): 2P + 8E + 2L.
+
+  Performance (PerformanceDef=-1) -> LPMD_OFF  -> all CPUs active
+  Balanced    (BalancedDef= 0)    -> LPMD_AUTO -> E+L idle, P-cores on load
+  Powersaver  (PowersaverDef= 0)  -> LPMD_AUTO -> same as Balanced
+
+Idle (WLT 0+1): E+L cores only. Sustained (WLT 2) and bursty (WLT 3)
+unpark P-cores. Do not park E-cores: that can stick on LPE-only
+(rhbz#2532653). Distro F6_M170 keeps BalancedDef=-1 (LPMD never
+enters AUTO), so this overlay is what actually parks P-cores.
+-->
+
+<Configuration>
+	<lp_mode_cpus></lp_mode_cpus>
+	<lp_mode_epp></lp_mode_epp>
+
+	<!--
+		Mode values
+		0: Cgroup v2
+		1: Cgroup v2 isolate
+		2: CPU idle injection
+	-->
+	<Mode>1</Mode>
+
+	<PerformanceDef>-1</PerformanceDef>
+	<BalancedDef>0</BalancedDef>
+	<PowersaverDef>0</PowersaverDef>
+
+	<HfiLpmEnable>0</HfiLpmEnable>
+	<WLTHintEnable>1</WLTHintEnable>
+	<WLTHintPollEnable>1</WLTHintPollEnable>
+	<HfiSuvEnable>0</HfiSuvEnable>
+	<WLTHintMask>15</WLTHintMask>
+	<IgnoreITMT>0</IgnoreITMT>
+
+	<!--
+		UTIL_IDLE (WLT 0+1): park P-cores. Keep WLT 0 and 1 merged;
+		the hardware oscillates between them and split EPP/EPB would
+		churn sysfs.
+
+		UTIL_IDLE_SUSTAIN (WLT 2) / UTIL_IDLE_BURSTY (WLT 3): all
+		core types. IRQMigrate=0 so IRQs can follow P-cores.
+
+		Hardware WLT is present on this SoC (PCI 00:04.0
+		workload_hint). Do not enable WLTProxyEnable: the distro
+		MTL template uses the software proxy, which can stall after
+		profile switches (intel-lpmd#106).
+	-->
+	<States>
+		<CPUFamily> 6 </CPUFamily>
+		<CPUModel> 170 </CPUModel>
+		<CPUConfig> * </CPUConfig>
+		<State>
+			<ID> 1 </ID>
+			<Name> UTIL_IDLE </Name>
+			<WLTTypeMask> 3 </WLTTypeMask>
+			<ActiveLcores>ALL</ActiveLcores>
+			<ActiveEcores>ALL</ActiveEcores>
+			<IRQMigrate>1</IRQMigrate>
+			<EPP>192</EPP>
+			<EPB>8</EPB>
+		</State>
+		<State>
+			<ID> 2 </ID>
+			<Name> UTIL_IDLE_SUSTAIN </Name>
+			<WLTType> 2 </WLTType>
+			<ActivePcores>ALL</ActivePcores>
+			<ActiveLcores>ALL</ActiveLcores>
+			<ActiveEcores>ALL</ActiveEcores>
+			<IRQMigrate>0</IRQMigrate>
+			<EPP>64</EPP>
+			<EPB>4</EPB>
+		</State>
+		<State>
+			<ID> 3 </ID>
+			<Name> UTIL_IDLE_BURSTY </Name>
+			<WLTType> 3 </WLTType>
+			<ActivePcores>ALL</ActivePcores>
+			<ActiveLcores>ALL</ActiveLcores>
+			<ActiveEcores>ALL</ActiveEcores>
+			<IRQMigrate>0</IRQMigrate>
+			<EPP>128</EPP>
+			<EPB>6</EPB>
+		</State>
+	</States>
+
+</Configuration>
