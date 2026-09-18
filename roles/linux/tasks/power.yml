@@ -24,15 +24,39 @@
     mode: "0644"
   notify: Reload udev
   when: ansible_facts['product_name'] | default('') == 'NUC15CRSU9'
-- name: Ignore UCSI USB-C PD change floods
+- name: Remove ineffective UCSI udev ignore rule
+  ansible.builtin.file:
+    path: /etc/udev/rules.d/99-ignore-ucsi-psy.rules
+    state: absent
+  notify: Reload udev
+  when: ansible_facts['product_name'] | default('') == 'NUC15CRSU9'
+- name: Unbind ucsi_acpi after the display is up
   ansible.builtin.copy:
     content: |
-      # ucsi_acpi on this NUC spams power_supply CHANGE events when a USB-C PD
-      # dock/monitor is attached, which pegs systemd-udevd. Kernel PD/USB still work.
-      ACTION=="change", SUBSYSTEM=="power_supply", KERNEL=="ucsi-source-psy-*", OPTIONS+="ignore_device"
-    dest: /etc/udev/rules.d/99-ignore-ucsi-psy.rules
+      [Unit]
+      Description=Unbind ucsi_acpi to stop USB-C PD uevent floods
+      After=display-manager.service
+      ConditionPathExists=/sys/bus/platform/drivers/ucsi_acpi/unbind
+
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+      # ignore_device is not valid in systemd 259; udev cannot drop kernel uevents.
+      # Unbind after the USB-C DP mux is already configured so the dock/display stay up.
+      ExecStart=/bin/sh -c 'if [ -e /sys/bus/platform/devices/USBC000:00/driver ]; then echo USBC000:00 > /sys/bus/platform/drivers/ucsi_acpi/unbind; fi'
+      ExecStart=/bin/systemctl restart systemd-udevd.service
+
+      [Install]
+      WantedBy=graphical.target
+    dest: /etc/systemd/system/unbind-ucsi-acpi.service
     mode: "0644"
-  notify: Reload udev
+  when: ansible_facts['product_name'] | default('') == 'NUC15CRSU9'
+- name: Enable unbind-ucsi-acpi service
+  ansible.builtin.systemd_service:
+    name: unbind-ucsi-acpi.service
+    enabled: true
+    state: started
+    daemon_reload: true
   when: ansible_facts['product_name'] | default('') == 'NUC15CRSU9'
 - name: Install powertop service
   ansible.builtin.copy:
