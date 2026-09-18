@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+
+<!--
+Intel Energy Optimizer (LPMD) overlay for Arrow Lake-H at 45W TDP
+(family 6, model 0xC5 / 197). intel_lpmd loads
+intel_lpmd_config_F6_M197_T45.xml before the distro F6_M197.xml.
+
+  Performance (PerformanceDef=-1) -> LPMD_OFF  -> all CPUs active
+  Balanced    (BalancedDef= 0)    -> LPMD_AUTO -> E+L idle, P-cores on load
+  Powersaver  (PowersaverDef= 0)  -> LPMD_AUTO -> same as Balanced
+
+Idle (WLT 0+1): E+L cores only. Sustained (WLT 2) and bursty (WLT 3)
+unpark P-cores. Do not park E-cores: that can stick on LPE-only
+(rhbz#2532653).
+-->
+
+<Configuration>
+	<lp_mode_cpus></lp_mode_cpus>
+	<lp_mode_epp></lp_mode_epp>
+
+	<!--
+		Mode values
+		0: Cgroup v2
+		1: Cgroup v2 isolate
+		2: CPU idle injection
+	-->
+	<Mode>1</Mode>
+
+	<PerformanceDef>-1</PerformanceDef>
+	<BalancedDef>0</BalancedDef>
+	<PowersaverDef>0</PowersaverDef>
+
+	<HfiLpmEnable>0</HfiLpmEnable>
+	<WLTHintEnable>1</WLTHintEnable>
+	<WLTHintPollEnable>1</WLTHintPollEnable>
+	<HfiSuvEnable>0</HfiSuvEnable>
+	<WLTHintMask>15</WLTHintMask>
+	<IgnoreITMT>0</IgnoreITMT>
+
+	<!--
+		UTIL_IDLE (WLT 0+1): park P-cores. Keep WLT 0 and 1 merged;
+		the hardware oscillates between them and split EPP/EPB would
+		churn sysfs.
+
+		UTIL_IDLE_SUSTAIN (WLT 2) / UTIL_IDLE_BURSTY (WLT 3): all
+		core types. IRQMigrate=0 so IRQs can follow P-cores.
+	-->
+	<States>
+		<CPUFamily> 6 </CPUFamily>
+		<CPUModel> 197 </CPUModel>
+		<CPUConfig> * </CPUConfig>
+		<State>
+			<ID> 1 </ID>
+			<Name> UTIL_IDLE </Name>
+			<WLTTypeMask> 3 </WLTTypeMask>
+			<ActiveLcores>ALL</ActiveLcores>
+			<ActiveEcores>ALL</ActiveEcores>
+			<IRQMigrate>1</IRQMigrate>
+			<EPP>192</EPP>
+			<EPB>8</EPB>
+		</State>
+		<State>
+			<ID> 2 </ID>
+			<Name> UTIL_IDLE_SUSTAIN </Name>
+			<WLTType> 2 </WLTType>
+			<ActivePcores>ALL</ActivePcores>
+			<ActiveLcores>ALL</ActiveLcores>
+			<ActiveEcores>ALL</ActiveEcores>
+			<IRQMigrate>0</IRQMigrate>
+			<EPP>64</EPP>
+			<EPB>4</EPB>
+		</State>
+		<State>
+			<ID> 3 </ID>
+			<Name> UTIL_IDLE_BURSTY </Name>
+			<WLTType> 3 </WLTType>
+			<ActivePcores>ALL</ActivePcores>
+			<ActiveLcores>ALL</ActiveLcores>
+			<ActiveEcores>ALL</ActiveEcores>
+			<IRQMigrate>0</IRQMigrate>
+			<EPP>128</EPP>
+			<EPB>6</EPB>
+		</State>
+	</States>
+
+</Configuration>
