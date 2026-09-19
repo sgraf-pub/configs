@@ -7,6 +7,13 @@
     dest: /etc/udev/rules.d/99-monitor-network-power.rules
     mode: "0644"
   notify: Reload udev
+  when: ansible_facts['product_name'] | default('') == 'NUC15CRSU9'
+- name: Remove auto power management rule for USB monitor network card
+  ansible.builtin.file:
+    path: /etc/udev/rules.d/99-monitor-network-power.rules
+    state: absent
+  notify: Reload udev
+  when: ansible_facts['product_name'] | default('') != 'NUC15CRSU9'
 - name: Ignore onboard Intel 2.5G NIC in NetworkManager
   ansible.builtin.copy:
     content: |
