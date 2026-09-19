@@ -31,6 +31,23 @@
     mode: "0644"
   notify: Reload udev
   when: ansible_facts['product_name'] | default('') == 'NUC15CRSU9'
+- name: Ignore onboard Aquantia 10G NIC in NetworkManager
+  ansible.builtin.copy:
+    content: |
+      [keyfile]
+      unmanaged-devices+=driver:atlantic
+    dest: /etc/NetworkManager/conf.d/99-unmanaged-atlantic.conf
+    mode: "0644"
+  notify: Reload NetworkManager
+  when: ansible_facts['product_name'] | default('') == 'Mac13,2'
+- name: Keep onboard Aquantia 10G NIC administratively down
+  ansible.builtin.copy:
+    content: |
+      ACTION=="add", SUBSYSTEM=="net", DRIVERS=="atlantic", RUN+="/usr/sbin/ip link set %k down"
+    dest: /etc/udev/rules.d/80-down-atlantic.rules
+    mode: "0644"
+  notify: Reload udev
+  when: ansible_facts['product_name'] | default('') == 'Mac13,2'
 - name: Remove ineffective UCSI udev ignore rule
   ansible.builtin.file:
     path: /etc/udev/rules.d/99-ignore-ucsi-psy.rules
