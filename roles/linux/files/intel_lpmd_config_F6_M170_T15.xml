@@ -64,8 +64,8 @@ enters AUTO), so this overlay is what actually parks P-cores.
 			<ActiveLcores>ALL</ActiveLcores>
 			<ActiveEcores>ALL</ActiveEcores>
 			<IRQMigrate>1</IRQMigrate>
-			<EPP>192</EPP>
-			<EPB>8</EPB>
+			<EPP>192</EPP> <!-- balance_power -->
+			<EPB>8</EPB> <!-- balance_power -->
 		</State>
 		<State>
 			<ID> 2 </ID>
@@ -75,8 +75,8 @@ enters AUTO), so this overlay is what actually parks P-cores.
 			<ActiveLcores>ALL</ActiveLcores>
 			<ActiveEcores>ALL</ActiveEcores>
 			<IRQMigrate>0</IRQMigrate>
-			<EPP>64</EPP>
-			<EPB>4</EPB>
+			<EPP>64</EPP> <!-- between performance and balance_performance -->
+			<EPB>4</EPB> <!-- balance_performance -->
 		</State>
 		<State>
 			<ID> 3 </ID>
@@ -86,8 +86,8 @@ enters AUTO), so this overlay is what actually parks P-cores.
 			<ActiveLcores>ALL</ActiveLcores>
 			<ActiveEcores>ALL</ActiveEcores>
 			<IRQMigrate>0</IRQMigrate>
-			<EPP>128</EPP>
-			<EPB>6</EPB>
+			<EPP>128</EPP> <!-- balance_performance -->
+			<EPB>6</EPB> <!-- balanced -->
 		</State>
 	</States>
 
