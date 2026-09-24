@@ -90,7 +90,6 @@
 
       [Service]
       Type=oneshot
-      RemainAfterExit=yes
       ExecStart=/usr/bin/powertop --auto-tune
       ExecStartPost=/bin/sh -c \
         'find /sys/bus/usb/drivers/usbhid -regex ".*/[0-9:.-]+" \
@@ -98,7 +97,7 @@
         | xargs -rI{} sh -c "echo on > /sys/bus/usb/devices/{}/power/control"'
 
       [Install]
-      WantedBy=multi-user.target sleep.target
+      WantedBy=multi-user.target
     dest: /etc/systemd/system/powertop.service
     mode: "0644"
 - name: Enable powertop service
