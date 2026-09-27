@@ -17,6 +17,7 @@ flatpak_remotes:
 # List of RPM packages to remove in favor of Flatpaks
 flatpak_rpm_packages_to_remove:
   - gnome-boxes
+  - libreoffice-core
   - libreoffice-writer
   - libreoffice-calc
   - libreoffice-impress
@@ -29,3 +30,7 @@ flatpak_packages:
   - org.gnome.Boxes
   - org.libreoffice.LibreOffice
   - org.fedoraproject.MediaWriter
+
+# List of RPM packages to ensure installed after Flatpak replacements and autoremove
+flatpak_post_rpm_packages:
+  - langpacks-en

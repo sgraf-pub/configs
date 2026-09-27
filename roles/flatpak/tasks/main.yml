@@ -44,3 +44,9 @@
     state: "{{ item.state | default('present') }}"
   loop: "{{ flatpak_packages }}"
   when: flatpak_packages is defined and flatpak_packages | length > 0
+
+- name: Ensure langpacks-en is installed
+  ansible.builtin.dnf:
+    name: "{{ flatpak_post_rpm_packages }}"
+    state: present
+  when: flatpak_post_rpm_packages is defined and flatpak_post_rpm_packages | length > 0
