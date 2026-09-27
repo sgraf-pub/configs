@@ -86,8 +86,6 @@
       - intel-vpl-gpu-rt
       # Diagnostic tools for oneVPL (includes vpl-inspect to query codec capabilities)
       - libvpl-tools
-      # GStreamer plugins for hardware-accelerated video decode/encode via VA-API
-      - gstreamer1-vaapi
       # Level Zero diagnostic utility (zello_world) to verify GPU/NPU detection and properties
       - oneapi-level-zero-zello_world
     state: present
