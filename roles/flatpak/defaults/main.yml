@@ -24,12 +24,43 @@ flatpak_rpm_packages_to_remove:
   - libreoffice-draw
   - libreoffice-base
   - mediawriter
+  # Tier 1 GNOME applications explanation:
+  # - What "Tier 1" means: Standalone "leaf" user-facing applications (calculators, viewers,
+  #   text editors, camera) that rely strictly on standard XDG Desktop Portals (file chooser,
+  #   notifications, camera, dark mode).
+  # - Why they are safe to replace: They have no low-level system daemon dependencies, host
+  #   DBus service provisions (unlike Nautilus's FileManager1), or host hardware/process
+  #   privileges (unlike Settings, Disks, System Monitor, Terminal).
+  # - Integration behavior: Shell search provider integration, MIME associations, and desktop
+  #   icons are cleanly exported by Flatpak without breaking desktop workflows.
+  # - Exclusion note: Apps like Nautilus, Settings, System Monitor, or Terminal (Tier 3)
+  #   and Calendar/Contacts (Tier 2 EDS sync) are excluded.
+  # Tier 1 GNOME applications (including legacy/alternative package names)
+  - gnome-calculator
+  - gnome-characters
+  - gnome-font-viewer
+  - gnome-text-editor
+  - gedit
+  - loupe
+  - eog
+  - showtime
+  - totem
+  - snapshot
+  - cheese
 
 # List of Flatpak packages to install
 flatpak_packages:
   - org.gnome.Boxes
   - org.libreoffice.LibreOffice
   - org.fedoraproject.MediaWriter
+  # Tier 1 GNOME applications
+  - org.gnome.Calculator
+  - org.gnome.Characters
+  - org.gnome.font-viewer
+  - org.gnome.Loupe
+  - org.gnome.Showtime
+  - org.gnome.Snapshot
+  - org.gnome.TextEditor
 
 # List of RPM packages to ensure installed after Flatpak replacements and autoremove
 flatpak_post_rpm_packages:
