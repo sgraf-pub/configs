@@ -1,0 +1,46 @@
+---
+- name: Ensure flatpak is installed
+  ansible.builtin.dnf:
+    name: flatpak
+    state: present
+
+- name: Configure Flatpak remotes
+  community.general.flatpak_remote:
+    name: "{{ item.name }}"
+    flatpakrepo_url: "{{ item.flatpakrepo_url }}"
+    method: "{{ item.method | default(flatpak_installation_method) }}"
+    state: "{{ item.state | default('present') }}"
+  loop: "{{ flatpak_remotes }}"
+  when: flatpak_remotes is defined and flatpak_remotes | length > 0
+
+- name: Gather package facts
+  ansible.builtin.package_facts:
+    manager: auto
+  when: flatpak_rpm_packages_to_remove is defined and flatpak_rpm_packages_to_remove | length > 0
+
+- name: Filter installed RPM packages to remove
+  ansible.builtin.set_fact:
+    _flatpak_installed_rpms: "{{ flatpak_rpm_packages_to_remove | select('in', ansible_facts.packages) | list }}"
+  when:
+    - flatpak_rpm_packages_to_remove is defined
+    - flatpak_rpm_packages_to_remove | length > 0
+    - ansible_facts.packages is defined
+
+- name: Remove RPM packages replaced by Flatpaks
+  ansible.builtin.dnf:
+    name: "{{ _flatpak_installed_rpms }}"
+    state: absent
+    autoremove: "{{ flatpak_rpm_autoremove }}"
+    allowerasing: "{{ flatpak_rpm_allowerasing }}"
+  when:
+    - _flatpak_installed_rpms is defined
+    - _flatpak_installed_rpms | length > 0
+
+- name: Install Flatpak packages
+  community.general.flatpak:
+    name: "{{ item.name | default(item) }}"
+    remote: "{{ item.remote | default('flathub') }}"
+    method: "{{ item.method | default(flatpak_installation_method) }}"
+    state: "{{ item.state | default('present') }}"
+  loop: "{{ flatpak_packages }}"
+  when: flatpak_packages is defined and flatpak_packages | length > 0

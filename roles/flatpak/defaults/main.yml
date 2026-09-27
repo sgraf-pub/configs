@@ -1,0 +1,31 @@
+---
+# Installation method for Flatpak packages: 'system' or 'user'
+flatpak_installation_method: system
+
+# Whether to autoremove unused dependencies when removing RPM packages
+flatpak_rpm_autoremove: true
+
+# Whether to allow erasing installed packages to resolve dependency conflicts
+flatpak_rpm_allowerasing: true
+
+# Flatpak remote repositories to configure
+flatpak_remotes:
+  - name: flathub
+    flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+    state: present
+
+# List of RPM packages to remove in favor of Flatpaks
+flatpak_rpm_packages_to_remove:
+  - gnome-boxes
+  - libreoffice-writer
+  - libreoffice-calc
+  - libreoffice-impress
+  - libreoffice-draw
+  - libreoffice-base
+  - mediawriter
+
+# List of Flatpak packages to install
+flatpak_packages:
+  - org.gnome.Boxes
+  - org.libreoffice.LibreOffice
+  - org.fedoraproject.MediaWriter

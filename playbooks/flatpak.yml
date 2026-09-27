@@ -1,0 +1,7 @@
+---
+# file: flatpak.yml
+- name: Configure Flatpaks
+  hosts: laptop
+  remote_user: root
+  roles:
+    - { role: flatpak, become: true }
