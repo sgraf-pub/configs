@@ -62,13 +62,35 @@
       - wget
       - xlsclients
     state: present
+- name: Check for Intel GPU
+  ansible.builtin.command: lspci -d 8086::03xx
+  register: linux_intel_gpu
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
 - name: Install GPU pkgs
   ansible.builtin.dnf:
     name:
+      # GPU process and resource utilization monitor (supports i915 and Xe via DRM fdinfo)
       - nvtop
+      # Intel Graphics Compute Runtime for OpenCL and oneAPI Level Zero GPU driver
       - intel-compute-runtime
+      # Intel GPU debug and performance tools (includes intel_gpu_top)
       - igt-gpu-tools
+      # User-space Level Zero driver backend for Intel Neural Processing Unit (NPU)
       - intel-npu-driver
+      # OpenCL diagnostic query tool to inspect platforms, devices, and capabilities
       - clinfo
+      # oneVPL GPU runtime for Quick Sync hardware video decode/encode (AV1, HEVC, AVC)
+      - intel-vpl-gpu-rt
+      # Diagnostic tools for oneVPL (includes vpl-inspect to query codec capabilities)
+      - libvpl-tools
+      # GStreamer plugins for hardware-accelerated video decode/encode via VA-API
+      - gstreamer1-vaapi
+      # Level Zero diagnostic utility (zello_world) to verify GPU/NPU detection and properties
+      - oneapi-level-zero-zello_world
     state: present
-  when: ansible_facts.architecture == 'x86_64'
+  when:
+    - linux_intel_gpu.rc == 0
+    - linux_intel_gpu.stdout | length > 0

@@ -12,3 +12,4 @@
     - { role: dnf_automatic, become: true }
     - containers
     - { role: google_chrome, become: true }
+    - { role: intel_media_driver, become: true }

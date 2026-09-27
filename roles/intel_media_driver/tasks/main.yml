@@ -1,10 +1,20 @@
 ---
+- name: Check for Intel GPU
+  ansible.builtin.command: lspci -d 8086::03xx
+  register: intel_media_driver_intel_gpu
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
 - name: Install RPM Fusion non-free repository release package
   ansible.builtin.dnf:
     name: "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ ansible_facts['distribution_major_version'] }}.noarch.rpm"
     state: present
     disable_gpg_check: true
   become: true
+  when:
+    - intel_media_driver_intel_gpu.rc == 0
+    - intel_media_driver_intel_gpu.stdout | length > 0
 
 - name: Restrict rpmfusion-nonfree repo to intel-media-driver
   community.general.ini_file:
@@ -15,6 +25,9 @@
     no_extra_spaces: true
     mode: "0644"
   become: true
+  when:
+    - intel_media_driver_intel_gpu.rc == 0
+    - intel_media_driver_intel_gpu.stdout | length > 0
 
 - name: Restrict rpmfusion-nonfree-updates repo to intel-media-driver
   community.general.ini_file:
@@ -25,9 +38,15 @@
     no_extra_spaces: true
     mode: "0644"
   become: true
+  when:
+    - intel_media_driver_intel_gpu.rc == 0
+    - intel_media_driver_intel_gpu.stdout | length > 0
 
 - name: Install intel-media-driver
   ansible.builtin.dnf:
     name: intel-media-driver
     state: present
   become: true
+  when:
+    - intel_media_driver_intel_gpu.rc == 0
+    - intel_media_driver_intel_gpu.stdout | length > 0
