@@ -42,6 +42,7 @@ flatpak_rpm_packages_to_remove:
   # Tier 1 GNOME applications (including legacy/alternative package names)
   - gnome-calculator
   - gnome-characters
+  - gnome-extensions-app
   - gnome-font-viewer
   - gnome-text-editor
   - gedit
@@ -51,6 +52,9 @@ flatpak_rpm_packages_to_remove:
   - totem
   - snapshot
   - cheese
+  - epiphany
+  - decibels
+  - gnome-sound-recorder
 
 # Tier 2 GNOME applications explanation:
 # - What "Tier 2" means: GNOME applications that function well as Flatpaks but have specific
@@ -62,19 +66,26 @@ flatpak_rpm_packages_to_remove:
 #     direct local database access, enabling calendar and contact sync with online accounts.
 #   - Clocks: Relies on the XDG Desktop Background portal (org.freedesktop.portal.Background)
 #     and notifications to ensure alarms and timers trigger reliably when closed.
+#   - Maps: Relies on the Geoclue location portal (org.freedesktop.portal.Location)
+#     and exports a GNOME Shell search provider for place queries.
 #   - Weather: Relies on the Geoclue location portal (org.freedesktop.portal.Location)
 #     to provide location-based automatic weather updates.
 #   - Papers (and Evince): Modern document/PDF viewer. While the viewer itself runs sandboxed,
 #     PDF thumbnail generation in Nautilus requires host-level thumbnailers (papers-thumbnailer RPM).
+#   - Simple Scan (Document Scanner): Uses USB device access and network discovery (eSCL/AirScan)
+#     for scanning. Works out-of-the-box for driverless and standard SANE-supported scanners;
+#     proprietary host-only driver plugins cannot be reached inside the sandbox.
 # List of Tier 2 RPM packages to remove when flatpak_enable_tier2_gnome_apps is true
 flatpak_tier2_rpm_packages_to_remove:
   - baobab
   - gnome-calendar
   - gnome-clocks
   - gnome-contacts
+  - gnome-maps
   - gnome-weather
   - papers
   - evince
+  - simple-scan
 
 # List of Flatpak packages to install
 flatpak_packages:
@@ -84,10 +95,14 @@ flatpak_packages:
   # Tier 1 GNOME applications
   - org.gnome.Calculator
   - org.gnome.Characters
+  - org.gnome.Decibels
+  - org.gnome.Epiphany
+  - org.gnome.Extensions
   - org.gnome.font-viewer
   - org.gnome.Loupe
   - org.gnome.Showtime
   - org.gnome.Snapshot
+  - org.gnome.SoundRecorder
   - org.gnome.TextEditor
 
 # List of Tier 2 Flatpak packages to install when flatpak_enable_tier2_gnome_apps is true
@@ -96,7 +111,9 @@ flatpak_tier2_packages:
   - org.gnome.Calendar
   - org.gnome.clocks
   - org.gnome.Contacts
+  - org.gnome.Maps
   - org.gnome.Papers
+  - org.gnome.SimpleScan
   - org.gnome.Weather
 
 # List of RPM packages to ensure installed after Flatpak replacements and autoremove
