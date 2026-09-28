@@ -8,6 +8,9 @@ flatpak_rpm_autoremove: true
 # Whether to allow erasing installed packages to resolve dependency conflicts
 flatpak_rpm_allowerasing: true
 
+# Whether to enable Tier 2 GNOME applications (Flatpaks with integration requirements)
+flatpak_enable_tier2_gnome_apps: true
+
 # Flatpak remote repositories to configure
 flatpak_remotes:
   - name: flathub
@@ -33,8 +36,9 @@ flatpak_rpm_packages_to_remove:
   #   privileges (unlike Settings, Disks, System Monitor, Terminal).
   # - Integration behavior: Shell search provider integration, MIME associations, and desktop
   #   icons are cleanly exported by Flatpak without breaking desktop workflows.
-  # - Exclusion note: Apps like Nautilus, Settings, System Monitor, or Terminal (Tier 3)
-  #   and Calendar/Contacts (Tier 2 EDS sync) are excluded.
+  # - Exclusion note: Tier 2 GNOME applications (Calendar, Contacts, etc.) are managed
+  #   separately via flatpak_enable_tier2_gnome_apps. System apps like Nautilus, Settings,
+  #   System Monitor, or Terminal (Tier 3) remain native RPMs.
   # Tier 1 GNOME applications (including legacy/alternative package names)
   - gnome-calculator
   - gnome-characters
@@ -47,6 +51,30 @@ flatpak_rpm_packages_to_remove:
   - totem
   - snapshot
   - cheese
+
+# Tier 2 GNOME applications explanation:
+# - What "Tier 2" means: GNOME applications that function well as Flatpaks but have specific
+#   host integration characteristics, portal dependencies, or sandbox permission requirements:
+#   - Baobab (Disk Usage Analyzer): Filesystem isolation restricts default visibility. Requires
+#     a filesystem override (host:ro) to inspect host disk usage effectively.
+#   - Calendar & Contacts: Evolution-Data-Server (EDS) sync vs GNOME Online Accounts (GOA).
+#     In Flatpak, they interface with EDS / GOA through portals and D-Bus services rather than
+#     direct local database access, enabling calendar and contact sync with online accounts.
+#   - Clocks: Relies on the XDG Desktop Background portal (org.freedesktop.portal.Background)
+#     and notifications to ensure alarms and timers trigger reliably when closed.
+#   - Weather: Relies on the Geoclue location portal (org.freedesktop.portal.Location)
+#     to provide location-based automatic weather updates.
+#   - Papers (and Evince): Modern document/PDF viewer. While the viewer itself runs sandboxed,
+#     PDF thumbnail generation in Nautilus requires host-level thumbnailers (papers-thumbnailer RPM).
+# List of Tier 2 RPM packages to remove when flatpak_enable_tier2_gnome_apps is true
+flatpak_tier2_rpm_packages_to_remove:
+  - baobab
+  - gnome-calendar
+  - gnome-clocks
+  - gnome-contacts
+  - gnome-weather
+  - papers
+  - evince
 
 # List of Flatpak packages to install
 flatpak_packages:
@@ -62,6 +90,28 @@ flatpak_packages:
   - org.gnome.Snapshot
   - org.gnome.TextEditor
 
+# List of Tier 2 Flatpak packages to install when flatpak_enable_tier2_gnome_apps is true
+flatpak_tier2_packages:
+  - org.gnome.baobab
+  - org.gnome.Calendar
+  - org.gnome.clocks
+  - org.gnome.Contacts
+  - org.gnome.Papers
+  - org.gnome.Weather
+
 # List of RPM packages to ensure installed after Flatpak replacements and autoremove
 flatpak_post_rpm_packages:
   - langpacks-en
+
+# List of Tier 2 RPM packages to ensure installed after Flatpak replacements and autoremove
+flatpak_tier2_post_rpm_packages:
+  - papers-thumbnailer
+  - papers-previewer
+  - papers-nautilus
+
+# Flatpak system overrides to configure for active Flatpak packages
+flatpak_overrides:
+  - name: org.gnome.baobab
+    filesystems:
+      - host:ro
+

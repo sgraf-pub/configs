@@ -1,4 +1,10 @@
 ---
+- name: Determine active package lists
+  ansible.builtin.set_fact:
+    _flatpak_active_rpm_packages_to_remove: "{{ flatpak_rpm_packages_to_remove | default([]) + (flatpak_tier2_rpm_packages_to_remove | default([]) if flatpak_enable_tier2_gnome_apps | default(false) else []) }}"
+    _flatpak_active_packages: "{{ flatpak_packages | default([]) + (flatpak_tier2_packages | default([]) if flatpak_enable_tier2_gnome_apps | default(false) else []) }}"
+    _flatpak_active_post_rpm_packages: "{{ flatpak_post_rpm_packages | default([]) + (flatpak_tier2_post_rpm_packages | default([]) if flatpak_enable_tier2_gnome_apps | default(false) else []) }}"
+
 - name: Ensure flatpak is installed
   ansible.builtin.dnf:
     name: flatpak
@@ -16,14 +22,14 @@
 - name: Gather package facts
   ansible.builtin.package_facts:
     manager: auto
-  when: flatpak_rpm_packages_to_remove is defined and flatpak_rpm_packages_to_remove | length > 0
+  when: _flatpak_active_rpm_packages_to_remove is defined and _flatpak_active_rpm_packages_to_remove | length > 0
 
 - name: Filter installed RPM packages to remove
   ansible.builtin.set_fact:
-    _flatpak_installed_rpms: "{{ flatpak_rpm_packages_to_remove | select('in', ansible_facts.packages) | list }}"
+    _flatpak_installed_rpms: "{{ _flatpak_active_rpm_packages_to_remove | select('in', ansible_facts.packages) | list }}"
   when:
-    - flatpak_rpm_packages_to_remove is defined
-    - flatpak_rpm_packages_to_remove | length > 0
+    - _flatpak_active_rpm_packages_to_remove is defined
+    - _flatpak_active_rpm_packages_to_remove | length > 0
     - ansible_facts.packages is defined
 
 - name: Remove RPM packages replaced by Flatpaks
@@ -42,11 +48,34 @@
     remote: "{{ item.remote | default('flathub') }}"
     method: "{{ item.method | default(flatpak_installation_method) }}"
     state: "{{ item.state | default('present') }}"
-  loop: "{{ flatpak_packages }}"
-  when: flatpak_packages is defined and flatpak_packages | length > 0
+  loop: "{{ _flatpak_active_packages }}"
+  when: _flatpak_active_packages is defined and _flatpak_active_packages | length > 0
 
-- name: Ensure langpacks-en is installed
+- name: Ensure post-removal RPM packages are installed
   ansible.builtin.dnf:
-    name: "{{ flatpak_post_rpm_packages }}"
+    name: "{{ _flatpak_active_post_rpm_packages }}"
     state: present
-  when: flatpak_post_rpm_packages is defined and flatpak_post_rpm_packages | length > 0
+  when: _flatpak_active_post_rpm_packages is defined and _flatpak_active_post_rpm_packages | length > 0
+
+- name: Ensure Flatpak overrides directory exists
+  ansible.builtin.file:
+    path: /var/lib/flatpak/overrides
+    state: directory
+    mode: "0755"
+  when: flatpak_overrides is defined and flatpak_overrides | length > 0
+
+- name: Configure Flatpak system overrides
+  community.general.ini_file:
+    path: "/var/lib/flatpak/overrides/{{ item.name }}"
+    section: Context
+    option: filesystems
+    value: "{{ ((item.filesystems | join(';')) | regex_replace(';+$', '')) ~ ';' }}"
+    mode: "0644"
+    no_extra_spaces: true
+  loop: "{{ flatpak_overrides | default([]) }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when:
+    - item.name in (_flatpak_active_packages | default([]) | select('mapping') | map(attribute='name') | list + _flatpak_active_packages | default([]) | select('string') | list)
+    - item.filesystems is defined
+
