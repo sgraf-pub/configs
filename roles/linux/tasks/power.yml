@@ -129,26 +129,6 @@
     dest: /etc/tmpfiles.d/rapl-pl1.conf
     mode: "0644"
   when: ansible_facts['product_name'] | default('') == 'StarLite'
-- name: Prefer S3 deep suspend on NUC, StarLite, and ThinkPad
-  when: ansible_facts['product_name'] | default('') in ['NUC15CRSU9', 'StarLite', '21KDS27P0G']
-  block:
-    - name: Ensure systemd sleep.conf.d exists
-      ansible.builtin.file:
-        path: /etc/systemd/sleep.conf.d
-        state: directory
-        mode: "0755"
-    - name: Write MemorySleepMode=deep
-      ansible.builtin.copy:
-        dest: /etc/systemd/sleep.conf.d/deep.conf
-        mode: "0644"
-        content: |
-          [Sleep]
-          MemorySleepMode=deep
-- name: Remove deep suspend override on other machines
-  ansible.builtin.file:
-    path: /etc/systemd/sleep.conf.d/deep.conf
-    state: absent
-  when: ansible_facts['product_name'] | default('') not in ['NUC15CRSU9', 'StarLite', '21KDS27P0G']
 - name: Ensure system-sleep directory exists
   ansible.builtin.file:
     path: /usr/lib/systemd/system-sleep
