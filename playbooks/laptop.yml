@@ -12,4 +12,4 @@
     - { role: flatpak, become: true }
     - containers
     - { role: google_chrome, become: true }
-    - { role: intel_media_driver, become: true }
+    - { role: rpmfusion, become: true, when: "ansible_facts['product_name'] | default('') == 'StarLite'" }

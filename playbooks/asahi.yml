@@ -13,4 +13,3 @@
     - { role: flatpak, become: true }
     - containers
     - { role: google_chrome, become: true }
-    - { role: intel_media_driver, become: true }

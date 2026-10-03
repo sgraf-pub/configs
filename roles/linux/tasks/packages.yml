@@ -11,9 +11,6 @@
       - langpacks-en
       - langpacks-cs
 
-      # --- Multimedia ---
-      - "@multimedia"
-
       # --- Tools & Utilities ---
       - ansible-lint
       - bat
@@ -25,7 +22,6 @@
       - duf
       - egl-utils
       - fastfetch
-      - ffmpeg-free
       - firewalld
       - git
       - gnome-backgrounds-extras
@@ -62,6 +58,16 @@
       - wget
       - xlsclients
     state: present
+
+- name: Install multimedia packages
+  ansible.builtin.dnf:
+    name:
+      # --- Multimedia ---
+      - "@multimedia"
+      - ffmpeg-free
+    state: present
+  when: ansible_facts['product_name'] | default('') != 'StarLite'
+
 - name: Check for Intel GPU
   ansible.builtin.command: lspci -d 8086::03xx
   register: linux_intel_gpu

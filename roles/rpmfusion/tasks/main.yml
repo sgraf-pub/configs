@@ -1,0 +1,74 @@
+---
+- name: Check for Intel GPU
+  ansible.builtin.command: lspci -d 8086::03xx
+  register: rpmfusion_intel_gpu
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Install RPM Fusion repository release packages
+  ansible.builtin.dnf:
+    name:
+      - "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_facts['distribution_major_version'] }}.noarch.rpm"
+      - "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ ansible_facts['distribution_major_version'] }}.noarch.rpm"
+    state: present
+    disable_gpg_check: true
+  become: true
+
+- name: Install RPM Fusion AppStream metadata for GNOME Software
+  ansible.builtin.dnf:
+    name:
+      - rpmfusion-free-appstream-data
+      - rpmfusion-nonfree-appstream-data
+    state: present
+  become: true
+
+- name: Check if full ffmpeg is installed
+  ansible.builtin.command: rpm -q ffmpeg # noqa: command-instead-of-module
+  register: rpmfusion_ffmpeg_installed
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Check if ffmpeg-free is installed
+  ansible.builtin.command: rpm -q ffmpeg-free # noqa: command-instead-of-module
+  register: rpmfusion_ffmpeg_free_installed
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Switch to full ffmpeg
+  ansible.builtin.command: dnf swap -y ffmpeg-free ffmpeg --allowerasing # noqa: command-instead-of-module
+  become: true
+  changed_when: true
+  when:
+    - rpmfusion_ffmpeg_installed.rc != 0
+    - rpmfusion_ffmpeg_free_installed.rc == 0
+
+- name: Install full ffmpeg
+  ansible.builtin.dnf:
+    name: ffmpeg
+    state: present
+    allowerasing: true
+  become: true
+  when:
+    - rpmfusion_ffmpeg_installed.rc != 0
+    - rpmfusion_ffmpeg_free_installed.rc != 0
+
+- name: Install additional multimedia codecs
+  ansible.builtin.dnf:
+    name: "@multimedia"
+    state: present
+    install_weak_deps: false
+    exclude:
+      - PackageKit-gstreamer-plugin
+  become: true
+
+- name: Install intel-media-driver
+  ansible.builtin.dnf:
+    name: intel-media-driver
+    state: present
+  become: true
+  when:
+    - rpmfusion_intel_gpu.rc == 0
+    - rpmfusion_intel_gpu.stdout | length > 0
