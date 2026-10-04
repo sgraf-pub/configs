@@ -8,6 +8,7 @@
     - { role: linux, become: true }
     - { role: duperemove, become: true }
     - git
+    - { role: display, become: true }
     - { role: dnf_automatic, become: true }
     - { role: flatpak, become: true }
     - containers
