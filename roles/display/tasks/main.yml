@@ -1,4 +1,16 @@
 ---
+- name: Select Studio display profile
+  ansible.builtin.set_fact:
+    display_monitors_src: studio-monitors.xml
+    display_video_arg: video=HDMI-A-1:3440x1440@100
+  when: ansible_facts['product_name'] | default('') == 'Mac13,2' or ansible_facts['nodename'] | default('') == 'studio'
+
+- name: Select NUC display profile
+  ansible.builtin.set_fact:
+    display_monitors_src: nuc-monitors.xml
+    display_video_arg: video=DP-3:3440x1440@100
+  when: ansible_facts['product_name'] | default('') == 'NUC15CRSU9'
+
 - name: Ensure GDM config directory exists
   ansible.builtin.file:
     path: /var/lib/gdm/.config
@@ -6,38 +18,36 @@
     owner: gdm
     group: gdm
     mode: "0755"
-  when: ansible_facts['product_name'] | default('') == 'Mac13,2' or ansible_facts['nodename'] | default('') == 'studio'
+  when: display_monitors_src is defined
 
 - name: Deploy GDM monitors.xml configuration
   ansible.builtin.copy:
-    src: monitors.xml
+    src: "{{ display_monitors_src }}"
     dest: /var/lib/gdm/.config/monitors.xml
     owner: gdm
     group: gdm
     mode: "0644"
-  when: ansible_facts['product_name'] | default('') == 'Mac13,2' or ansible_facts['nodename'] | default('') == 'studio'
+  when: display_monitors_src is defined
 
-- name: Deploy system-wide monitors.xml for GDM (Studio)
+- name: Deploy system-wide monitors.xml for GDM
   ansible.builtin.copy:
-    src: monitors.xml
+    src: "{{ display_monitors_src }}"
     dest: /etc/xdg/monitors.xml
     owner: root
     group: root
     mode: "0644"
-  when: ansible_facts['product_name'] | default('') == 'Mac13,2' or ansible_facts['nodename'] | default('') == 'studio'
+  when: display_monitors_src is defined
 
 - name: Check kernel cmdline for video mode
   ansible.builtin.slurp:
     src: /etc/kernel/cmdline
   register: display_kernel_cmdline
-  when: ansible_facts['product_name'] | default('') == 'Mac13,2' or ansible_facts['nodename'] | default('') == 'studio'
+  when: display_video_arg is defined
 
-- name: Set TTY and early boot video resolution for Studio
-  ansible.builtin.command: grubby --update-kernel=ALL --args="video=HDMI-A-1:3440x1440@100"
+- name: Set TTY and early boot video resolution
+  ansible.builtin.command: grubby --update-kernel=ALL --args="{{ display_video_arg }}"
   changed_when: true
-  when:
-    - ansible_facts['product_name'] | default('') == 'Mac13,2' or ansible_facts['nodename'] | default('') == 'studio'
-    - "'video=HDMI-A-1:3440x1440@100' not in (display_kernel_cmdline.content | b64decode)"
+  when: display_video_arg is defined and display_video_arg not in (display_kernel_cmdline.content | b64decode)
 
 - name: Install terminus console fonts
   ansible.builtin.dnf:
