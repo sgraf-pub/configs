@@ -48,6 +48,14 @@
     mode: "0644"
   notify: Reload udev
   when: ansible_facts['product_name'] | default('') == 'Mac13,2'
+- name: Enable Wi-Fi power saving in NetworkManager
+  ansible.builtin.copy:
+    content: |
+      [connection]
+      wifi.powersave = 3
+    dest: /etc/NetworkManager/conf.d/99-wifi-powersave.conf
+    mode: "0644"
+  notify: Reload NetworkManager
 - name: Remove ineffective UCSI udev ignore rule
   ansible.builtin.file:
     path: /etc/udev/rules.d/99-ignore-ucsi-psy.rules
