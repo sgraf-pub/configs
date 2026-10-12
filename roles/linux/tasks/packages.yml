@@ -27,7 +27,6 @@
       - gnome-backgrounds-extras
       - gnome-shell-extension-appindicator
       - gnome-shell-extension-background-logo
-      - gnome-shell-extension-caffeine
       - gnome-shell-extension-freon
       - gnome-tweaks
       - htop
@@ -58,6 +57,20 @@
       - wget
       - xlsclients
     state: present
+
+- name: Install caffeine GNOME Shell extension
+  ansible.builtin.dnf:
+    name:
+      - gnome-shell-extension-caffeine
+    state: present
+  when: ansible_facts['product_name'] | default('') in ['StarLite', 'Mac13,2'] or ansible_facts['nodename'] | default('') == 'studio'
+
+- name: Remove caffeine GNOME Shell extension
+  ansible.builtin.dnf:
+    name:
+      - gnome-shell-extension-caffeine
+    state: absent
+  when: ansible_facts['product_name'] | default('') in ['21KDS27P0G', 'NUC15CRSU9']
 
 - name: Install multimedia packages
   ansible.builtin.dnf:
