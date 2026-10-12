@@ -47,14 +47,11 @@
     value: "false"
     no_extra_spaces: true
     mode: "0644"
-- name: Configure disk I/O scheduler
-  ansible.builtin.copy:
-    content: |
-      ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="nvme[0-9]*n[0-9]*", ENV{DEVTYPE}=="disk", ATTR{queue/scheduler}="kyber"
-      ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="sd[a-z]|mmcblk[0-9]*", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="mq-deadline"
-      ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="sd[a-z]", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="bfq"
-    dest: /etc/udev/rules.d/60-iosched.rules
-    mode: "0644"
+- name: Remove disk I/O scheduler udev rule
+  ansible.builtin.file:
+    path: /etc/udev/rules.d/60-iosched.rules
+    state: absent
+  notify: Reload udev
 - name: Set dracut image compression
   ansible.builtin.copy:
     content: |
