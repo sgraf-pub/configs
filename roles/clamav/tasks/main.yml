@@ -15,13 +15,16 @@
     state: true
     persistent: true
 
-- name: Install clamd.scan tmpfiles.d configuration
-  ansible.builtin.copy:
-    src: clamd.scan.conf
-    dest: /etc/tmpfiles.d/clamd.scan.conf
-    owner: root
-    group: root
-    mode: "0644"
+- name: Add user to virusgroup
+  ansible.builtin.user:
+    name: "{{ var_user }}"
+    groups: virusgroup
+    append: true
+
+- name: Remove custom clamd tmpfiles override if present
+  ansible.builtin.file:
+    path: /etc/tmpfiles.d/clamd.scan.conf
+    state: absent
 
 - name: Ensure /run/clamd.scan directory exists
   ansible.builtin.file:
@@ -29,20 +32,17 @@
     state: directory
     owner: clamscan
     group: virusgroup
-    mode: "0755"
+    mode: "0710"
 
-- name: Configure LocalSocket in /etc/clamd.d/scan.conf
+- name: Configure scan.conf settings
   ansible.builtin.lineinfile:
     path: /etc/clamd.d/scan.conf
-    regexp: '^#?\s*LocalSocket\s+'
-    line: "LocalSocket /run/clamd.scan/clamd.sock"
-  notify: Restart clamd@scan
-
-- name: Configure LocalSocketMode in /etc/clamd.d/scan.conf
-  ansible.builtin.lineinfile:
-    path: /etc/clamd.d/scan.conf
-    regexp: '^#?\s*LocalSocketMode\s+'
-    line: "LocalSocketMode 666"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop:
+    - { regexp: '^#?\s*LocalSocket\s+', line: 'LocalSocket /run/clamd.scan/clamd.sock' }
+    - { regexp: '^#?\s*LocalSocketGroup\s+', line: 'LocalSocketGroup virusgroup' }
+    - { regexp: '^#?\s*User\s+', line: 'User clamscan' }
   notify: Restart clamd@scan
 
 - name: Enable and start ClamAV services
@@ -59,8 +59,6 @@
     path: "{{ var_home }}/.local/share/nautilus/scripts"
     state: directory
     mode: "0755"
-    owner: "{{ var_user }}"
-    group: "{{ var_user }}"
   become: true
   become_user: "{{ var_user }}"
 
@@ -69,7 +67,5 @@
     src: Scan with ClamAV (Multi-core)
     dest: "{{ var_home }}/.local/share/nautilus/scripts/Scan with ClamAV (Multi-core)"
     mode: "0755"
-    owner: "{{ var_user }}"
-    group: "{{ var_user }}"
   become: true
   become_user: "{{ var_user }}"
