@@ -1,0 +1,75 @@
+---
+- name: Install ClamAV packages
+  ansible.builtin.dnf:
+    name:
+      - clamav
+      - clamav-freshclam
+      - clamd
+      - clamtk
+      - libnotify
+    state: present
+
+- name: Enable antivirus_can_scan_system SELinux boolean
+  ansible.posix.seboolean:
+    name: antivirus_can_scan_system
+    state: true
+    persistent: true
+
+- name: Install clamd.scan tmpfiles.d configuration
+  ansible.builtin.copy:
+    src: clamd.scan.conf
+    dest: /etc/tmpfiles.d/clamd.scan.conf
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Ensure /run/clamd.scan directory exists
+  ansible.builtin.file:
+    path: /run/clamd.scan
+    state: directory
+    owner: clamscan
+    group: virusgroup
+    mode: "0755"
+
+- name: Configure LocalSocket in /etc/clamd.d/scan.conf
+  ansible.builtin.lineinfile:
+    path: /etc/clamd.d/scan.conf
+    regexp: '^#?\s*LocalSocket\s+'
+    line: "LocalSocket /run/clamd.scan/clamd.sock"
+  notify: Restart clamd@scan
+
+- name: Configure LocalSocketMode in /etc/clamd.d/scan.conf
+  ansible.builtin.lineinfile:
+    path: /etc/clamd.d/scan.conf
+    regexp: '^#?\s*LocalSocketMode\s+'
+    line: "LocalSocketMode 666"
+  notify: Restart clamd@scan
+
+- name: Enable and start ClamAV services
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop:
+    - clamav-freshclam
+    - clamd@scan
+
+- name: Ensure Nautilus scripts directory exists
+  ansible.builtin.file:
+    path: "{{ var_home }}/.local/share/nautilus/scripts"
+    state: directory
+    mode: "0755"
+    owner: "{{ var_user }}"
+    group: "{{ var_user }}"
+  become: true
+  become_user: "{{ var_user }}"
+
+- name: Install Nautilus ClamAV scan script
+  ansible.builtin.copy:
+    src: Scan with ClamAV (Multi-core)
+    dest: "{{ var_home }}/.local/share/nautilus/scripts/Scan with ClamAV (Multi-core)"
+    mode: "0755"
+    owner: "{{ var_user }}"
+    group: "{{ var_user }}"
+  become: true
+  become_user: "{{ var_user }}"

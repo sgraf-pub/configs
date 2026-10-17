@@ -1,0 +1,7 @@
+---
+# file: clamav.yml
+- name: Configure ClamAV
+  hosts: laptop
+  remote_user: root
+  roles:
+    - { role: clamav, become: true }

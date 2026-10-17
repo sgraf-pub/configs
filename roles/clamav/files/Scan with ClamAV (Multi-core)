@@ -1,0 +1,68 @@
+#!/bin/bash
+
+# Ensure D-Bus session exists for desktop notifications
+if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
+    DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$(id -u)/bus"
+    export DBUS_SESSION_BUS_ADDRESS
+fi
+
+LOG_DIR="${XDG_RUNTIME_DIR:-/tmp}/clamav"
+mkdir -p "$LOG_DIR"
+LOG_FILE="$LOG_DIR/scan-$(date +%s)-$$.log"
+ln -sf "$LOG_FILE" "$LOG_DIR/last-scan.log"
+
+TARGETS=()
+
+# 1. Parse selected items if any
+if [ -n "$NAUTILUS_SCRIPT_SELECTED_FILE_PATHS" ]; then
+    while IFS= read -r line; do
+        [[ -n "$line" ]] && TARGETS+=("$line")
+    done <<< "$NAUTILUS_SCRIPT_SELECTED_FILE_PATHS"
+fi
+
+# 2. Fallback: if user clicked empty space, scan current directory
+if [ ${#TARGETS[@]} -eq 0 ] && [ -n "$NAUTILUS_SCRIPT_CURRENT_URI" ]; then
+    # Convert file:// URI to standard absolute path
+    CURRENT_PATH=$(python3 -c "import urllib.parse, sys; print(urllib.parse.unquote(urllib.parse.urlparse(sys.argv[1]).path))" "$NAUTILUS_SCRIPT_CURRENT_URI" 2>/dev/null)
+    if [ -d "$CURRENT_PATH" ]; then
+        TARGETS+=("$CURRENT_PATH")
+    fi
+fi
+
+# 3. Guard against empty targets
+if [ ${#TARGETS[@]} -eq 0 ]; then
+    notify-send "ClamAV" "No target detected to scan." 2>/dev/null
+    exit 0
+fi
+
+# Log debug header
+echo "=== Scan started at $(date) ===" > "$LOG_FILE"
+echo "Targets: ${TARGETS[*]}" >> "$LOG_FILE"
+echo "----------------------------------------" >> "$LOG_FILE"
+
+notify-send "ClamAV" "Scanning ${#TARGETS[@]} item(s) across all cores..." 2>/dev/null
+
+# Run clamdscan synchronously
+clamdscan --multiscan --fdpass --infected "${TARGETS[@]}" >> "$LOG_FILE" 2>&1
+EXIT_CODE=$?
+
+# Extract clean summary statistics
+SCANNED=$(grep "Scanned files:" "$LOG_FILE" | awk '{print $3}')
+TIME=$(grep "Time:" "$LOG_FILE" | cut -d: -f2- | xargs)
+SUMMARY="Scanned: ${SCANNED:-0} file(s) in ${TIME:-N/A}"
+
+if [ $EXIT_CODE -eq 0 ]; then
+    notify-send -i security-high "ClamAV: Scan Clean" "${SUMMARY}\nNo threats found." 2>/dev/null
+elif [ $EXIT_CODE -eq 1 ]; then
+    INFECTED_DETAILS=$(grep " FOUND$" "$LOG_FILE" | head -n 3)
+    if [ -z "$INFECTED_DETAILS" ]; then
+        INFECTED_COUNT=$(grep "Infected files:" "$LOG_FILE" | awk '{print $3}')
+        INFECTED_DETAILS="Infected files: ${INFECTED_COUNT:-1}"
+    fi
+    notify-send -u critical -i dialog-warning "ClamAV: Threat Detected!" \
+        "${INFECTED_DETAILS}\nLog: $LOG_FILE" 2>/dev/null
+else
+    ERROR_DETAILS=$(grep -i "ERROR:" "$LOG_FILE" | head -n 2)
+    notify-send -u critical -i dialog-error "ClamAV Scan Error (Code $EXIT_CODE)" \
+        "${ERROR_DETAILS:-Check log for details}\nLog: $LOG_FILE" 2>/dev/null
+fi

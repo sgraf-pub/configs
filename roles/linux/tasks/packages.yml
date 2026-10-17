@@ -15,7 +15,6 @@
       - ansible-lint
       - bat
       - btrfsmaintenance
-      - clamtk
       - compsize
       - cpufetch
       - distrobox
