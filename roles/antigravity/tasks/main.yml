@@ -88,3 +88,20 @@
   become: true
   become_user: "{{ var_user }}"
   notify: Update desktop database
+
+- name: Ensure ~/.gemini directory exists
+  ansible.builtin.file:
+    path: "{{ var_home }}/.gemini"
+    state: directory
+    mode: "0755"
+  become: true
+  become_user: "{{ var_user }}"
+
+- name: Copy GEMINI.md
+  ansible.builtin.copy:
+    src: GEMINI.md
+    dest: "{{ var_home }}/.gemini/GEMINI.md"
+    mode: "0644"
+  become: true
+  become_user: "{{ var_user }}"
+
