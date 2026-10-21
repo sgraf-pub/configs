@@ -96,6 +96,22 @@ is_shell_builtin () {
     [[ "$SHELL_BUILTINS" == *" $1 "* ]]
 }
 
+# Host vs container indicator (os-release and $container are fixed for the session)
+if [[ -r /etc/os-release ]]; then
+    ID=$(grep "^ID=" /etc/os-release | awk -F = '{print $2}' | sed -e 's/"//g')
+    VER=$(grep "^VERSION_ID=" /etc/os-release | awk -F = '{print $2}' | sed -e 's/"//g')
+else
+    ID=unknown
+    VER=
+fi
+if test -z "$container"
+then
+    export PROMPT_CONTAINER="host:$ID-$VER"
+else
+    export PROMPT_CONTAINER="$CONTAINER_ID:$ID-$VER"
+fi
+unset ID VER PROMPT_USERHOST
+
 parse_exit_code () {
     local temp_ecode=( $1 )
     local last_cmd="$2"
@@ -140,7 +156,7 @@ generate_ps () {
     last_cmd=$(HISTTIMEFORMAT='' history 1 2>/dev/null | sed 's/^ *[0-9]* *//' | awk '{print $1}')
     PS1=
     parse_exit_code "${ecode}" "$last_cmd"
-    PS1+="[\u@\h"
+    PS1+="[\u@${PROMPT_CONTAINER}"
     PS1+=" ${LIGHT_BLUE}\w${RESET_COLOR}]"
     local pre="$PS1"
     [[ -n ${VIRTUAL_ENV} ]] && pre+="(${VIRTUAL_ENV##*/})"
