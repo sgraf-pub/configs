@@ -27,6 +27,7 @@
       - gnome-shell-extension-appindicator
       - gnome-shell-extension-background-logo
       - gnome-shell-extension-freon
+      - gnome-shell-extension-light-style
       - gnome-tweaks
       - htop
       - inxi
