@@ -8,6 +8,9 @@ flatpak_rpm_autoremove: true
 # Whether to allow erasing installed packages to resolve dependency conflicts
 flatpak_rpm_allowerasing: true
 
+# Whether to enable Tier 1 GNOME applications (standalone user-facing Flatpaks)
+flatpak_enable_tier1_gnome_apps: true
+
 # Whether to enable Tier 2 GNOME applications (Flatpaks with integration requirements)
 flatpak_enable_tier2_gnome_apps: true
 
@@ -27,19 +30,21 @@ flatpak_rpm_packages_to_remove:
   - libreoffice-draw
   - libreoffice-base
   - mediawriter
-  # Tier 1 GNOME applications explanation:
-  # - What "Tier 1" means: Standalone "leaf" user-facing applications (calculators, viewers,
-  #   text editors, camera) that rely strictly on standard XDG Desktop Portals (file chooser,
-  #   notifications, camera, dark mode).
-  # - Why they are safe to replace: They have no low-level system daemon dependencies, host
-  #   DBus service provisions (unlike Nautilus's FileManager1), or host hardware/process
-  #   privileges (unlike Settings, Disks, System Monitor, Terminal).
-  # - Integration behavior: Shell search provider integration, MIME associations, and desktop
-  #   icons are cleanly exported by Flatpak without breaking desktop workflows.
-  # - Exclusion note: Tier 2 GNOME applications (Calendar, Contacts, etc.) are managed
-  #   separately via flatpak_enable_tier2_gnome_apps. System apps like Nautilus, Settings,
-  #   System Monitor, or Terminal (Tier 3) remain native RPMs.
-  # Tier 1 GNOME applications (including legacy/alternative package names)
+
+# Tier 1 GNOME applications explanation:
+# - What "Tier 1" means: Standalone "leaf" user-facing applications (calculators, viewers,
+#   text editors, camera) that rely strictly on standard XDG Desktop Portals (file chooser,
+#   notifications, camera, dark mode).
+# - Why they are safe to replace: They have no low-level system daemon dependencies, host
+#   DBus service provisions (unlike Nautilus's FileManager1), or host hardware/process
+#   privileges (unlike Settings, Disks, System Monitor, Terminal).
+# - Integration behavior: Shell search provider integration, MIME associations, and desktop
+#   icons are cleanly exported by Flatpak without breaking desktop workflows.
+# - Exclusion note: Tier 2 GNOME applications (Calendar, Contacts, etc.) are managed
+#   separately via flatpak_enable_tier2_gnome_apps. System apps like Nautilus, Settings,
+#   System Monitor, or Terminal (Tier 3) remain native RPMs.
+# List of Tier 1 RPM packages to remove when flatpak_enable_tier1_gnome_apps is true
+flatpak_tier1_rpm_packages_to_remove:
   - gnome-calculator
   - gnome-characters
   - gnome-extensions-app
@@ -92,7 +97,9 @@ flatpak_packages:
   - org.gnome.Boxes
   - org.libreoffice.LibreOffice
   - org.fedoraproject.MediaWriter
-  # Tier 1 GNOME applications
+
+# List of Tier 1 Flatpak packages to install when flatpak_enable_tier1_gnome_apps is true
+flatpak_tier1_packages:
   - org.gnome.Calculator
   - org.gnome.Characters
   - org.gnome.Decibels

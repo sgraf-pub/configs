@@ -1,8 +1,8 @@
 ---
 - name: Determine active package lists
   ansible.builtin.set_fact:
-    _flatpak_active_rpm_packages_to_remove: "{{ flatpak_rpm_packages_to_remove | default([]) + (flatpak_tier2_rpm_packages_to_remove | default([]) if flatpak_enable_tier2_gnome_apps | default(false) else []) }}"
-    _flatpak_active_packages: "{{ flatpak_packages | default([]) + (flatpak_tier2_packages | default([]) if flatpak_enable_tier2_gnome_apps | default(false) else []) }}"
+    _flatpak_active_rpm_packages_to_remove: "{{ flatpak_rpm_packages_to_remove | default([]) + (flatpak_tier1_rpm_packages_to_remove | default([]) if flatpak_enable_tier1_gnome_apps | default(false) else []) + (flatpak_tier2_rpm_packages_to_remove | default([]) if flatpak_enable_tier2_gnome_apps | default(false) else []) }}"
+    _flatpak_active_packages: "{{ flatpak_packages | default([]) + (flatpak_tier1_packages | default([]) if flatpak_enable_tier1_gnome_apps | default(false) else []) + (flatpak_tier2_packages | default([]) if flatpak_enable_tier2_gnome_apps | default(false) else []) }}"
     _flatpak_active_post_rpm_packages: "{{ flatpak_post_rpm_packages | default([]) + (flatpak_tier2_post_rpm_packages | default([]) if flatpak_enable_tier2_gnome_apps | default(false) else []) }}"
 
 - name: Ensure flatpak is installed
