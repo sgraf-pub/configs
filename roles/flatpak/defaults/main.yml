@@ -9,10 +9,10 @@ flatpak_rpm_autoremove: true
 flatpak_rpm_allowerasing: true
 
 # Whether to enable Tier 1 GNOME applications (standalone user-facing Flatpaks)
-flatpak_enable_tier1_gnome_apps: true
+flatpak_enable_tier1_gnome_apps: false
 
 # Whether to enable Tier 2 GNOME applications (Flatpaks with integration requirements)
-flatpak_enable_tier2_gnome_apps: true
+flatpak_enable_tier2_gnome_apps: false
 
 # Flatpak remote repositories to configure
 flatpak_remotes:
