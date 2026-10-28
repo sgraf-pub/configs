@@ -19,7 +19,6 @@
       - cpufetch
       - distrobox
       - duf
-      - egl-utils
       - fastfetch
       - firewalld
       - git
@@ -31,7 +30,6 @@
       - gnome-tweaks
       - htop
       - inxi
-      - lame
       - libva-utils
       - lm_sensors
       - lshw
@@ -39,10 +37,8 @@
       - mmv
       - mozilla-openh264
       - ncdu
-      - nvme-cli
       - powertop
       - pwgen
-      - ramalama
       - remove-retired-packages
       - rpmconf
       - screenfetch
@@ -94,20 +90,10 @@
 - name: Install GPU pkgs
   ansible.builtin.dnf:
     name:
-      # GPU process and resource utilization monitor (supports i915 and Xe via DRM fdinfo)
-      - nvtop
-      # Intel Graphics Compute Runtime for OpenCL and oneAPI Level Zero GPU driver
-      - intel-compute-runtime
       # Intel GPU debug and performance tools (includes intel_gpu_top)
       - igt-gpu-tools
-      # User-space Level Zero driver backend for Intel Neural Processing Unit (NPU)
-      - intel-npu-driver
       # OpenCL diagnostic query tool to inspect platforms, devices, and capabilities
       - clinfo
-      # oneVPL GPU runtime for Quick Sync hardware video decode/encode (AV1, HEVC, AVC)
-      - intel-vpl-gpu-rt
-      # Diagnostic tools for oneVPL (includes vpl-inspect to query codec capabilities)
-      - libvpl-tools
       # Level Zero diagnostic utility (zello_world) to verify GPU/NPU detection and properties
       - oneapi-level-zero-zello_world
     state: present
