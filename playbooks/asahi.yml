@@ -15,4 +15,4 @@
     - containers
     - { role: google_chrome, become: true }
     - { role: clamav, become: true, when: "ansible_facts['product_name'] | default('') in ['StarLite', 'Mac13,2', '20HMS1FC02'] or ansible_facts['nodename'] | default('') in ['studio', 'x270']" }
-    - { role: rpmfusion, become: true, when: "ansible_facts['product_name'] | default('') == 'Mac13,2' or ansible_facts['nodename'] | default('') == 'studio'" }
+    - { role: rpmfusion, become: true, when: "ansible_facts['product_name'] | default('') in ['StarLite', 'Mac13,2', '20HMS1FC02'] or ansible_facts['nodename'] | default('') in ['studio', 'x270']" }
