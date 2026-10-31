@@ -6,3 +6,4 @@
   roles:
     - common
     - server
+    - { role: performance, become: true, when: "ansible_facts['architecture'] == 'x86_64'" }

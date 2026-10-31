@@ -1,0 +1,78 @@
+---
+# tasks file for performance role
+
+- name: Detect x86-64-v3 capability via dynamic linker
+  ansible.builtin.command: /lib64/ld-linux-x86-64.so.2 --help
+  register: performance_ld_help
+  changed_when: false
+  check_mode: false
+  failed_when: false
+  when: ansible_facts['architecture'] == 'x86_64'
+
+- name: Set performance_has_x86_64_v3 fact
+  ansible.builtin.set_fact:
+    performance_has_x86_64_v3: "{{ performance_ld_help.stdout is defined and 'x86-64-v3 (supported' in performance_ld_help.stdout }}"
+  when: ansible_facts['architecture'] == 'x86_64'
+
+- name: Gather package facts
+  ansible.builtin.package_facts:
+    manager: auto
+  when: ansible_facts['architecture'] == 'x86_64'
+
+- name: Replace legacy packages with optimized performance alternatives
+  ansible.builtin.dnf:
+    name: "{{ item.new }}"
+    state: present
+    allowerasing: "{{ performance_allowerasing }}"
+  loop: "{{ performance_package_replacements }}"
+  when:
+    - ansible_facts['architecture'] == 'x86_64'
+    - ansible_facts.packages is defined
+    - item.old in ansible_facts.packages
+    - item.new not in ansible_facts.packages
+    - not item.requires_v3 or (performance_has_x86_64_v3 | default(false) | bool)
+  loop_control:
+    label: "{{ item.old }} -> {{ item.new }}"
+
+- name: Ensure CPU microcode package is installed on bare-metal systems
+  ansible.builtin.dnf:
+    name: microcode_ctl
+    state: present
+  when:
+    - ansible_facts['architecture'] == 'x86_64'
+    - performance_ensure_microcode | bool
+    - ansible_facts['virtualization_role'] | default('') != 'guest'
+
+- name: Ensure pigz is installed
+  ansible.builtin.dnf:
+    name: pigz
+    state: present
+  when:
+    - ansible_facts['architecture'] == 'x86_64'
+    - performance_symlink_pigz | bool
+
+- name: Create pigz symlinks in /usr/local/bin
+  ansible.builtin.file:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    state: link
+  loop:
+    - src: /usr/bin/pigz
+      dest: /usr/local/bin/gzip
+    - src: /usr/bin/unpigz
+      dest: /usr/local/bin/gunzip
+  loop_control:
+    label: "{{ item.dest }}"
+  when:
+    - ansible_facts['architecture'] == 'x86_64'
+    - performance_symlink_pigz | bool
+
+- name: Configure xz multithreading in profile.d
+  ansible.builtin.copy:
+    content: |
+      export XZ_OPT="-T0"
+    dest: /etc/profile.d/xz.sh
+    mode: "0644"
+  when:
+    - ansible_facts['architecture'] == 'x86_64'
+    - performance_enable_xz_multithreading | bool

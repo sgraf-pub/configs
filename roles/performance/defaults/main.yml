@@ -1,0 +1,29 @@
+---
+# defaults file for performance role
+
+# Allow erasing of conflicting packages when installing optimized alternatives
+performance_allowerasing: true
+
+# Ensure CPU microcode updates package is installed on bare-metal x86_64 hosts
+performance_ensure_microcode: true
+
+# Symlink gzip and gunzip to pigz and unpigz in /usr/local/bin
+performance_symlink_pigz: true
+
+# Enable multithreaded xz compression via /etc/profile.d/xz.sh
+performance_enable_xz_multithreading: true
+
+# List of legacy packages and their high-performance replacements
+performance_package_replacements:
+  - old: zlib
+    new: zlib-ng-compat
+    requires_v3: true
+    description: "Replace standard zlib with zlib-ng-compat for hardware-accelerated compression on x86-64-v3"
+  - old: minizip
+    new: minizip-ng-compat
+    requires_v3: false
+    description: "Replace legacy minizip with minizip-ng-compat for modern zip manipulation performance"
+  - old: blas
+    new: openblas
+    requires_v3: false
+    description: "Ensure optimized OpenBLAS backend is installed when reference BLAS is present"
