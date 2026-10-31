@@ -13,3 +13,6 @@ __pycache__/
 .idea/
 *.swp
 .DS_Store
+
+# Agent scratch
+.cursor_scratch/
