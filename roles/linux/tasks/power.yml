@@ -232,3 +232,13 @@
     dest: /usr/lib/systemd/system-sleep/rtsx-suspend-fix.sh
     mode: "0755"
   when: ansible_facts['product_name'] | default('') == 'StarLite'
+- name: Configure battery charge thresholds (stop at 95%, start at 90%)
+  ansible.builtin.copy:
+    content: |
+      # Set battery charge thresholds: charge to 95%, resume charging only below 90%
+      SUBSYSTEM=="power_supply", KERNEL=="BAT[0-9]*", TEST=="charge_control_end_threshold", ATTR{charge_control_end_threshold}="95"
+      SUBSYSTEM=="power_supply", KERNEL=="BAT[0-9]*", TEST=="charge_control_start_threshold", ATTR{charge_control_start_threshold}="90"
+    dest: /etc/udev/rules.d/99-battery-charge-thresholds.rules
+    mode: "0644"
+  notify: Reload udev
+
