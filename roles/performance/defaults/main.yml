@@ -13,6 +13,12 @@ performance_symlink_pigz: true
 # Enable multithreaded xz compression via /etc/profile.d/xz.sh
 performance_enable_xz_multithreading: true
 
+# Enable multithreaded zstd compression via /etc/profile.d/zstd.sh
+performance_enable_zstd_multithreading: true
+
+# Enable fast multithreaded zstd compression for dracut initramfs
+performance_dracut_compression: true
+
 # List of legacy packages and their high-performance replacements
 performance_package_replacements:
   - old: zlib

@@ -47,9 +47,7 @@
   ansible.builtin.dnf:
     name: pigz
     state: present
-  when:
-    - ansible_facts['architecture'] == 'x86_64'
-    - performance_symlink_pigz | bool
+  when: performance_symlink_pigz | bool
 
 - name: Create pigz symlinks in /usr/local/bin
   ansible.builtin.file:
@@ -63,9 +61,7 @@
       dest: /usr/local/bin/gunzip
   loop_control:
     label: "{{ item.dest }}"
-  when:
-    - ansible_facts['architecture'] == 'x86_64'
-    - performance_symlink_pigz | bool
+  when: performance_symlink_pigz | bool
 
 - name: Configure xz multithreading in profile.d
   ansible.builtin.copy:
@@ -73,6 +69,20 @@
       export XZ_OPT="-T0"
     dest: /etc/profile.d/xz.sh
     mode: "0644"
-  when:
-    - ansible_facts['architecture'] == 'x86_64'
-    - performance_enable_xz_multithreading | bool
+  when: performance_enable_xz_multithreading | bool
+
+- name: Configure zstd multithreading in profile.d
+  ansible.builtin.copy:
+    content: |
+      export ZSTD_NBTHREADS="0"
+    dest: /etc/profile.d/zstd.sh
+    mode: "0644"
+  when: performance_enable_zstd_multithreading | bool
+
+- name: Set dracut image compression
+  ansible.builtin.copy:
+    content: |
+      compress="zstd -1 -T0 -q"
+    dest: /etc/dracut.conf.d/compress.conf
+    mode: "0644"
+  when: performance_dracut_compression | bool
