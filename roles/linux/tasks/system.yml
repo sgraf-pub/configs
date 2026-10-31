@@ -62,3 +62,42 @@
   ansible.builtin.file:
     path: /etc/systemd/system/dnf5daemon-server.service.d
     state: absent
+- name: Ensure geoclue service override directory exists
+  ansible.builtin.file:
+    path: /etc/systemd/system/geoclue.service.d
+    state: directory
+    mode: "0755"
+- name: Configure geoclue service network ordering and restart
+  ansible.builtin.copy:
+    content: |
+      [Unit]
+      After=network.target
+
+      [Service]
+      Restart=on-failure
+      RestartSec=5s
+    dest: /etc/systemd/system/geoclue.service.d/network.conf
+    mode: "0644"
+  notify: Reload systemd
+- name: Ensure geoclue configuration directory exists
+  ansible.builtin.file:
+    path: /etc/geoclue/conf.d
+    state: directory
+    mode: "0755"
+- name: Disable unused geoclue sources
+  ansible.builtin.copy:
+    content: |
+      [network-nmea]
+      enable=false
+
+      [3g]
+      enable=false
+
+      [cdma]
+      enable=false
+
+      [modem-gps]
+      enable=false
+    dest: /etc/geoclue/conf.d/99-disable-unused-sources.conf
+    mode: "0644"
+
