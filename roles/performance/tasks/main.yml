@@ -86,3 +86,70 @@
     dest: /etc/dracut.conf.d/compress.conf
     mode: "0644"
   when: performance_dracut_compression | bool
+
+- name: Configure TCP BBR congestion control algorithm
+  ansible.builtin.copy:
+    content: |
+      net.core.default_qdisc = fq
+      net.ipv4.tcp_congestion_control = bbr
+    dest: /etc/sysctl.d/tcp_congestion_control.conf
+    mode: "0644"
+  when: performance_tcp_bbr | bool
+
+- name: Set zram size
+  community.general.ini_file:
+    path: /etc/systemd/zram-generator.conf
+    section: zram0
+    option: zram-size
+    value: "{{ performance_zram_size }}"
+    mode: "0644"
+  when: performance_configure_zram | bool
+
+- name: Set zram compression algorithm
+  community.general.ini_file:
+    path: /etc/systemd/zram-generator.conf
+    section: zram0
+    option: compression-algorithm
+    value: "{{ performance_zram_algorithm }}"
+    mode: "0644"
+  when: performance_configure_zram | bool and performance_zram_algorithm | length > 0
+
+- name: Set VM memory sysctl
+  ansible.builtin.copy:
+    content: |
+      vm.swappiness = {{ performance_vm_swappiness }}
+      vm.page-cluster = {{ performance_vm_page_cluster }}
+    dest: /etc/sysctl.d/swappiness.conf
+    mode: "0644"
+  when: performance_configure_swappiness | bool
+
+- name: Configure vm.max_map_count
+  ansible.builtin.copy:
+    content: |
+      vm.max_map_count = {{ performance_vm_max_map_count }}
+    dest: /etc/sysctl.d/10-map-count.conf
+    mode: "0644"
+  when: performance_configure_max_map_count | bool
+
+- name: Configure inotify sysctl limits
+  ansible.builtin.copy:
+    content: |
+      fs.inotify.max_user_watches = {{ performance_fs_inotify_max_user_watches }}
+      fs.inotify.max_user_instances = {{ performance_fs_inotify_max_user_instances }}
+    dest: /etc/sysctl.d/inotify.conf
+    mode: "0644"
+  when: performance_configure_inotify | bool
+
+- name: Configure transparent hugepage policies
+  ansible.builtin.copy:
+    content: |
+      w /sys/kernel/mm/transparent_hugepage/shmem_enabled - - - - advise
+      w /sys/kernel/mm/transparent_hugepage/defrag - - - - defer+madvise
+    dest: /etc/tmpfiles.d/thp.conf
+    mode: "0644"
+  when: performance_configure_thp | bool
+
+- name: Remove obsolete thp-shmem-advise.conf
+  ansible.builtin.file:
+    path: /etc/tmpfiles.d/thp-shmem-advise.conf
+    state: absent

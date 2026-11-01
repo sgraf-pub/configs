@@ -19,6 +19,35 @@ performance_enable_zstd_multithreading: true
 # Enable fast multithreaded zstd compression for dracut initramfs
 performance_dracut_compression: true
 
+# Configure TCP BBR congestion control
+performance_tcp_bbr: true
+
+# Configure zram generator
+performance_configure_zram: true
+
+# Size of zram0 device
+performance_zram_size: ram
+
+# Compression algorithm for zram0 device
+performance_zram_algorithm: "zstd(level=1)"
+
+# Configure vm.swappiness and vm.page-cluster
+performance_configure_swappiness: true
+performance_vm_swappiness: 150
+performance_vm_page_cluster: 0
+
+# Configure vm.max_map_count
+performance_configure_max_map_count: true
+performance_vm_max_map_count: 1048576
+
+# Configure inotify sysctl limits
+performance_configure_inotify: true
+performance_fs_inotify_max_user_watches: 524288
+performance_fs_inotify_max_user_instances: 1024
+
+# Configure transparent hugepage policies
+performance_configure_thp: true
+
 # List of legacy packages and their high-performance replacements
 performance_package_replacements:
   - old: zlib
