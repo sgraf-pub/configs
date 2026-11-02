@@ -6,4 +6,5 @@
   roles:
     - common
     - server
+    - { role: smartd, become: true }
     - { role: performance, become: true }

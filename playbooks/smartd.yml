@@ -1,0 +1,8 @@
+---
+# file: smartd.yml
+- name: Configure smartd
+  hosts: all
+  remote_user: root
+  roles:
+    - role: smartd
+      become: true

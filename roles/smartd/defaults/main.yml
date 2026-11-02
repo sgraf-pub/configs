@@ -1,0 +1,28 @@
+---
+# defaults file for smartd role
+
+# Short SMART self-test schedule (regex format: T/MM/DD/d/HH)
+# Default: daily at 02:00
+smartd_short_test_schedule: "S/../.././02"
+
+# Long SMART self-test schedule (regex format: T/MM/DD/d/HH)
+# Default: every Saturday at 03:00 (day 6 = Saturday)
+smartd_long_test_schedule: "L/../../6/03"
+
+# Recipient email address for SMART alerts
+smartd_mail_recipient: "root"
+
+# Executable or script to run when alerts or warnings are triggered
+smartd_notify_runner: "/usr/libexec/smartmontools/smartdnotify"
+
+# Temperature monitoring parameters (-W DIFF[,INFO[,CRIT]]):
+# DIFF: Track changes of N degrees Celsius or more
+smartd_temp_diff: 4
+
+# INFO: Log informational message when temperature reaches or exceeds
+# N degrees Celsius
+smartd_temp_info: 45
+
+# CRIT: Log critical warning and send alert when temperature reaches or exceeds
+# N degrees Celsius
+smartd_temp_crit: 55

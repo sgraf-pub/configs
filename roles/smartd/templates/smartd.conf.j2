@@ -1,0 +1,36 @@
+# {{ ansible_managed }}
+#
+# Configuration file for smartd (SMART Daemon).
+# See smartd.conf(5) man page for detailed documentation.
+#
+# Directives explained:
+#   DEVICESCAN:
+#     Instructs smartd to scan for all ATA/SATA, SCSI, and NVMe devices.
+#   -a:
+#     Equivalent to turning on all monitoring options (-H, -f, -t, -l selftest,
+#     -l error, -C 197, -U 198).
+#   -o on:
+#     Enables automatic offline data collection on supporting devices.
+#   -S on:
+#     Enables automatic Attribute Autosave on supporting devices.
+#   -n standby,10,q:
+#     Avoids waking up sleeping or power-managed drives:
+#     - standby: do not check if disk is in SLEEP or STANDBY mode.
+#     - 10: check at most once every 10 poll intervals if continuously in standby.
+#     - q: suppress log messages when skipped.
+#   -s (SHORT|LONG):
+#     Regular scheduled self-tests:
+#     - Short test: {{ smartd_short_test_schedule }}
+#     - Long test:  {{ smartd_long_test_schedule }}
+#   -W DIFF,INFO,CRIT:
+#     Temperature monitoring:
+#     - Tracks temperature changes >= {{ smartd_temp_diff }}°C
+#     - Informational log threshold >= {{ smartd_temp_info }}°C
+#     - Critical warning alert threshold >= {{ smartd_temp_crit }}°C
+#   -m RECIPIENT:
+#     Email address for alert reports ({{ smartd_mail_recipient }}).
+#   -M exec RUNNER:
+#     Executes custom notification script ({{ smartd_notify_runner }})
+#     to deliver desktop notifications via notify-send across active user sessions.
+#
+DEVICESCAN -a -o on -S on -n standby,10,q -s ({{ smartd_short_test_schedule }}|{{ smartd_long_test_schedule }}) -W {{ smartd_temp_diff }},{{ smartd_temp_info }},{{ smartd_temp_crit }} -m {{ smartd_mail_recipient }} -M exec {{ smartd_notify_runner }}
