@@ -70,12 +70,19 @@
   become_user: "{{ var_user }}"
 
 #
-# Setup tmux
+# Setup htop
 #
-- name: Copy config of tmux
+- name: Create htop config directory
+  ansible.builtin.file:
+    path: "{{ var_home }}/.config/htop"
+    state: directory
+    mode: "0755"
+  become: true
+  become_user: "{{ var_user }}"
+- name: Copy config of htop
   ansible.builtin.copy:
-    src: tmux.conf
-    dest: "{{ var_home }}/.tmux.conf"
+    src: htoprc
+    dest: "{{ var_home }}/.config/htop/htoprc"
     mode: "0644"
   become: true
   become_user: "{{ var_user }}"
