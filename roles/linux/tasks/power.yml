@@ -243,4 +243,44 @@
     dest: /etc/udev/rules.d/99-battery-charge-thresholds.rules
     mode: "0644"
   notify: Reload udev
+- name: Check kernel cmdline for ThinkPad X270 tweaks
+  ansible.builtin.slurp:
+    src: /etc/kernel/cmdline
+  register: power_kernel_cmdline
+  when: ansible_facts['product_name'] | default('') == '20HMS1FC02' or ansible_facts['nodename'] | default('') == 'x270'
+- name: Enable Synaptics touchpad intertouch kernel parameter
+  ansible.builtin.command: grubby --update-kernel=ALL --args="psmouse.synaptics_intertouch=1"
+  changed_when: true
+  when:
+    - ansible_facts['product_name'] | default('') == '20HMS1FC02' or ansible_facts['nodename'] | default('') == 'x270'
+    - power_kernel_cmdline.content is defined
+    - "'psmouse.synaptics_intertouch=1' not in (power_kernel_cmdline.content | b64decode)"
+- name: Configure Synaptics touchpad intertouch modprobe options
+  ansible.builtin.copy:
+    content: |
+      options psmouse synaptics_intertouch=1
+    dest: /etc/modprobe.d/psmouse.conf
+    mode: "0644"
+  when: ansible_facts['product_name'] | default('') == '20HMS1FC02' or ansible_facts['nodename'] | default('') == 'x270'
+- name: Enable Intel HD Graphics GuC/HuC firmware loading in kernel cmdline
+  ansible.builtin.command: grubby --update-kernel=ALL --args="i915.enable_guc=3"
+  changed_when: true
+  when:
+    - ansible_facts['product_name'] | default('') == '20HMS1FC02' or ansible_facts['nodename'] | default('') == 'x270'
+    - power_kernel_cmdline.content is defined
+    - "'i915.enable_guc=3' not in (power_kernel_cmdline.content | b64decode)"
+- name: Configure Intel HD Graphics GuC/HuC firmware modprobe options
+  ansible.builtin.copy:
+    content: |
+      options i915 enable_guc=3
+    dest: /etc/modprobe.d/i915.conf
+    mode: "0644"
+  when: ansible_facts['product_name'] | default('') == '20HMS1FC02' or ansible_facts['nodename'] | default('') == 'x270'
+- name: Force PCIe ASPM in kernel cmdline
+  ansible.builtin.command: grubby --update-kernel=ALL --args="pcie_aspm=force"
+  changed_when: true
+  when:
+    - ansible_facts['product_name'] | default('') == '20HMS1FC02' or ansible_facts['nodename'] | default('') == 'x270'
+    - power_kernel_cmdline.content is defined
+    - "'pcie_aspm=force' not in (power_kernel_cmdline.content | b64decode)"
 
