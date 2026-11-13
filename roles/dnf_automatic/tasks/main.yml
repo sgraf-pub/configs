@@ -1,9 +1,7 @@
 ---
-- name: Install dnf-automatic and dbus-x11 packages
+- name: Install dnf-automatic package
   ansible.builtin.dnf:
-    name:
-      - dnf-automatic
-      - dbus-x11
+    name: dnf-automatic
     state: present
 
 - name: Configure /etc/dnf/automatic.conf commands
@@ -48,39 +46,29 @@
   ansible.builtin.copy:
     content: |
       [org/gnome/software]
-      download-updates=false
+      download-updates=true
       download-updates-notify=true
       allow-updates=true
     dest: /etc/dconf/db/local.d/00-gnome-software
     mode: "0644"
   notify: Update dconf database
 
-- name: Copy flatpak-update.service
-  ansible.builtin.copy:
-    src: flatpak-update.service
-    dest: /etc/systemd/system/flatpak-update.service
-    mode: "0644"
-
-- name: Copy flatpak-update.timer
-  ansible.builtin.copy:
-    src: flatpak-update.timer
-    dest: /etc/systemd/system/flatpak-update.timer
-    mode: "0644"
-
-- name: Enable and start flatpak-update.timer
+- name: Stop and disable legacy flatpak and fwupd services and timers
   ansible.builtin.systemd_service:
-    name: flatpak-update.timer
-    state: started
-    enabled: true
+    name: "{{ item }}"
+    state: stopped
+    enabled: false
+  loop:
+    - flatpak-update.timer
+    - flatpak-update.service
+    - fwupd-refresh.timer
+  failed_when: false
 
-- name: Install fwupd package
-  ansible.builtin.dnf:
-    name: fwupd
-    state: present
-
-- name: Enable and start fwupd-refresh.timer
-  ansible.builtin.systemd_service:
-    name: fwupd-refresh.timer
-    state: started
-    enabled: true
-
+- name: Remove legacy flatpak-update service and timer files
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /etc/systemd/system/flatpak-update.service
+    - /etc/systemd/system/flatpak-update.timer
+  notify: Reload systemd
