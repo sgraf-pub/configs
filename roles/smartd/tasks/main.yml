@@ -5,6 +5,7 @@
       - smartmontools
       - libnotify
     state: present
+    install_weak_deps: false
 
 - name: Ensure /etc/smartmontools directory exists
   ansible.builtin.file:

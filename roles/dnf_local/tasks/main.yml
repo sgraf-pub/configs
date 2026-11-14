@@ -6,6 +6,7 @@
       - createrepo_c
       - acl
     state: present
+    install_weak_deps: false
   become: true
 
 - name: Determine the real user

@@ -23,6 +23,7 @@
   ansible.builtin.dnf:
     name: "{{ item.new }}"
     state: present
+    install_weak_deps: false
     allowerasing: "{{ performance_allowerasing }}"
   loop: "{{ performance_package_replacements }}"
   when:
@@ -38,6 +39,7 @@
   ansible.builtin.dnf:
     name: microcode_ctl
     state: present
+    install_weak_deps: false
   when:
     - ansible_facts['architecture'] == 'x86_64'
     - performance_ensure_microcode | bool
@@ -47,6 +49,7 @@
   ansible.builtin.dnf:
     name: pigz
     state: present
+    install_weak_deps: false
   when: performance_symlink_pigz | bool
 
 - name: Create pigz symlinks in /usr/local/bin

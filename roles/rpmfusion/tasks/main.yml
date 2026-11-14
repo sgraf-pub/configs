@@ -12,6 +12,7 @@
       - "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_facts['distribution_major_version'] }}.noarch.rpm"
       - "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ ansible_facts['distribution_major_version'] }}.noarch.rpm"
     state: present
+    install_weak_deps: false
     disable_gpg_check: true
   become: true
 
@@ -21,6 +22,7 @@
       - rpmfusion-free-appstream-data
       - rpmfusion-nonfree-appstream-data
     state: present
+    install_weak_deps: false
   become: true
 
 - name: Check if full ffmpeg is installed
@@ -38,7 +40,7 @@
   check_mode: false
 
 - name: Switch to full ffmpeg
-  ansible.builtin.command: dnf swap -y ffmpeg-free ffmpeg --allowerasing # noqa: command-instead-of-module
+  ansible.builtin.command: dnf swap -y ffmpeg-free ffmpeg --allowerasing --setopt=install_weak_deps=False # noqa: command-instead-of-module
   become: true
   changed_when: true
   when:
@@ -49,6 +51,7 @@
   ansible.builtin.dnf:
     name: ffmpeg
     state: present
+    install_weak_deps: false
     allowerasing: true
   become: true
   when:
@@ -68,6 +71,7 @@
   ansible.builtin.dnf:
     name: intel-media-driver
     state: present
+    install_weak_deps: false
   become: true
   when:
     - rpmfusion_intel_gpu.rc == 0

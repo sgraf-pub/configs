@@ -3,6 +3,7 @@
   ansible.builtin.dnf:
     name: jdupes
     state: present
+    install_weak_deps: false
 
 - name: Create jdupes service file
   ansible.builtin.copy:

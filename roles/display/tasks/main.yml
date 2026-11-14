@@ -53,6 +53,7 @@
   ansible.builtin.dnf:
     name: terminus-fonts-console
     state: present
+    install_weak_deps: false
   when: display_console_font.startswith('ter-')
 
 - name: Set console font

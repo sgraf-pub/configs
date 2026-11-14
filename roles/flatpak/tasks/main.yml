@@ -9,6 +9,7 @@
   ansible.builtin.dnf:
     name: flatpak
     state: present
+    install_weak_deps: false
 
 - name: Configure Flatpak remotes
   community.general.flatpak_remote:
@@ -55,6 +56,7 @@
   ansible.builtin.dnf:
     name: "{{ _flatpak_active_post_rpm_packages }}"
     state: present
+    install_weak_deps: false
   when: _flatpak_active_post_rpm_packages is defined and _flatpak_active_post_rpm_packages | length > 0
 
 - name: Ensure Flatpak overrides directory exists

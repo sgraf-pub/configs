@@ -54,12 +54,14 @@
       - wget
       - xlsclients
     state: present
+    install_weak_deps: false
 
 - name: Install caffeine GNOME Shell extension
   ansible.builtin.dnf:
     name:
       - gnome-shell-extension-caffeine
     state: present
+    install_weak_deps: false
   when: ansible_facts['product_name'] | default('') in ['StarLite', 'Mac13,2'] or ansible_facts['nodename'] | default('') == 'studio'
 
 - name: Remove caffeine GNOME Shell extension
@@ -76,6 +78,7 @@
       - "@multimedia"
       - ffmpeg-free
     state: present
+    install_weak_deps: false
   when:
     - ansible_facts['product_name'] | default('') != 'StarLite'
     - ansible_facts['product_name'] | default('') != 'Mac13,2'
@@ -100,6 +103,7 @@
       # Level Zero diagnostic utility (zello_world) to verify GPU/NPU detection and properties
       - oneapi-level-zero-zello_world
     state: present
+    install_weak_deps: false
   when:
     - linux_intel_gpu.rc == 0
     - linux_intel_gpu.stdout | length > 0

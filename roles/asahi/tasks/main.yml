@@ -12,12 +12,14 @@
       - xorg-x11-font-utils
       - fontconfig
     state: present
+    install_weak_deps: false
 
 - name: Install asahi packages
   ansible.builtin.dnf:
     name:
       - asahi-bless
     state: present
+    install_weak_deps: false
   when: ansible_facts.architecture == 'aarch64'
 
 - name: Check if Microsoft Fonts are already installed

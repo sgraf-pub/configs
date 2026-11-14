@@ -8,6 +8,7 @@
       - clamtk
       - libnotify
     state: present
+    install_weak_deps: false
 
 - name: Enable antivirus_can_scan_system SELinux boolean
   ansible.posix.seboolean:

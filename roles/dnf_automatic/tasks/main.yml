@@ -3,6 +3,7 @@
   ansible.builtin.dnf:
     name: dnf-automatic
     state: present
+    install_weak_deps: false
 
 - name: Configure /etc/dnf/automatic.conf commands
   community.general.ini_file:
