@@ -88,10 +88,9 @@
     scope: global
     value: "6700"
 #
-# Laptop-specific Git identity and SSH commit signing
+# Git identity and SSH commit signing
 #
-- name: Configure laptop Git identity and SSH commit signing
-  when: git_is_laptop | bool
+- name: Configure Git identity and SSH commit signing
   block:
     - name: Read existing global Git configuration
       community.general.git_config_info:
@@ -124,6 +123,45 @@
         value: "{{ git_user_email }}"
       when: git_user_email | length > 0
 
+    - name: Check configured Git SSH signing key
+      ansible.builtin.stat:
+        path: "{{ git_signing_key | default('') }}"
+      register: git_signing_key_stat
+      when: git_signing_key | default('') | length > 0
+
+    - name: Check candidate SSH public keys
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      loop: "{{ git_signing_key_candidates }}"
+      register: git_signing_key_candidates_stat
+      when: git_signing_key | default('') | length == 0
+
+    - name: Select first available SSH signing key
+      ansible.builtin.set_fact:
+        git_signing_key: >-
+          {{
+            (
+              git_signing_key_candidates_stat.results
+              | selectattr('stat.exists')
+              | map(attribute='item')
+              | list
+              | first
+            ) | default('')
+          }}
+      when: git_signing_key | default('') | length == 0
+
+    - name: Record whether the configured Git SSH signing key exists
+      ansible.builtin.set_fact:
+        git_signing_key_exists: >-
+          {{ git_signing_key_stat.stat.exists | bool }}
+      when: git_signing_key_stat is not skipped
+
+    - name: Record whether a detected SSH signing key exists
+      ansible.builtin.set_fact:
+        git_signing_key_exists: >-
+          {{ (git_signing_key | default('') | length > 0) | bool }}
+      when: git_signing_key_candidates_stat is not skipped
+
     - name: Configure Git SSH commit signing settings
       community.general.git_config:
         name: "{{ item.name }}"
@@ -133,13 +171,16 @@
         - name: "gpg.format"
           value: "ssh"
         - name: "user.signingkey"
-          value: "{{ git_signing_key }}"
+          value: "{{ git_signing_key | default('') }}"
         - name: "commit.gpgsign"
           value: "true"
         - name: "gpg.ssh.allowedSignersFile"
           value: "{{ git_allowed_signers_file }}"
       loop_control:
         label: "{{ item.name }}"
+      when: >-
+        item.name != 'user.signingkey'
+        or (git_signing_key | default('') | length > 0)
 
     - name: Ensure allowed_signers directory exists
       ansible.builtin.file:
@@ -147,16 +188,11 @@
         state: directory
         mode: "0755"
 
-    - name: Check if Git SSH signing key exists
-      ansible.builtin.stat:
-        path: "{{ git_signing_key }}"
-      register: git_signing_key_stat
-
     - name: Read SSH public key for Git signing
       ansible.builtin.slurp:
         src: "{{ git_signing_key }}"
       register: git_signing_pubkey
-      when: git_signing_key_stat.stat.exists
+      when: git_signing_key_exists | bool
 
     - name: Ensure public key is configured in allowed_signers
       ansible.builtin.lineinfile:
@@ -166,7 +202,9 @@
         regexp: "^{{ git_effective_email | regex_escape }}\\s+"
         # yamllint disable-line rule:line-length
         line: "{{ git_effective_email }} namespaces=\"git\" {{ (git_signing_pubkey.content | b64decode).strip() }}"
-      when: git_signing_key_stat.stat.exists and (git_effective_email | length > 0)
+      when:
+        - git_signing_key_exists | bool
+        - git_effective_email | length > 0
 
     - name: Ensure empty allowed_signers file exists when signing key or identity missing
       ansible.builtin.copy:
@@ -174,7 +212,9 @@
         dest: "{{ git_allowed_signers_file }}"
         force: false
         mode: "0644"
-      when: not git_signing_key_stat.stat.exists or (git_effective_email | length == 0)
+      when: >-
+        not (git_signing_key_exists | bool)
+        or (git_effective_email | length == 0)
 
     - name: Warn when Git identity is not configured
       ansible.builtin.debug:
@@ -183,9 +223,22 @@
           extra vars: -e "var_git_name='...' var_git_email='...'"
       when: (git_user_name | length == 0 and git_existing_name | length == 0) or (git_effective_email | length == 0)
 
-    - name: Warn when Git signing key is not found
+    - name: Warn when configured Git signing key is missing
       ansible.builtin.debug:
         msg: >-
           Signing key {{ git_signing_key }} was not found. Please generate
           or place it and add the entry to {{ git_allowed_signers_file }}.
-      when: not git_signing_key_stat.stat.exists
+      when:
+        - not (git_signing_key_exists | bool)
+        - git_signing_key | default('') | length > 0
+
+    - name: Warn when no SSH signing key was detected
+      ansible.builtin.debug:
+        msg: >-
+          No SSH signing key found among
+          {{ git_signing_key_candidates | join(', ') }}.
+          Please generate or place one and add the entry to
+          {{ git_allowed_signers_file }}.
+      when:
+        - not (git_signing_key_exists | bool)
+        - git_signing_key | default('') | length == 0
