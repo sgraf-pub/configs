@@ -87,3 +87,105 @@
     name: "gc.auto"
     scope: global
     value: "6700"
+#
+# Laptop-specific Git identity and SSH commit signing
+#
+- name: Configure laptop Git identity and SSH commit signing
+  when: git_is_laptop | bool
+  block:
+    - name: Read existing global Git configuration
+      community.general.git_config_info:
+        scope: global
+      register: git_existing_config
+
+    - name: Determine existing Git identity
+      ansible.builtin.set_fact:
+        # yamllint disable-line rule:line-length
+        git_existing_name: "{{ (git_existing_config.config_values['user.name'] | default([])) | first | default('') }}"
+        # yamllint disable-line rule:line-length
+        git_existing_email: "{{ (git_existing_config.config_values['user.email'] | default([])) | first | default('') }}"
+
+    - name: Determine effective Git email
+      ansible.builtin.set_fact:
+        git_effective_email: >-
+          {{ git_user_email if git_user_email | length > 0 else git_existing_email }}
+
+    - name: Configure Git user name
+      community.general.git_config:
+        name: "user.name"
+        scope: global
+        value: "{{ git_user_name }}"
+      when: git_user_name | length > 0
+
+    - name: Configure Git user email
+      community.general.git_config:
+        name: "user.email"
+        scope: global
+        value: "{{ git_user_email }}"
+      when: git_user_email | length > 0
+
+    - name: Configure Git SSH commit signing settings
+      community.general.git_config:
+        name: "{{ item.name }}"
+        scope: global
+        value: "{{ item.value }}"
+      loop:
+        - name: "gpg.format"
+          value: "ssh"
+        - name: "user.signingkey"
+          value: "{{ git_signing_key }}"
+        - name: "commit.gpgsign"
+          value: "true"
+        - name: "gpg.ssh.allowedSignersFile"
+          value: "{{ git_allowed_signers_file }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Ensure allowed_signers directory exists
+      ansible.builtin.file:
+        path: "{{ git_allowed_signers_file | dirname }}"
+        state: directory
+        mode: "0755"
+
+    - name: Check if Git SSH signing key exists
+      ansible.builtin.stat:
+        path: "{{ git_signing_key }}"
+      register: git_signing_key_stat
+
+    - name: Read SSH public key for Git signing
+      ansible.builtin.slurp:
+        src: "{{ git_signing_key }}"
+      register: git_signing_pubkey
+      when: git_signing_key_stat.stat.exists
+
+    - name: Ensure public key is configured in allowed_signers
+      ansible.builtin.lineinfile:
+        path: "{{ git_allowed_signers_file }}"
+        create: true
+        mode: "0644"
+        regexp: "^{{ git_effective_email | regex_escape }}\\s+"
+        # yamllint disable-line rule:line-length
+        line: "{{ git_effective_email }} namespaces=\"git\" {{ (git_signing_pubkey.content | b64decode).strip() }}"
+      when: git_signing_key_stat.stat.exists and (git_effective_email | length > 0)
+
+    - name: Ensure empty allowed_signers file exists when signing key or identity missing
+      ansible.builtin.copy:
+        content: ""
+        dest: "{{ git_allowed_signers_file }}"
+        force: false
+        mode: "0644"
+      when: not git_signing_key_stat.stat.exists or (git_effective_email | length == 0)
+
+    - name: Warn when Git identity is not configured
+      ansible.builtin.debug:
+        msg: >-
+          Git user.name or user.email is not configured. Provide them via
+          extra vars: -e "var_git_name='...' var_git_email='...'"
+      when: (git_user_name | length == 0 and git_existing_name | length == 0) or (git_effective_email | length == 0)
+
+    - name: Warn when Git signing key is not found
+      ansible.builtin.debug:
+        msg: >-
+          Signing key {{ git_signing_key }} was not found. Please generate
+          or place it and add the entry to {{ git_allowed_signers_file }}.
+      when: not git_signing_key_stat.stat.exists

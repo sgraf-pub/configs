@@ -1,0 +1,9 @@
+---
+git_user_name: "{{ var_git_name | default('') }}"
+git_user_email: "{{ var_git_email | default('') }}"
+# yamllint disable-line rule:line-length
+git_home: "{{ var_home | default(ansible_facts['user_dir'] | default(ansible_facts['env']['HOME'] | default('~'))) }}"
+git_signing_key: "{{ git_home }}/.ssh/id_ecdsa.pub"
+git_allowed_signers_file: "{{ git_home }}/.config/git/allowed_signers"
+# yamllint disable-line rule:line-length
+git_is_laptop: "{{ ansible_facts['product_name'] | default('') == '20HMS1FC02' or ansible_facts['nodename'] | default('') == 'x270' }}"
