@@ -283,4 +283,11 @@
     - ansible_facts['product_name'] | default('') == '20HMS1FC02' or ansible_facts['nodename'] | default('') == 'x270'
     - power_kernel_cmdline.content is defined
     - "'pcie_aspm=force' not in (power_kernel_cmdline.content | b64decode)"
+- name: Enable Intel IOMMU in kernel cmdline
+  ansible.builtin.command: grubby --update-kernel=ALL --args="intel_iommu=on"
+  changed_when: true
+  when:
+    - ansible_facts['product_name'] | default('') == '20HMS1FC02' or ansible_facts['nodename'] | default('') == 'x270'
+    - power_kernel_cmdline.content is defined
+    - "'intel_iommu=on' not in (power_kernel_cmdline.content | b64decode)"
 
