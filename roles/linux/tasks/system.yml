@@ -32,6 +32,14 @@
   ansible.builtin.file:
     path: /etc/systemd/system/dnf5daemon-server.service.d
     state: absent
+- name: Disable weak dependencies in dnf config
+  community.general.ini_file:
+    path: /etc/dnf/dnf.conf
+    section: main
+    option: install_weak_deps
+    value: "False"
+    no_extra_spaces: true
+    mode: "0644"
 - name: Ensure geoclue service override directory exists
   ansible.builtin.file:
     path: /etc/systemd/system/geoclue.service.d
