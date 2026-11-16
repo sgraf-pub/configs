@@ -290,4 +290,77 @@
     - ansible_facts['product_name'] | default('') == '20HMS1FC02' or ansible_facts['nodename'] | default('') == 'x270'
     - power_kernel_cmdline.content is defined
     - "'intel_iommu=on' not in (power_kernel_cmdline.content | b64decode)"
+- name: Stat thermald service unit
+  ansible.builtin.stat:
+    path: /usr/lib/systemd/system/thermald.service
+  register: power_thermald_unit # noqa: var-naming[no-role-prefix]
+- name: Check cpuinfo for Intel CPU
+  ansible.builtin.command: grep -q GenuineIntel /proc/cpuinfo
+  register: power_intel_cpu # noqa: var-naming[no-role-prefix]
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  when:
+    - ansible_facts['architecture'] == 'x86_64'
+    - ansible_facts['virtualization_role'] | default('') != 'guest'
+- name: Configure kernel modules for thermald
+  ansible.builtin.copy:
+    content: |
+      intel_rapl_msr
+      coretemp
+    dest: /etc/modules-load.d/thermald.conf
+    mode: "0644"
+  when:
+    - ansible_facts['architecture'] == 'x86_64'
+    - ansible_facts['virtualization_role'] | default('') != 'guest'
+    - power_thermald_unit.stat.exists
+    - power_intel_cpu.rc | default(1) == 0
+- name: Ensure thermald service override directory exists
+  ansible.builtin.file:
+    path: /etc/systemd/system/thermald.service.d
+    state: directory
+    mode: "0755"
+  when:
+    - ansible_facts['architecture'] == 'x86_64'
+    - ansible_facts['virtualization_role'] | default('') != 'guest'
+    - power_thermald_unit.stat.exists
+    - power_intel_cpu.rc | default(1) == 0
+# yamllint disable rule:line-length
+- name: Configure thermald service wait-rapl override
+  ansible.builtin.copy:
+    content: |
+      [Unit]
+      After=systemd-modules-load.service
 
+      [Service]
+      ExecStartPre=/bin/sh -c 'i=0; while [ $i -lt 50 ] && { [ ! -e /sys/class/powercap/intel-rapl:0/enabled ] || [ ! -d /sys/devices/platform/coretemp.0 ]; }; do sleep 0.1; i=$((i + 1)); done; true'
+    dest: /etc/systemd/system/thermald.service.d/wait-rapl.conf
+    mode: "0644"
+  notify:
+    - Reload systemd
+    - Restart thermald
+  when:
+    - ansible_facts['architecture'] == 'x86_64'
+    - ansible_facts['virtualization_role'] | default('') != 'guest'
+    - power_thermald_unit.stat.exists
+    - power_intel_cpu.rc | default(1) == 0
+# yamllint enable rule:line-length
+- name: Remove thermald kernel modules configuration
+  ansible.builtin.file:
+    path: /etc/modules-load.d/thermald.conf
+    state: absent
+  when: >
+    not (ansible_facts['architecture'] == 'x86_64' and
+    ansible_facts['virtualization_role'] | default('') != 'guest' and
+    power_thermald_unit.stat.exists and
+    power_intel_cpu.rc | default(1) == 0)
+- name: Remove thermald service wait-rapl override
+  ansible.builtin.file:
+    path: /etc/systemd/system/thermald.service.d/wait-rapl.conf
+    state: absent
+  notify: Reload systemd
+  when: >
+    not (ansible_facts['architecture'] == 'x86_64' and
+    ansible_facts['virtualization_role'] | default('') != 'guest' and
+    power_thermald_unit.stat.exists and
+    power_intel_cpu.rc | default(1) == 0)
