@@ -1,53 +1,39 @@
 ---
-- name: Select Studio display profile
-  ansible.builtin.set_fact:
-    display_monitors_src: studio-monitors.xml
-    display_video_arg: video=HDMI-A-1:3440x1440@100
-  when: ansible_facts['product_name'] | default('') == 'Mac13,2' or ansible_facts['nodename'] | default('') == 'studio'
+- name: Clean up Studio and NUC display resolution overrides
+  when: >-
+    ansible_facts['product_name'] | default('') in ['Mac13,2', 'NUC15CRSU9']
+    or ansible_facts['nodename'] | default('') == 'studio'
+  block:
+    - name: Remove GDM and system-wide monitors.xml overrides
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /var/lib/gdm/.config/monitors.xml
+        - /etc/xdg/monitors.xml
 
-- name: Select NUC display profile
-  ansible.builtin.set_fact:
-    display_monitors_src: nuc-monitors.xml
-    display_video_arg: video=DP-3:3440x1440@100
-  when: ansible_facts['product_name'] | default('') == 'NUC15CRSU9'
+    - name: Check if kernel cmdline file exists
+      ansible.builtin.stat:
+        path: /etc/kernel/cmdline
+      register: display_kernel_cmdline_file
 
-- name: Ensure GDM config directory exists
-  ansible.builtin.file:
-    path: /var/lib/gdm/.config
-    state: directory
-    owner: gdm
-    group: gdm
-    mode: "0755"
-  when: display_monitors_src is defined
+    - name: Read kernel cmdline for legacy video mode args
+      ansible.builtin.slurp:
+        src: /etc/kernel/cmdline
+      register: display_kernel_cmdline
+      when: display_kernel_cmdline_file.stat.exists
 
-- name: Deploy GDM monitors.xml configuration
-  ansible.builtin.copy:
-    src: "{{ display_monitors_src }}"
-    dest: /var/lib/gdm/.config/monitors.xml
-    owner: gdm
-    group: gdm
-    mode: "0644"
-  when: display_monitors_src is defined
-
-- name: Deploy system-wide monitors.xml for GDM
-  ansible.builtin.copy:
-    src: "{{ display_monitors_src }}"
-    dest: /etc/xdg/monitors.xml
-    owner: root
-    group: root
-    mode: "0644"
-  when: display_monitors_src is defined
-
-- name: Check kernel cmdline for video mode
-  ansible.builtin.slurp:
-    src: /etc/kernel/cmdline
-  register: display_kernel_cmdline
-  when: display_video_arg is defined
-
-- name: Set TTY and early boot video resolution
-  ansible.builtin.command: grubby --update-kernel=ALL --args="{{ display_video_arg }}"
-  changed_when: true
-  when: display_video_arg is defined and display_video_arg not in (display_kernel_cmdline.content | b64decode)
+    - name: Remove legacy TTY and early boot video resolution args
+      ansible.builtin.command:
+        cmd: grubby --update-kernel=ALL --remove-args="{{ item }}"
+      loop:
+        - video=HDMI-A-1:3440x1440@100
+        - video=DP-3:3440x1440@100
+      changed_when: true
+      when:
+        - display_kernel_cmdline_file.stat.exists
+        - display_kernel_cmdline.content is defined
+        - item in (display_kernel_cmdline.content | b64decode)
 
 - name: Install terminus console fonts
   ansible.builtin.dnf:
