@@ -62,7 +62,7 @@
       - gnome-shell-extension-caffeine
     state: present
     install_weak_deps: false
-  when: ansible_facts['product_name'] | default('') in ['StarLite', 'Mac13,2'] or ansible_facts['nodename'] | default('') == 'studio'
+  when: ansible_facts['product_name'] | default('') in ['StarLite', 'Mac13,2', '20HMS1FC02'] or ansible_facts['nodename'] | default('') in ['studio', 'x270']
 
 - name: Remove caffeine GNOME Shell extension
   ansible.builtin.dnf:
