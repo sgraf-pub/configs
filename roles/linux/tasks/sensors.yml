@@ -1,0 +1,51 @@
+---
+- name: Resolve host-specific lm-sensors configuration
+  ansible.builtin.set_fact:
+    linux_sensors_config: >-
+      {{
+        linux_sensors_by_product.get(ansible_facts['product_name'] | default('', true))
+        or linux_sensors_by_nodename.get(ansible_facts['nodename'] | default('', true))
+        or ''
+      }}
+  vars:
+    linux_sensors_by_product:
+      Mac13,2: sensors-macstudio.conf
+      NUC15CRSU9: sensors-nuc.conf
+      StarLite: sensors-starlite.conf
+      21KDS27P0G: sensors-thinkpad.conf
+      20HMS1FC02: sensors-x270.conf
+    linux_sensors_by_nodename:
+      studio: sensors-macstudio.conf
+      x270: sensors-x270.conf
+
+- name: Ensure /etc/sensors.d directory exists
+  ansible.builtin.file:
+    path: /etc/sensors.d
+    state: directory
+    mode: "0755"
+  when: linux_sensors_config | length > 0
+
+- name: Find unexpected entries in /etc/sensors.d
+  ansible.builtin.find:
+    paths: /etc/sensors.d
+    file_type: any
+    hidden: true
+    excludes: custom.conf
+  register: linux_sensors_extra_files
+  when: linux_sensors_config | length > 0
+
+- name: Remove unexpected entries from /etc/sensors.d
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ linux_sensors_extra_files.files | default([]) }}"
+  loop_control:
+    label: "{{ item.path }}"
+  when: linux_sensors_config | length > 0
+
+- name: Install host-specific lm-sensors configuration
+  ansible.builtin.copy:
+    src: "{{ linux_sensors_config }}"
+    dest: /etc/sensors.d/custom.conf
+    mode: "0644"
+  when: linux_sensors_config | length > 0
