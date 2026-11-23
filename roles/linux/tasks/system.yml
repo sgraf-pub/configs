@@ -78,3 +78,33 @@
       enable=false
     dest: /etc/geoclue/conf.d/99-disable-unused-sources.conf
     mode: "0644"
+- name: Install boot remount helper
+  ansible.builtin.copy:
+    src: boot-remount-rw
+    dest: /usr/local/sbin/boot-remount-rw
+    mode: "0755"
+- name: Install boot remount service
+  ansible.builtin.copy:
+    content: |
+      [Unit]
+      Description=Remount /boot read-write after a leaked cryptsetup keydev mount
+      Documentation=man:systemd-cryptsetup-generator(8)
+      DefaultDependencies=no
+      After=boot.mount
+      Before=local-fs.target
+      ConditionPathIsMountPoint=/boot
+
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+      ExecStart=/usr/local/sbin/boot-remount-rw
+
+      [Install]
+      WantedBy=local-fs.target
+    dest: /etc/systemd/system/boot-remount-rw.service
+    mode: "0644"
+- name: Enable boot remount service
+  ansible.builtin.systemd_service:
+    name: boot-remount-rw.service
+    enabled: true
+    daemon_reload: true

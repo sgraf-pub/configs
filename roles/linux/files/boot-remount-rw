@@ -1,0 +1,26 @@
+#!/bin/bash
+# The initrd mounts the /boot device read-only as a cryptsetup keydev, then
+# starts that mount again during initrd-cleanup. If switch-root wins that
+# race, the read-only mount is still up when boot.mount runs and ext4 refuses
+# a read-write mount. Drop the leftover keydev mount, then remount /boot rw.
+set -euo pipefail
+
+boot_src=$(findmnt -nro SOURCE /boot || true)
+if [[ -z ${boot_src} ]]; then
+  exit 0
+fi
+
+while read -r target; do
+  case ${target} in
+    /run/systemd/cryptsetup/keydev-*)
+      umount -- "${target}"
+      ;;
+  esac
+done < <(findmnt -rn -S "${boot_src}" -o TARGET || true)
+
+opts=$(findmnt -nro OPTIONS /boot || true)
+case ",${opts}," in
+  *,ro,*)
+    mount -o remount,rw /boot
+    ;;
+esac
