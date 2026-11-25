@@ -16,3 +16,4 @@ __pycache__/
 
 # Agent scratch
 .cursor_scratch/
+.agent_scratch/
