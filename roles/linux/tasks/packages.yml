@@ -45,7 +45,6 @@
       - screenfetch
       - ShellCheck
       - smartmontools
-      - pwgen
       - tldr
       - tmux
       - tuned-utils
