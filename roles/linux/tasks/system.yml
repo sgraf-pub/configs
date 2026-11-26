@@ -52,6 +52,7 @@
       After=network.target
 
       [Service]
+      Environment="GIO_USE_PROXY_RESOLVER=dummy"
       Restart=on-failure
       RestartSec=5s
     dest: /etc/systemd/system/geoclue.service.d/network.conf
