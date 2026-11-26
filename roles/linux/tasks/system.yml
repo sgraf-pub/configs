@@ -109,3 +109,15 @@
     name: boot-remount-rw.service
     enabled: true
     daemon_reload: true
+- name: Remove x-systemd.growfs option from /etc/fstab
+  ansible.builtin.replace:
+    path: /etc/fstab
+    regexp: '(?:(?<=[\s,])x-systemd\.growfs,|,\s*x-systemd\.growfs(?=\s|$))'
+    replace: ""
+  notify: Reload systemd
+- name: Replace standalone x-systemd.growfs option in /etc/fstab
+  ansible.builtin.replace:
+    path: /etc/fstab
+    regexp: '(?<=\s)x-systemd\.growfs(?=\s|$)'
+    replace: "defaults"
+  notify: Reload systemd
