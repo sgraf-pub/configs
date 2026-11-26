@@ -23,11 +23,17 @@
     mode: "0644"
   notify: Reload NetworkManager
   when: ansible_facts['product_name'] | default('') == 'NUC15CRSU9'
+- name: Remove legacy Intel 2.5G NIC udev rule
+  ansible.builtin.file:
+    path: /etc/udev/rules.d/80-down-igc.rules
+    state: absent
+  notify: Reload udev
+  when: ansible_facts['product_name'] | default('') == 'NUC15CRSU9'
 - name: Keep onboard Intel 2.5G NIC administratively down
   ansible.builtin.copy:
     content: |
-      ACTION=="add", SUBSYSTEM=="net", DRIVERS=="igc", RUN+="/usr/sbin/ip link set %k down"
-    dest: /etc/udev/rules.d/80-down-igc.rules
+      ACTION=="add", SUBSYSTEM=="net", DRIVERS=="igc", RUN+="/usr/sbin/ip link set $name down"
+    dest: /etc/udev/rules.d/90-down-igc.rules
     mode: "0644"
   notify: Reload udev
   when: ansible_facts['product_name'] | default('') == 'NUC15CRSU9'
@@ -40,11 +46,17 @@
     mode: "0644"
   notify: Reload NetworkManager
   when: ansible_facts['product_name'] | default('') == 'Mac13,2'
+- name: Remove legacy Aquantia 10G NIC udev rule
+  ansible.builtin.file:
+    path: /etc/udev/rules.d/80-down-atlantic.rules
+    state: absent
+  notify: Reload udev
+  when: ansible_facts['product_name'] | default('') == 'Mac13,2'
 - name: Keep onboard Aquantia 10G NIC administratively down
   ansible.builtin.copy:
     content: |
-      ACTION=="add", SUBSYSTEM=="net", DRIVERS=="atlantic", RUN+="/usr/sbin/ip link set %k down"
-    dest: /etc/udev/rules.d/80-down-atlantic.rules
+      ACTION=="add", SUBSYSTEM=="net", DRIVERS=="atlantic", RUN+="/usr/sbin/ip link set $name down"
+    dest: /etc/udev/rules.d/90-down-atlantic.rules
     mode: "0644"
   notify: Reload udev
   when: ansible_facts['product_name'] | default('') == 'Mac13,2'
