@@ -1,67 +1,233 @@
 ---
 #
-# Install / update Antigravity from a pre-downloaded tarball
+# Install / update Antigravity from upstream download page or local tarball
 #
 
-- name: Check primary tarball path
+- name: Check installed Antigravity binary
   ansible.builtin.stat:
-    path: "{{ antigravity_tarball }}"
-  register: antigravity_tarball_stat
+    path: "{{ antigravity_install_dir }}/antigravity"
+  register: antigravity_installed_bin_stat
+  check_mode: false
 
-- name: Check architecture-specific tarball path
+- name: Check installed version file
   ansible.builtin.stat:
-    path: "{{ var_home }}/Downloads/Antigravity-{{ antigravity_arch }}.tar.gz"
-  register: antigravity_arch_tarball_stat
-  when: not antigravity_tarball_stat.stat.exists
+    path: "{{ antigravity_version_file }}"
+  register: antigravity_version_file_stat
+  check_mode: false
 
-- name: Set resolved tarball path
+- name: Read installed version file
+  ansible.builtin.slurp:
+    src: "{{ antigravity_version_file }}"
+  register: antigravity_version_slurp
+  when: antigravity_installed_bin_stat.stat.exists and antigravity_version_file_stat.stat.exists
+  check_mode: false
+
+- name: Set installed Antigravity version
   ansible.builtin.set_fact:
-    antigravity_resolved_tarball: >-
+    antigravity_installed_version: >-
       {{
-        antigravity_tarball if antigravity_tarball_stat.stat.exists
-        else (var_home ~ '/Downloads/Antigravity-' ~ antigravity_arch ~ '.tar.gz')
+        (antigravity_version_slurp.content | b64decode | trim)
+        if (
+          antigravity_installed_bin_stat.stat.exists
+          and antigravity_version_file_stat.stat.exists
+          and antigravity_version_slurp.content is defined
+        )
+        else ''
       }}
 
-- name: Check if resolved tarball exists
-  ansible.builtin.stat:
-    path: "{{ antigravity_resolved_tarball }}"
-  register: antigravity_resolved_tarball_stat
+- name: Resolve latest upstream Antigravity release
+  when: not (antigravity_use_local_tarball | bool)
+  block:
+    - name: Fetch Antigravity download page
+      ansible.builtin.uri:
+        url: "{{ antigravity_download_page_url }}"
+        return_content: true
+      register: antigravity_download_page
+      check_mode: false
 
-- name: Fail if tarball is missing
-  ansible.builtin.fail:
-    msg: >-
-      Tarball not found at {{ antigravity_tarball }} or {{ var_home }}/Downloads/Antigravity-{{ antigravity_arch }}.tar.gz.
-      Download it first into ~/Downloads/
-  when: not antigravity_resolved_tarball_stat.stat.exists
+    - name: Extract Antigravity tarball URL
+      ansible.builtin.set_fact:
+        antigravity_download_url: >-
+          {{
+            antigravity_download_page.content
+            | regex_search(
+                'https://storage\.googleapis\.com/antigravity-public/antigravity-hub/[A-Za-z0-9._-]+/linux-'
+                ~ antigravity_url_arch
+                ~ '/Antigravity\.tar\.gz'
+              )
+            | default('', true)
+          }}
 
-- name: Remove existing installation directory
-  ansible.builtin.file:
-    path: "{{ antigravity_install_dir }}"
-    state: absent
+    - name: Fail if Antigravity download URL was not found
+      ansible.builtin.fail:
+        msg: >-
+          Failed to extract Linux ({{ antigravity_url_arch }}) Antigravity tarball URL from {{ antigravity_download_page_url }}.
+          Set antigravity_use_local_tarball=true to install from a local tarball instead.
+      when: (antigravity_download_url | length) == 0
 
-- name: Create installation directory
-  ansible.builtin.file:
-    path: "{{ antigravity_install_dir }}"
-    state: directory
-    owner: "{{ var_user }}"
-    group: "{{ var_user }}"
-    mode: "0755"
+    - name: Extract target Antigravity version
+      ansible.builtin.set_fact:
+        antigravity_target_version: >-
+          {{
+            antigravity_download_url
+            | regex_search('antigravity-hub/([^/]+)/linux-', '\1')
+            | default([], true)
+            | first
+            | default('', true)
+          }}
 
-- name: Extract tarball into install directory
-  ansible.builtin.unarchive:
-    src: "{{ antigravity_resolved_tarball }}"
-    dest: "{{ antigravity_install_dir }}"
-    remote_src: true
-    extra_opts:
-      - --strip-components=1
-    owner: "{{ var_user }}"
-    group: "{{ var_user }}"
+    - name: Determine whether Antigravity update is needed
+      ansible.builtin.set_fact:
+        antigravity_needs_update: "{{ (antigravity_force_update | bool) or (antigravity_installed_version != antigravity_target_version) }}"
 
-- name: Download icon
+- name: Resolve local Antigravity tarball
+  when: antigravity_use_local_tarball | bool
+  block:
+    - name: Check primary tarball path
+      ansible.builtin.stat:
+        path: "{{ antigravity_tarball }}"
+      register: antigravity_tarball_stat
+      check_mode: false
+
+    - name: Check architecture-specific tarball path
+      ansible.builtin.stat:
+        path: "{{ var_home }}/Downloads/Antigravity-{{ antigravity_arch }}.tar.gz"
+      register: antigravity_arch_tarball_stat
+      when: not antigravity_tarball_stat.stat.exists
+      check_mode: false
+
+    - name: Set resolved tarball path
+      ansible.builtin.set_fact:
+        antigravity_resolved_tarball: >-
+          {{
+            antigravity_tarball if antigravity_tarball_stat.stat.exists
+            else (var_home ~ '/Downloads/Antigravity-' ~ antigravity_arch ~ '.tar.gz')
+          }}
+
+    - name: Check if resolved tarball exists
+      ansible.builtin.stat:
+        path: "{{ antigravity_resolved_tarball }}"
+      register: antigravity_resolved_tarball_stat
+      check_mode: false
+
+    - name: Fail if tarball is missing
+      ansible.builtin.fail:
+        msg: >-
+          Tarball not found at {{ antigravity_tarball }} or {{ var_home }}/Downloads/Antigravity-{{ antigravity_arch }}.tar.gz.
+          Download it first into ~/Downloads/
+      when: not antigravity_resolved_tarball_stat.stat.exists
+
+    - name: Set local tarball update metadata
+      ansible.builtin.set_fact:
+        antigravity_target_version: "local"
+        antigravity_needs_update: true
+
+- name: Download, stage, and swap Antigravity installation
+  when: antigravity_needs_update | bool
+  block:
+    - name: Download Antigravity tarball
+      ansible.builtin.get_url:
+        url: "{{ antigravity_download_url }}"
+        dest: "/tmp/Antigravity-{{ antigravity_arch }}-{{ antigravity_target_version }}.tar.gz"
+        mode: "0644"
+      when: not (antigravity_use_local_tarball | bool)
+
+    - name: Set downloaded tarball path for extraction
+      ansible.builtin.set_fact:
+        antigravity_resolved_tarball: "/tmp/Antigravity-{{ antigravity_arch }}-{{ antigravity_target_version }}.tar.gz"
+      when: not (antigravity_use_local_tarball | bool)
+
+    - name: Remove stale staging directory
+      ansible.builtin.file:
+        path: "{{ antigravity_install_dir }}.staging"
+        state: absent
+
+    - name: Create staging directory
+      ansible.builtin.file:
+        path: "{{ antigravity_install_dir }}.staging"
+        state: directory
+        owner: "{{ var_user }}"
+        group: "{{ var_user }}"
+        mode: "0755"
+
+    - name: Extract tarball into staging directory
+      ansible.builtin.unarchive:
+        src: "{{ antigravity_resolved_tarball }}"
+        dest: "{{ antigravity_install_dir }}.staging"
+        remote_src: true
+        extra_opts:
+          - --strip-components=1
+        owner: "{{ var_user }}"
+        group: "{{ var_user }}"
+
+    - name: Check staged Antigravity binary
+      ansible.builtin.stat:
+        path: "{{ antigravity_install_dir }}.staging/antigravity"
+      register: antigravity_staging_bin_stat
+
+    - name: Fail if staged Antigravity binary is missing
+      ansible.builtin.fail:
+        msg: "Extracted tarball did not contain expected binary at {{ antigravity_install_dir }}.staging/antigravity"
+      when: not ansible_check_mode and not antigravity_staging_bin_stat.stat.exists
+
+    - name: Write version marker in staging directory
+      ansible.builtin.copy:
+        content: "{{ antigravity_target_version }}\n"
+        dest: "{{ antigravity_install_dir }}.staging/.version"
+        owner: "{{ var_user }}"
+        group: "{{ var_user }}"
+        mode: "0644"
+
+    - name: Check if installation directory exists
+      ansible.builtin.stat:
+        path: "{{ antigravity_install_dir }}"
+      register: antigravity_install_dir_stat
+
+    - name: Remove stale backup directory
+      ansible.builtin.file:
+        path: "{{ antigravity_install_dir }}.old"
+        state: absent
+
+    - name: Atomically swap staging directory into installation directory
+      block:
+        - name: Move existing installation directory to backup
+          ansible.builtin.command:
+            cmd: "mv {{ antigravity_install_dir }} {{ antigravity_install_dir }}.old"
+          changed_when: true
+          when: antigravity_install_dir_stat.stat.exists
+
+        - name: Move staging directory to installation directory
+          ansible.builtin.command:
+            cmd: "mv {{ antigravity_install_dir }}.staging {{ antigravity_install_dir }}"
+          changed_when: true
+      rescue:
+        - name: Restore backup installation directory on swap failure
+          ansible.builtin.command:
+            cmd: "mv {{ antigravity_install_dir }}.old {{ antigravity_install_dir }}"
+          changed_when: true
+          when: antigravity_install_dir_stat.stat.exists
+
+        - name: Re-raise swap failure
+          ansible.builtin.fail:
+            msg: "Failed to swap {{ antigravity_install_dir }}.staging into {{ antigravity_install_dir }}"
+
+    - name: Remove backup installation directory
+      ansible.builtin.file:
+        path: "{{ antigravity_install_dir }}.old"
+        state: absent
+
+    - name: Remove temporary downloaded tarball
+      ansible.builtin.file:
+        path: "/tmp/Antigravity-{{ antigravity_arch }}-{{ antigravity_target_version }}.tar.gz"
+        state: absent
+      when: not (antigravity_use_local_tarball | bool)
+
+- name: Ensure Antigravity icon exists
   ansible.builtin.get_url:
     url: "{{ antigravity_icon_url }}"
     dest: "{{ antigravity_install_dir }}/antigravity.png"
     mode: "0644"
+    force: false
 
 - name: Create symlink in /usr/local/bin
   ansible.builtin.file:
@@ -104,4 +270,3 @@
     mode: "0644"
   become: true
   become_user: "{{ var_user }}"
-

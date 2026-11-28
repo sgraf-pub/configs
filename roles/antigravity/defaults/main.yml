@@ -7,18 +7,28 @@ antigravity_arch_map:
 
 antigravity_arch: "{{ antigravity_arch_map[ansible_facts.architecture | default(ansible_architecture | default('x86_64'))] | default('x64') }}"
 
-# Path to the downloaded tarball
+# Architecture mapping for upstream Antigravity download URLs
+antigravity_url_arch_map:
+  x86_64: "x64"
+  aarch64: "arm"
+  arm64: "arm"
+
+antigravity_url_arch: "{{ antigravity_url_arch_map[ansible_facts.architecture | default(ansible_architecture | default('x86_64'))] | default('x64') }}"
+
+# Upstream download page and update behavior
+antigravity_download_page_url: "https://antigravity.google/download"
+antigravity_use_local_tarball: false
+antigravity_force_update: false
+
+# Path to the downloaded tarball (used when antigravity_use_local_tarball is true)
 antigravity_tarball: "{{ var_home }}/Downloads/Antigravity.tar.gz"
 
-# Installation directory
+# Installation directory and version marker
 antigravity_install_dir: /opt/antigravity
+antigravity_version_file: "{{ antigravity_install_dir }}/.version"
 
 # Symlink target
 antigravity_bin: /usr/local/bin/antigravity
 
-# Name of the directory inside the tarball
-antigravity_tarball_dir: "Antigravity-{{ antigravity_arch }}"
-
 # Icon URL
 antigravity_icon_url: "https://aur.archlinux.org/cgit/aur.git/plain/antigravity.png?h=antigravity"
-
